@@ -1,2 +1,2 @@
-# Grafic-smen1
+# Grafic-smen
 Grafic
