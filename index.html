@@ -89,6 +89,8 @@ th.mh{font-size:12px;color:var(--tx);font-weight:700;line-height:1.2}
 #today{transition:background .25s,color .25s,border-color .25s}
 @keyframes blinkc{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 4px var(--ac)}}
 @keyframes blinkbg{0%,100%{background:transparent}50%{background:var(--wk)}}
+body.ro .eo:not(.eg){display:none!important}
+body.ro:not(.ed) .eg{display:none!important}
 .cell.flash{animation:blinkc 1.4s ease-in-out 1}
 th.flash{animation:blinkbg 1.4s ease-in-out 1}
 </style>
@@ -104,9 +106,9 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <button id="today">Сегодня</button>
 <select id="dFilter" aria-label="Отдел"></select>
 </div>
-<div class="bar" style="margin-bottom:6px"><button id="bToggle" aria-expanded="true">Режимы корректировки ▾</button><span id="bCur" class="sub" style="margin:0"></span></div>
+<div class="bar eo fl" style="margin-bottom:6px"><button id="bToggle" aria-expanded="true">Режимы корректировки ▾</button><span id="bCur" class="sub" style="margin:0"></span></div>
 <div id="syncSt" class="sub" style="margin:0 0 8px"></div>
-<div class="brush" id="brush">
+<div class="brush eo fl" id="brush">
 <span>Нажатие на клетку:</span>
 <button data-b="cyc" class="on">Смена</button>
 <button data-b="3">Обучение на месте / вебинар</button>
@@ -130,15 +132,15 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <span><b style="padding:0 2px;color:var(--danger)">●</b>Ручная правка</span>
 <span><b style="padding:0 2px;color:var(--ac)">■</b>Обучение или командировка в выходной</span>
 </div>
-<div class="sub" style="margin-top:8px">Выберите режим и нажимайте на клетки. «Смена» переключает выходной → рабочий → дежурство. Повторное нажатие тем же режимом снимает отметку, «По циклу» возвращает клетку к графику 4/2. Часы без обеда: рабочий, обучение и командировка 8 ч, дежурство 9 ч, отпуск и больничный 0 ч. Обучение и командировку можно ставить и на выходной день, такие дни помечены синим квадратиком, но обучение на месте / вебинар в выходной часов не даёт (0 ч) и присутствием на работе не считается, а командировка в выходной считается как 8 ч. К — любые выезды в другие города и страны: рабочие визиты, командировки и обучение с выездом. В строке «На работе» считаются рабочие, дежурные и обучающиеся на месте в рабочие дни; командировки и отпуск не считаются, красным подсвечивается день, когда в отделе на месте меньше минимума (он задаётся в настройках по отделам).</div>
-<div class="bar" style="margin-top:8px"><button id="reset">Сбросить правки периода</button></div>
-<div class="bar" style="margin-top:20px;margin-bottom:6px"><button id="sToggle" aria-expanded="true">Сотрудники и цикл ▾</button></div>
-<div id="setBox">
+<div class="sub eo" style="margin-top:8px">Выберите режим и нажимайте на клетки. «Смена» переключает выходной → рабочий → дежурство. Повторное нажатие тем же режимом снимает отметку, «По циклу» возвращает клетку к графику 4/2. Часы без обеда: рабочий, обучение и командировка 8 ч, дежурство 9 ч, отпуск и больничный 0 ч. Обучение и командировку можно ставить и на выходной день, такие дни помечены синим квадратиком, но обучение на месте / вебинар в выходной часов не даёт (0 ч) и присутствием на работе не считается, а командировка в выходной считается как 8 ч. К — любые выезды в другие города и страны: рабочие визиты, командировки и обучение с выездом. В строке «На работе» считаются рабочие, дежурные и обучающиеся на месте в рабочие дни; командировки и отпуск не считаются, красным подсвечивается день, когда в отделе на месте меньше минимума (он задаётся в настройках по отделам).</div>
+<div class="bar eo fl" style="margin-top:8px"><button id="reset">Сбросить правки периода</button></div>
+<div class="bar eo fl" style="margin-top:20px;margin-bottom:6px"><button id="sToggle" aria-expanded="true">Сотрудники и цикл ▾</button></div>
+<div id="setBox" class="eo">
 <div class="set" id="set"></div>
 <div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла; для 5/2 дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс по календарю (праздничные дни Казахстана учитываются автоматически, если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную режимом «Выходной»). Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит (для 4/2 по умолчанию 1-й и 4-й, у 2/2 и 5/2 дежурств нет, они работают 9–18). При смене типа графика дежурные дни сбрасываются к значениям по умолчанию. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой (например, первая начинает в понедельник, вторая в четверг), тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой, и новому сотруднику автоматически назначается свободный дежурный день смены. Если два дежурства приходятся на один день, в таблице в строке «На работе» число дежурных покраснеет.</div>
 </div>
-<div class="bar" style="margin-top:12px;margin-bottom:6px"><button id="gToggle" aria-expanded="true">Синхронизация GitHub ▾</button></div>
-<div id="ghBox">
+<div class="bar eo eg fl" style="margin-top:12px;margin-bottom:6px"><button id="gToggle" aria-expanded="true">Синхронизация GitHub ▾</button></div>
+<div id="ghBox" class="eo eg">
 <div class="set">
 <div class="row"><label style="min-width:90px">Репозиторий</label><input type="text" id="ghOwner" style="max-width:160px" placeholder="владелец" autocomplete="off"><span>/</span><input type="text" id="ghRepo" style="max-width:190px" placeholder="репозиторий" autocomplete="off"></div>
 <div class="row"><label style="min-width:90px">Токен</label><input type="password" id="ghTok" placeholder="github_pat_…" autocomplete="off"><button id="ghSave" class="on">Сохранить</button><button id="ghDel">Удалить токен</button></div>
@@ -379,7 +381,7 @@ document.getElementById('today').onclick=function(){
   setTimeout(function(){btn.classList.remove('on')},1600);
 };
 document.getElementById('m-toggle').onclick=function(){setMode(mode==='week'?'month':'week')};
-
+ 
 var collapsed=false;try{collapsed=localStorage.getItem('shift-app-ui')==='1'}catch(e){}
 function updCur(){
   var b=document.querySelector('#brush button.on');
@@ -420,8 +422,8 @@ try{var _gr=JSON.parse(localStorage.getItem('shift-gh-repo')||'null');if(_gr&&_g
 var token='';try{token=localStorage.getItem('shift-gh-token')||''}catch(e){}
 var canWrite=!!token,conn='connecting',stMsg='',remoteSha=null,remoteReady=false,syncTimer=null,syncing=false,syncAgain=false,retryTimer=null;
 var synced={cfg:'',ov:{}};
-var ST={connecting:'Загрузка с GitHub…',ok:'GitHub · синхронизировано',ro:'Только просмотр · для правок введите токен в блоке «Синхронизация GitHub»',empty:'В репозитории ещё нет данных · введите токен, чтобы создать их',err:'Ошибка сохранения, повторяю…',slow:'Нет связи с GitHub, показаны сохранённые данные',bad:'GitHub отклонил токен · проверьте токен и его права',rate:'GitHub ограничил число запросов · попробуйте позже'};
-function setSt(){var e=document.getElementById('syncSt');if(e)e.textContent=stMsg||ST[conn]||''}
+var ST={connecting:'Загрузка с GitHub…',ok:'GitHub · синхронизировано',ro:'Только просмотр',empty:'В репозитории ещё нет данных · введите токен, чтобы создать их',err:'Ошибка сохранения, повторяю…',slow:'Нет связи с GitHub, показаны сохранённые данные',bad:'GitHub отклонил токен · проверьте токен и его права',rate:'GitHub ограничил число запросов · попробуйте позже'};
+function setSt(){document.body.classList.toggle('ro',!canWrite);var e=document.getElementById('syncSt');if(e)e.textContent=stMsg||ST[conn]||''}
 function lockSet(){if(canWrite)return;[].forEach.call(document.querySelectorAll('#set input,#set select,#set button'),function(x){x.disabled=true})}
 function busy(){return syncTimer!==null||syncing}
 function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
@@ -573,6 +575,7 @@ document.getElementById('ghFile').onchange=function(ev){
   };
   rd.readAsText(f);
 };
+try{if(/edit/.test(location.hash))document.body.classList.add('ed')}catch(e){}
 applyGh();fillGh();setSt();
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')pull()});
 setInterval(function(){if(document.visibilityState==='visible')pull()},90000);
