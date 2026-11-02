@@ -7,9 +7,9 @@
 <title>Запись на сервис</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--bd:#e2e5ea;--ac:#2563eb;--danger:#dc2626;--ok:#16a34a;--warn:#d97706;
---to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a5f3fc;--sh:#fde68a;--ml:#e2e8f0;--okbg:#86efac;--nobg:#fca5a5;--hd:#e9eef6;--hatch:rgba(220,38,38,.16);--col:#aab3c0;--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--stx:#f3f4f6;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--stx:#f3f4f6;color-scheme:dark}
+--to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a5f3fc;--sh:#fde68a;--ml:#e2e8f0;--okbg:#86efac;--nobg:#fca5a5;--hd:#e9eef6;--hatch:rgba(220,38,38,.16);--col:#aab3c0;--tdb:#ccfbf1;--tdl:#14b8a6;--tdt:#0f5c55;--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--tdb:#134e4a;--tdl:#2dd4bf;--tdt:#ccfbf1;--stx:#f3f4f6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--tdb:#134e4a;--tdl:#2dd4bf;--tdt:#ccfbf1;--stx:#f3f4f6;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:none;margin:0;padding:16px max(12px,env(safe-area-inset-right,0px)) 32px max(12px,env(safe-area-inset-left,0px))}
@@ -17,9 +17,15 @@ main{max-width:none;margin:0;padding:16px max(12px,env(safe-area-inset-right,0px
 #setBox .set,#ghBox .set{max-width:900px}
 h1{font-size:20px;margin:0}
 h2{font-size:16px;margin:22px 0 8px}
-.ttl{display:flex;align-items:center;gap:6px 10px;padding:8px 0;flex-wrap:wrap}
+.ttl{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;flex:0 1 auto;min-width:0}
+.hrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:8px 0}
+.ttl h1{white-space:nowrap}
+#syncSt{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#today{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+#newB{background:var(--tdb);border-color:var(--tdl);color:var(--tdt);font-weight:600}
+#qRes .list{margin:0 0 8px!important}
 #syncSt{margin:0}
-.hdr{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px 0 4px;padding-top:8px;border-bottom:1px solid var(--bd)}
+.hdr{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px 0 4px;padding-top:4px;border-bottom:1px solid var(--bd)}
 .menu{overflow:auto;padding:4px 0 10px;border-top:1px solid var(--bd)}
 .menu .leg{margin-top:4px}
 .ttl .sp{flex:1}
@@ -38,8 +44,12 @@ textarea{resize:vertical;min-height:60px;width:100%}
 .wrap{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:12px}
 html,body{overflow-anchor:none}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.top{padding:8px 0;border-top:1px solid var(--bd)}
-.top .bar{margin-bottom:8px}
+.top{display:flex;flex:1 1 680px;min-width:0;align-items:center;gap:8px 12px;flex-wrap:wrap}
+.top .bar{margin:0;flex-wrap:nowrap}
+.top .bar:first-child .rng{flex:0 0 auto;min-width:150px}
+@media (min-width:600px) and (max-width:1599px){.ttl h1{display:none}}
+.grid.tight .bk.one{font-size:11.5px;line-height:1.02;margin:1px 3px;border-top-width:0;border-bottom-width:0}.grid.tight .bk.one b{font-size:11.5px}.grid.tight .bk.one .stw{font-size:12px}
+.top .bar:last-child{flex:1 1 280px}
 #qRes .list{margin:8px 0 0!important;max-height:45vh;overflow:auto}
 .day{padding-top:14px}
 .dh{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;padding:0 2px 8px}
@@ -50,7 +60,7 @@ html,body{overflow-anchor:none}
 .dh .bad{color:var(--danger)}
 .grid{display:grid;position:relative}
 .gh{position:sticky;top:0;background:var(--hd);z-index:3;padding:8px 6px;font-size:15px;font-weight:600;text-align:center;border-bottom:1px solid var(--col);border-left:2px solid var(--col)}
-.gh small{display:block;font-weight:400;color:var(--mu);font-size:12px}
+.gh small{display:inline;margin-left:6px;font-weight:400;color:var(--mu);font-size:12px}
 .gh.tm{position:sticky;left:0;z-index:4;border-left:none;text-align:left}
 .tc{position:sticky;left:0;background:var(--card);z-index:2;font-size:14px;padding:2px 6px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:4px}
 .tc.hr{font-weight:600}
@@ -122,11 +132,11 @@ body.ro .eo{display:none!important}
 @media (max-width:520px){.fg{grid-template-columns:1fr}.fg .f.w2{grid-column:span 1}}
 @media (max-width:599px){
 .bar{gap:6px}.bar .rng{min-width:0;font-size:14px}
-.gh{padding:6px 2px;font-size:13px}.gh small,.gh .who{font-size:11px}
+.gh{padding:6px 2px;font-size:13px}.gh small,.gh .who{font-size:11px}.gh small{display:block;margin:0}
 .tc{padding:2px 3px;font-size:12px;flex-direction:column;justify-content:center;align-items:flex-start;gap:0;line-height:1.1}.tc .rc{font-size:11px}
 .bk{margin:1px;padding:2px 4px;font-size:12px;border-radius:6px}.bk b{font-size:12px}.bk.one{font-size:11px}.bk.one b{font-size:11px}.bk .stw,.bk.one .stw{font-size:12px;margin:0 3px 0 0}
 .bar .rng{order:-1;flex-basis:100%;text-align:left}
-.top{padding:6px 0}.top .bar{margin-bottom:6px}.ttl{padding:4px 0}.ttl h1{font-size:17px}#syncSt{flex:1;min-width:0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ttl h1{display:none}.ttl .sp{display:none}#newB .t{display:none}#newB{padding:8px 14px;font-weight:700}#dPick{width:114px;padding:8px 4px;font-size:14px}#today{padding:8px 8px}.top .bar{gap:5px}
+.hrow{gap:6px;padding:4px 0 6px}.top{flex-basis:100%;gap:6px}.top .bar{flex-basis:100%;flex-wrap:wrap}.top .bar:first-child .rng{min-width:0;flex-basis:100%}.ttl{flex:1 1 100%}#syncSt{max-width:none}.ttl h1{font-size:17px}#syncSt{flex:1;min-width:0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ttl h1{display:none}.ttl .sp{display:none}#newB .t{display:none}#newB{padding:8px 14px;font-weight:700}#dPick{width:114px;padding:8px 4px;font-size:14px}#today{padding:8px 8px}.top .bar{gap:5px}
 .dlg{padding:12px}.fg input,.fg select,.fg textarea{padding:7px 9px}
 }
 </style>
@@ -134,7 +144,21 @@ body.ro .eo{display:none!important}
 <body class="ro">
 <main>
 <div id="hdr" class="hdr">
+<div class="hrow">
 <div class="ttl"><h1>Запись на сервис</h1><button id="refB" title="Обновить" aria-label="Обновить"><span id="refI">↻</span></button><button id="menuB" style="display:none" aria-expanded="false" aria-controls="menu">☰ Меню ▸</button><span id="syncSt" class="sub"></span><span class="sp"></span></div>
+<div id="top" class="top" style="display:none">
+<div class="bar">
+<button id="prev" aria-label="Предыдущий день">‹</button>
+<div class="rng" id="rng"></div>
+<button id="next" aria-label="Следующий день">›</button>
+<button id="today">Сегодня</button>
+<input type="date" id="dPick" aria-label="Перейти к дате">
+<button id="newB" class="pri eo" aria-label="Новая запись">+<span class="t"> Новая запись</span></button>
+</div>
+<div class="bar" style="margin-bottom:0"><input type="text" id="q" placeholder="Поиск по всем записям: госномер, телефон, имя или слово из комментария" style="flex:1;min-width:200px" autocomplete="off"></div>
+</div>
+</div>
+<div id="qRes"></div>
 <div id="menu" class="menu" style="display:none">
 <div class="tools"><button id="sToggle" class="eo" aria-expanded="false">Настройки ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button><span style="flex:1"></span><button id="lockB" title="Закрыть доступ на этом устройстве">Выйти</button></div>
 <div id="setBox" class="eo" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
@@ -154,18 +178,6 @@ body.ro .eo{display:none!important}
 <span><b style="background:var(--hatch);border:1px solid var(--bd)"></b>Пост закрыт по графику смен</span>
 </div>
 <div class="sub eo" style="margin-top:8px">Дни идут друг за другом: прокручивайте вниз или вверх, чтобы перейти к следующему или предыдущему дню. Дважды нажмите на свободную клетку, чтобы записать клиента на этот пост и время. Чтобы открыть запись, нажмите на неё один раз. Цифры у времени — сколько клиентов приезжает в эти полчаса и сколько сервисные консультанты успевают принять. Заштрихованное время уже занято по приёму: новую запись с началом в это время сделать нельзя, но работы, начатые раньше, через него продолжаются. Записи со статусом «Готов» становятся зелёными, «Не приехал» — красными и остаются на своём месте. Если клиент отменил запись, просто удалите её.</div>
-</div>
-<div id="top" class="top" style="display:none">
-<div class="bar">
-<button id="prev" aria-label="Предыдущий день">‹</button>
-<div class="rng" id="rng"></div>
-<button id="next" aria-label="Следующий день">›</button>
-<button id="today">Сегодня</button>
-<input type="date" id="dPick" aria-label="Перейти к дате">
-<button id="newB" class="pri eo" aria-label="Новая запись">+<span class="t"> Новая запись</span></button>
-</div>
-<div class="bar" style="margin-bottom:0"><input type="text" id="q" placeholder="Поиск по всем записям: госномер, телефон, имя или слово из комментария" style="flex:1;min-width:200px" autocomplete="off"></div>
-<div id="qRes"></div>
 </div>
 </div>
 
@@ -484,11 +496,14 @@ document.getElementById('lockB').onclick=function(){
 };
 
 /* ---------- таблица дня ---------- */
-var cur=iso(new Date()),RS=null,RE=null,needScroll=true,nar=false;
+var cur=iso(new Date()),RS=null,RE=null,needScroll=true,nar=false,RH=36;
+/* высота строки подбирается так, чтобы день целиком помещался на экране (от 30 до 44 пикселей) */
+function calcRH(){var h=document.getElementById('hdr'),mn=document.getElementById('menu'),qr=document.getElementById('qRes'),hh=h?h.offsetHeight-mn.offsetHeight-qr.offsetHeight:120,g=document.querySelector('#days .gh'),gh=g?g.offsetHeight:72,d=document.querySelector('#days .dh'),dh=d?d.offsetHeight+16:44,n=slots().length||20;
+  return Math.max(28,Math.min(44,Math.floor((innerHeight-hh-dh-gh-10)/n)))}
 function rerender(){render();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
 function appVisible(){return document.getElementById('app').style.display!=='none'}
 function secOf(d){return document.querySelector('#days .day[data-d="'+d+'"]')}
-function headRng(){var dd=parseIso(cur);document.getElementById('rng').textContent=(nar?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()].slice(0,3):fdate(cur))+(cur===iso(new Date())?' · сегодня':'');document.getElementById('dPick').value=cur}
+function headRng(){var dd=parseIso(cur);document.getElementById('rng').textContent=(nar?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()].slice(0,3):innerWidth<1800?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()]+(dd.getFullYear()!==new Date().getFullYear()?' '+dd.getFullYear():''):fdate(cur))+(cur===iso(new Date())?' · сегодня':'');document.getElementById('dPick').value=cur}
 function topBottom(){return document.getElementById('hdr').getBoundingClientRect().bottom}
 /* день, который сейчас вверху экрана, под закреплённой панелью */
 function anchor(){var y=topBottom()+40,ss=document.querySelectorAll('#days .day'),a=null,i;for(i=0;i<ss.length;i++){if(ss[i].getBoundingClientRect().top<=y)a=ss[i];else break}return a||ss[0]||null}
@@ -523,11 +538,11 @@ function dayHtml(D){
   var cap=P.length*(c.close-c.open),wd=dd.getDay(),info='Записей: '+nOcc+(nOff?' · не приехали: '+nOff:'')+' · загрузка постов: '+(cap?Math.round(tot/cap*100):0)+'%';
   var warn=(Object.keys(cf).length?' · есть наложения, проверьте записи с красной рамкой':'')+(nNw?' · у '+nNw+' записей мастер не на смене, перенесите клиентов':'')+(G.ok?'':' · график смен не загружен, посты не проверяются');
   return '<section class="day" data-d="'+D+'"><div class="dh'+(D===iso(new Date())?' td':'')+(wd===0||wd===6?' we':'')+'"><b>'+DNF[wd].charAt(0).toUpperCase()+DNF[wd].slice(1)+', '+dd.getDate()+' '+MN[dd.getMonth()]+(dd.getFullYear()!==new Date().getFullYear()?' '+dd.getFullYear():'')+(D===iso(new Date())?' · сегодня':'')+'</b><span class="sub">'+info+'<span class="bad">'+warn+'</span></span></div>'
-    +'<div class="wrap"><div class="grid" style="grid-template-columns:'+tw+'px repeat('+P.length+',minmax('+cw+'px,1fr));grid-template-rows:auto repeat('+S.length+',36px);min-width:'+(tw+P.length*cw)+'px">'+h+'</div></div>'+'</section>';
+    +'<div class="wrap"><div class="grid'+(RH<32?' tight':'')+'" style="grid-template-columns:'+tw+'px repeat('+P.length+',minmax('+cw+'px,1fr));grid-template-rows:auto repeat('+S.length+','+RH+'px);min-width:'+(tw+P.length*cw)+'px">'+h+'</div></div>'+'</section>';
 }
 /* перерисовать все дни ленты, не сдвигая то, что сейчас на экране */
 function render(){
-  nar=innerWidth<600;
+  nar=innerWidth<600;if(appVisible())RH=nar?34:calcRH();
   if(!RS){RS=addDays(cur,-2);RE=addDays(cur,12)}
   var box=document.getElementById('days'),a=box.children.length&&appVisible()?anchor():null,ad=a&&a.dataset.d,off=a?a.getBoundingClientRect().top:0,h='',d;
   for(d=RS;d<=RE;d=addDays(d,1))h+=dayHtml(d);
@@ -749,7 +764,7 @@ document.getElementById('menuB').onclick=function(){
 /* ---------- запуск ---------- */
 async function refreshAll(){var b=document.getElementById('refB'),i=document.getElementById('refI');if(b.disabled)return;b.disabled=true;i.classList.add('spin');var t0=Date.now();await pull();setTimeout(function(){i.classList.remove('spin');b.disabled=false},Math.max(0,600-(Date.now()-t0)))}
 document.getElementById('refB').onclick=refreshAll;
-var rzT=null,rzN=innerWidth<600;addEventListener('resize',function(){clearTimeout(rzT);rzT=setTimeout(function(){var n=innerWidth<600;if(n!==rzN){rzN=n;if(document.getElementById('app').style.display!=='none')render()}},150)});
+var rzT=null,rzN=innerWidth<600;addEventListener('resize',function(){clearTimeout(rzT);rzT=setTimeout(function(){var n=innerWidth<600;if(n!==rzN||(appVisible()&&!n&&calcRH()!==RH)){rzN=n;if(appVisible())render()}},150)});
 (async function(){
   if(!window.crypto||!crypto.subtle){document.getElementById('syncSt').textContent='Этот браузер не поддерживает шифрование. Откройте страницу по адресу https:// в современном браузере.';return}
   loadGraphCache();
