@@ -7,9 +7,9 @@
 <title>Запись на сервис</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--bd:#e2e5ea;--ac:#2563eb;--danger:#dc2626;--ok:#16a34a;--warn:#d97706;
---to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a7f3d0;--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e4b;--stx:#f3f4f6;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e4b;--stx:#f3f4f6;color-scheme:dark}
+--to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a5f3fc;--sh:#fde68a;--ml:#e2e8f0;--okbg:#86efac;--nobg:#fca5a5;--hd:#e9eef6;--hatch:rgba(220,38,38,.45);--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(248,113,113,.55);--stx:#f3f4f6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(248,113,113,.55);--stx:#f3f4f6;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:none;margin:0;padding:16px max(12px,env(safe-area-inset-right,0px)) 32px max(12px,env(safe-area-inset-left,0px))}
@@ -48,37 +48,38 @@ html,body{overflow-anchor:none}
 .dh.we b{color:var(--mu)}
 .dh .sub{margin:0}
 .dh .bad{color:var(--danger)}
-.offl{margin-top:8px}
-.offl .t{font-size:13px;color:var(--mu);margin:0 0 4px}
 .grid{display:grid;position:relative}
-.gh{position:sticky;top:0;background:var(--card);z-index:3;padding:8px 6px;font-size:13px;font-weight:600;text-align:center;border-bottom:1px solid var(--bd);border-left:1px solid var(--bd)}
-.gh small{display:block;font-weight:400;color:var(--mu);font-size:11px}
+.gh{position:sticky;top:0;background:var(--hd);z-index:3;padding:8px 6px;font-size:15px;font-weight:600;text-align:center;border-bottom:1px solid var(--bd);border-left:1px solid var(--bd)}
+.gh small{display:block;font-weight:400;color:var(--mu);font-size:12px}
 .gh.tm{position:sticky;left:0;z-index:4;border-left:none;text-align:left}
-.tc{position:sticky;left:0;background:var(--card);z-index:2;font-size:12px;padding:2px 6px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:4px}
+.tc{position:sticky;left:0;background:var(--card);z-index:2;font-size:14px;padding:2px 6px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:4px}
 .tc.hr{font-weight:600}
-.tc .rc{font-size:11px;color:var(--mu)}
+.tc .rc{font-size:12px;color:var(--mu)}
 .tc .rc.full{color:var(--danger);font-weight:700}
-.sl{border:none;border-bottom:1px solid var(--bd);border-left:1px solid var(--bd);border-radius:0;background:transparent;padding:0;min-height:0;cursor:pointer}
+.sl.sel{outline:2px solid var(--ac);outline-offset:-2px;background:var(--bg)}
+.sl{touch-action:manipulation;border:none;border-bottom:1px solid var(--bd);border-left:1px solid var(--bd);border-radius:0;background:transparent;padding:0;min-height:0;cursor:pointer}
 .sl:hover{background:var(--bg)}
 .sl.full{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--bg) 6px 12px)}
 body.ro .sl{cursor:default}
 body.ro .sl:hover{background:transparent}
-.bk{z-index:1;margin:2px 3px;border-radius:8px;padding:4px 7px;font-size:12px;line-height:1.3;overflow:hidden;cursor:pointer;color:var(--stx);border:1px solid transparent;text-align:left;display:block}
-.bk b{font-size:12px}
-.bk.one{margin:1px 3px;padding:1px 6px;font-size:11px;line-height:1.2}.bk.one b{font-size:11px}.bk.one .badge{font-size:9px;padding:0 3px}
+.bk{z-index:1;margin:2px 3px;border-radius:8px;padding:4px 8px;font-size:14px;line-height:1.3;overflow:hidden;cursor:pointer;color:var(--stx);border:1px solid transparent;text-align:left;display:block}
+.bk b{font-size:14px}
+.bk.one{margin:1px 3px;padding:0 6px;font-size:13px;line-height:1.18}.bk.one b{font-size:13px}
 .bk .ln{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bk .cm{display:block;font-style:italic;opacity:.85;white-space:normal;overflow-wrap:anywhere}
 #tip{position:fixed;z-index:20;max-width:300px;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.18);pointer-events:none;display:none}
 #tip b{display:block;margin-bottom:2px}
 #tip .r{color:var(--mu)}
 #tip .c{margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere}
-.bk.to{background:var(--to)}.bk.rm{background:var(--rm)}.bk.dg{background:var(--dg)}.bk.gr{background:var(--gr)}.bk.eq{background:var(--eq)}
-.bk.st-done{border-color:var(--ok)}
+.bk.to{background:var(--to)}.bk.rm{background:var(--rm)}.bk.dg{background:var(--dg)}.bk.gr{background:var(--gr)}.bk.eq{background:var(--eq)}.bk.sh{background:var(--sh)}.bk.ml{background:var(--ml)}
+.bk.st-done{background:var(--okbg);border-color:var(--ok)}
+.bk.st-nos{background:var(--nobg);border-color:var(--danger)}
+.bk .stw{display:inline-block;font-size:14px;font-weight:800;letter-spacing:.02em;margin-left:6px;vertical-align:-1px}
+.bk.one .stw{font-size:13px}
 .bk.cf{border:2px solid var(--danger)}
 .bk.nw{border:2px dashed var(--danger)}
-.sl.off{background:repeating-linear-gradient(135deg,transparent 0 5px,var(--bd) 5px 7px);cursor:not-allowed}
-.sl.off:hover{background:repeating-linear-gradient(135deg,transparent 0 5px,var(--bd) 5px 7px)}
-.gh .who{display:block;font-weight:400;font-size:11px;color:var(--tx)}
+.sl.off,.sl.off:hover{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--hatch) 6px 8px);cursor:not-allowed}
+.gh .who{display:block;font-weight:400;font-size:13px;color:var(--tx)}
 .gh .who.out{color:var(--danger)}
 #tip .w{color:var(--danger);margin-top:4px}
 .bk.dim{opacity:.25}
@@ -113,15 +114,17 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .seg button.on.dg{background:var(--dg);border-color:var(--dg);color:var(--stx)}
 .seg button.on.gr{background:var(--gr);border-color:var(--gr);color:var(--stx)}
 .seg button.on.eq{background:var(--eq);border-color:var(--eq);color:var(--stx)}
+.seg button.on.sh{background:var(--sh);border-color:var(--sh);color:var(--stx)}
+.seg button.on.ml{background:var(--ml);border-color:var(--ml);color:var(--stx)}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;position:sticky;bottom:0;background:var(--card);padding:8px 0 2px;z-index:2}
 .acts .sp{flex:1}
 body.ro .eo{display:none!important}
 @media (max-width:520px){.fg{grid-template-columns:1fr}.fg .f.w2{grid-column:span 1}}
 @media (max-width:599px){
 .bar{gap:6px}.bar .rng{min-width:0;font-size:14px}
-.gh{padding:6px 2px;font-size:12px}.gh small,.gh .who{font-size:10px}
-.tc{padding:2px 3px;font-size:11px;flex-direction:column;justify-content:center;align-items:flex-start;gap:0;line-height:1.1}.tc .rc{font-size:10px}
-.bk{margin:1px;padding:2px 4px;font-size:11px;border-radius:6px}.bk b{font-size:11px}
+.gh{padding:6px 2px;font-size:13px}.gh small,.gh .who{font-size:11px}
+.tc{padding:2px 3px;font-size:12px;flex-direction:column;justify-content:center;align-items:flex-start;gap:0;line-height:1.1}.tc .rc{font-size:11px}
+.bk{margin:1px;padding:2px 4px;font-size:12px;border-radius:6px}.bk b{font-size:12px}.bk.one{font-size:11px}.bk.one b{font-size:11px}.bk .stw,.bk.one .stw{font-size:12px;margin:0 3px 0 0}
 .bar .rng{order:-1;flex-basis:100%;text-align:left}
 .top{padding:6px 0}.top .bar{margin-bottom:6px}.ttl{padding:4px 0}.ttl h1{font-size:17px}#syncSt{flex:1;min-width:0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ttl h1{display:none}.ttl .sp{display:none}#newB .t{display:none}#newB{padding:8px 14px;font-weight:700}#dPick{width:114px;padding:8px 4px;font-size:14px}#today{padding:8px 8px}.top .bar{gap:5px}
 .dlg{padding:12px}.fg input,.fg select,.fg textarea{padding:7px 9px}
@@ -142,11 +145,15 @@ body.ro .eo{display:none!important}
 <span><b style="background:var(--dg)"></b>Диагностика</span>
 <span><b style="background:var(--gr)"></b>Гарантия</span>
 <span><b style="background:var(--eq)"></b>Доп. оборудование</span>
+<span><b style="background:var(--sh)"></b>Шиномонтаж</span>
+<span><b style="background:var(--ml)"></b>Замена масла</span>
+<span><b style="background:var(--okbg)"></b>Готов</span>
+<span><b style="background:var(--nobg)"></b>Не приехал</span>
 <span><b style="border:2px solid var(--danger)"></b>Наложение (проверьте запись)</span>
 <span><b style="border:2px dashed var(--danger)"></b>Мастер не на смене (перенесите клиента)</span>
-<span><b style="background:repeating-linear-gradient(135deg,transparent 0 5px,var(--bd) 5px 7px);border:1px solid var(--bd)"></b>Пост закрыт по графику смен</span>
+<span><b style="background:repeating-linear-gradient(135deg,transparent 0 4px,var(--hatch) 4px 6px);border:1px solid var(--bd)"></b>Пост закрыт по графику смен</span>
 </div>
-<div class="sub eo" style="margin-top:8px">Дни идут друг за другом: прокручивайте вниз или вверх, чтобы перейти к следующему или предыдущему дню. Нажмите на свободную клетку, чтобы записать клиента на этот пост и время, или на запись, чтобы открыть её. Цифры у времени — сколько клиентов приезжает в эти полчаса и сколько сервисные консультанты успевают принять. Заштрихованное время уже занято по приёму: новую запись с началом в это время сделать нельзя, но работы, начатые раньше, через него продолжаются. Неявки не занимают пост и показаны списком под таблицей своего дня. Если клиент отменил запись, просто удалите её.</div>
+<div class="sub eo" style="margin-top:8px">Дни идут друг за другом: прокручивайте вниз или вверх, чтобы перейти к следующему или предыдущему дню. Дважды нажмите на свободную клетку, чтобы записать клиента на этот пост и время. Чтобы открыть запись, нажмите на неё один раз. Цифры у времени — сколько клиентов приезжает в эти полчаса и сколько сервисные консультанты успевают принять. Заштрихованное время уже занято по приёму: новую запись с началом в это время сделать нельзя, но работы, начатые раньше, через него продолжаются. Записи со статусом «Готов» становятся зелёными, «Не приехал» — красными и остаются на своём месте. Если клиент отменил запись, просто удалите её.</div>
 </div>
 <div id="top" class="top" style="display:none">
 <div class="bar">
@@ -196,9 +203,9 @@ body.ro .eo{display:none!important}
 <script>
 var DN=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],DNF=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
 var MN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-var TYPES=[{k:'to',n:'ТО'},{k:'rm',n:'Ремонт'},{k:'dg',n:'Диагностика'},{k:'gr',n:'Гарантия'},{k:'eq',n:'Дополнительное оборудование'}];
+var TYPES=[{k:'to',n:'ТО'},{k:'rm',n:'Ремонт'},{k:'dg',n:'Диагностика'},{k:'gr',n:'Гарантия'},{k:'eq',n:'Дополнительное оборудование'},{k:'sh',n:'Шиномонтаж'},{k:'ml',n:'Замена масла'}];
 var TN={};TYPES.forEach(function(t){TN[t.k]=t.n});
-var TS={to:'ТО',rm:'Ремонт',dg:'Диагностика',gr:'Гарантия',eq:'Доп. оборуд.'};
+var TS={to:'ТО',rm:'Ремонт',dg:'Диагностика',gr:'Гарантия',eq:'Доп. оборуд.',sh:'Шиномонтаж',ml:'Замена масла'};
 var STS=[{k:'zap',n:'Записан'},{k:'done',n:'Готов'},{k:'nos',n:'Не приехал'}];
 var SN={};STS.forEach(function(s){SN[s.k]=s.n});
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
@@ -226,7 +233,7 @@ function normCfg(c){var d=defCfg(),k;c=c||{};for(k in d)if(c[k]===undefined)c[k]
   c.posts.forEach(function(p){if(!p.emp){var dp=d.posts.filter(function(x){return x.id===p.id})[0];p.emp=dp?dp.emp.slice():[]}});return c}
 function slots(){var c=state.cfg,r=[],m;for(m=c.open;m<c.close;m+=c.step)r.push(m);return r}
 function live(b){return b&&!b.del}
-function occupies(b){return live(b)&&st(b)!=='nos'}
+function occupies(b){return live(b)}
 function postIdx(id){for(var i=0;i<state.cfg.posts.length;i++)if(state.cfg.posts[i].id===id)return i;return -1}
 function postName(id){var i=postIdx(id);return i<0?'Пост удалён':state.cfg.posts[i].name}
 function dayList(date){var r=[],k,b;for(k in state.b){b=state.b[k];if(live(b)&&b.date===date)r.push(b)}r.sort(function(a,b){return a.start-b.start||postIdx(a.post)-postIdx(b.post)});return r}
@@ -238,7 +245,6 @@ function check(bk,ignoreId){
   if(postIdx(bk.post)<0)return 'Выберите пост';
   if(!(bk.len>0))return 'Выберите, сколько времени займут работы';
   if(bk.start<c.open||bk.start+bk.len>c.close)return 'Работы выходят за часы работы сервиса ('+fm(c.open)+'–'+fm(c.close)+'). Уменьшите длительность или выберите время раньше.';
-  if(bk.status==='nos')return '';
   var av=postAvail(postIdx(bk.post)>=0?state.cfg.posts[postIdx(bk.post)]:null,bk.date);
   if(!av.free){
     if(!av.open)return 'Мастер поста не на смене в этот день ('+av.why+'). Выберите другой пост или день.';
@@ -502,11 +508,10 @@ function dayHtml(D){
   });
   var nOcc=0,nOff=0,nNw=0,tot=0;
   l.forEach(function(b){
-    if(!occupies(b)){nOff++;return}
-    var j=postIdx(b.post);if(j<0)return;nOcc++;tot+=b.len;
+    var j=postIdx(b.post);if(j<0)return;nOcc++;if(st(b)==='nos')nOff++;else tot+=b.len;
     var nw=notWorking(b,AV[j]);if(nw)nNw++;
     var r0=Math.max(0,Math.floor((b.start-c.open)/c.step)),r1=Math.min(S.length,Math.ceil((b.start+b.len-c.open)/c.step));if(r1<=r0)r1=r0+1;
-    var span=r1-r0,lines='<span class="ln"><b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+(TS[b.type]||TN[b.type])+(st(b)!=='zap'?'<span class="badge '+st(b)+'">'+SN[st(b)]+'</span>':'')+'</span>';
+    var span=r1-r0,sw=st(b)!=='zap'?'<span class="stw">'+SN[st(b)].toUpperCase()+'</span>':'',lines='<span class="ln">'+(nar?sw:'')+'<b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+(TS[b.type]||TN[b.type])+(nar?'':sw)+'</span>';
     var car=[b.plate,carY(b)].filter(Boolean).join(' · '),who=[b.client,b.phone].filter(Boolean).join(' · ');
     if(span===1){var l2=[b.plate||b.car,b.desc].filter(Boolean).join(' · ');if(l2)lines+='<span class="ln">'+esc(l2)+'</span>'}
     else{
@@ -515,12 +520,10 @@ function dayHtml(D){
     if(who&&(span>=3||!(car&&b.desc)))lines+='<span class="ln">'+esc(who)+'</span>';}
     h+='<button class="bk '+(span===1?'one ':'')+b.type+' st-'+st(b)+(cf[b.id]?' cf':'')+(nw?' nw':'')+(Q?(match(b,Q)?' hit':' dim'):'')+'" style="grid-row:'+(r0+2)+' / span '+span+';grid-column:'+(j+2)+'" data-id="'+b.id+'" aria-label="'+esc(TN[b.type]+', '+fm(b.start)+'–'+fm(b.start+b.len)+(car?', '+car:'')+(who?', '+who:'')+(b.desc?', '+b.desc:''))+'">'+lines+'</button>';
   });
-  var cap=P.length*(c.close-c.open),wd=dd.getDay(),info='Записей: '+nOcc+(nOff?' · неявок: '+nOff:'')+' · загрузка постов: '+(cap?Math.round(tot/cap*100):0)+'%';
+  var cap=P.length*(c.close-c.open),wd=dd.getDay(),info='Записей: '+nOcc+(nOff?' · не приехали: '+nOff:'')+' · загрузка постов: '+(cap?Math.round(tot/cap*100):0)+'%';
   var warn=(Object.keys(cf).length?' · есть наложения, проверьте записи с красной рамкой':'')+(nNw?' · у '+nNw+' записей мастер не на смене, перенесите клиентов':'')+(G.ok?'':' · график смен не загружен, посты не проверяются');
-  var off=l.filter(function(b){return !occupies(b)});
   return '<section class="day" data-d="'+D+'"><div class="dh'+(D===iso(new Date())?' td':'')+(wd===0||wd===6?' we':'')+'"><b>'+DNF[wd].charAt(0).toUpperCase()+DNF[wd].slice(1)+', '+dd.getDate()+' '+MN[dd.getMonth()]+(dd.getFullYear()!==new Date().getFullYear()?' '+dd.getFullYear():'')+(D===iso(new Date())?' · сегодня':'')+'</b><span class="sub">'+info+'<span class="bad">'+warn+'</span></span></div>'
-    +'<div class="wrap"><div class="grid" style="grid-template-columns:'+tw+'px repeat('+P.length+',minmax('+cw+'px,1fr));grid-template-rows:auto repeat('+S.length+',32px);min-width:'+(tw+P.length*cw)+'px">'+h+'</div></div>'
-    +(off.length?'<div class="offl"><div class="t">Неявки</div><div class="list">'+off.map(itemHtml).join('')+'</div></div>':'')+'</section>';
+    +'<div class="wrap"><div class="grid" style="grid-template-columns:'+tw+'px repeat('+P.length+',minmax('+cw+'px,1fr));grid-template-rows:auto repeat('+S.length+',36px);min-width:'+(tw+P.length*cw)+'px">'+h+'</div></div>'+'</section>';
 }
 /* перерисовать все дни ленты, не сдвигая то, что сейчас на экране */
 function render(){
@@ -574,8 +577,12 @@ document.getElementById('days').addEventListener('click',function(e){
   var it=e.target.closest('.it');if(it){listClick(e);return}
   var t=e.target.closest('button');if(!t)return;
   if(t.dataset.id){openForm(state.b[t.dataset.id]);return}
-  if(t.classList.contains('off'))return;
-  if(t.dataset.p&&canWrite&&KEY)openForm(null,{post:t.dataset.p,start:+t.dataset.t,date:t.closest('.day').dataset.d});
+  if(t.dataset.p){var o=document.querySelector('#days .sl.sel');if(o)o.classList.remove('sel');if(!t.classList.contains('off'))t.classList.add('sel')}
+});
+/* пустая клетка открывает новую запись двойным кликом (на телефоне — двойным касанием) */
+document.getElementById('days').addEventListener('dblclick',function(e){
+  var t=e.target.closest('button.sl');if(!t||t.classList.contains('off'))return;
+  if(canWrite&&KEY){var sel=window.getSelection&&getSelection();if(sel&&sel.removeAllRanges)sel.removeAllRanges();openForm(null,{post:t.dataset.p,start:+t.dataset.t,date:t.closest('.day').dataset.d})}
 });
 function listClick(e){var t=e.target.closest('.it');if(t&&state.b[t.dataset.id]){var b=state.b[t.dataset.id];if(!secOf(b.date)||b.date!==cur)goto(b.date,false);openForm(b)}}
 document.getElementById('qRes').addEventListener('click',listClick);
