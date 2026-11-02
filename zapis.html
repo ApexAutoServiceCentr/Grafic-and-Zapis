@@ -160,8 +160,10 @@ body.ro .eo{display:none!important}
 <div class="f w2"><label>Вид работ</label><div class="seg" id="fType"></div></div>
 <div class="f"><label for="fClient">Клиент</label><input type="text" id="fClient" maxlength="60" placeholder="Иван Петров"></div>
 <div class="f"><label for="fPhone">Телефон</label><input type="tel" id="fPhone" maxlength="20" placeholder="+7 701 123 45 67"></div>
-<div class="f"><label for="fCar">Автомобиль</label><input type="text" id="fCar" maxlength="60" placeholder="Toyota Camry 2021"></div>
+<div class="f"><label for="fCar">Автомобиль</label><input type="text" id="fCar" maxlength="60" placeholder="Toyota Camry"></div>
 <div class="f"><label for="fPlate">Госномер</label><input type="text" id="fPlate" maxlength="15" placeholder="123ABC14"></div>
+<div class="f"><label for="fYear">Год выпуска</label><input type="text" id="fYear" inputmode="numeric" maxlength="4" placeholder="2021"></div>
+<div class="f"><label for="fKm">Пробег, км</label><input type="text" id="fKm" inputmode="numeric" maxlength="9" placeholder="85 000"></div>
 <div class="f w2"><label for="fDesc">Комментарий: что нужно сделать, жалоба клиента</label><textarea id="fDesc" maxlength="1000"></textarea></div>
 <div class="f"><label for="fStatus">Статус</label><select id="fStatus"></select></div>
 <div class="f"><label for="fBy">Кто записал</label><input type="text" id="fBy" maxlength="40" placeholder="Имя сотрудника"></div>
@@ -192,6 +194,8 @@ function fdate(s){var d=parseIso(s);return d.getDate()+' '+MN[d.getMonth()]+' '+
 function fshort(s){var d=parseIso(s);return DN[d.getDay()]+' '+d.getDate()+' '+MN[d.getMonth()].slice(0,3)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function digits(s){return String(s||'').replace(/\D/g,'')}
+function carY(b){return [b.car,b.year].filter(Boolean).join(' ')}
+function fkm(k){return k?String(k).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' км':''}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
 function now(){return Date.now()}
 
@@ -483,7 +487,7 @@ function render(){
     var nw=notWorking(b,AV[j]);if(nw)nNw++;
     var r0=Math.max(0,Math.floor((b.start-c.open)/c.step)),r1=Math.min(S.length,Math.ceil((b.start+b.len-c.open)/c.step));if(r1<=r0)r1=r0+1;
     var span=r1-r0,lines='<span class="ln"><b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+(TS[b.type]||TN[b.type])+(st(b)!=='zap'?'<span class="badge '+st(b)+'">'+SN[st(b)]+'</span>':'')+'</span>';
-    var car=[b.plate,b.car].filter(Boolean).join(' · '),who=[b.client,b.phone].filter(Boolean).join(' · ');
+    var car=[b.plate,carY(b)].filter(Boolean).join(' · '),who=[b.client,b.phone].filter(Boolean).join(' · ');
     if(span===1){var l2=[b.plate||b.car,b.desc].filter(Boolean).join(' · ');if(l2)lines+='<span class="ln">'+esc(l2)+'</span>'}
     else{
     if(car)lines+='<span class="ln">'+esc(car)+'</span>';
@@ -502,7 +506,7 @@ function render(){
 var tip=document.getElementById('tip');
 function tipHtml(b){var r='<b>'+esc(TN[b.type])+' · '+fm(b.start)+'–'+fm(b.start+b.len)+' ('+fdur(b.len)+')</b>';
   r+='<div class="r">'+esc(postName(b.post))+' · '+SN[st(b)]+'</div>';
-  if(b.plate||b.car)r+='<div>'+esc([b.plate,b.car].filter(Boolean).join(' · '))+'</div>';
+  if(b.plate||b.car||b.year||b.km)r+='<div>'+esc([b.plate,carY(b),fkm(b.km)].filter(Boolean).join(' · '))+'</div>';
   if(b.client||b.phone)r+='<div>'+esc([b.client,b.phone].filter(Boolean).join(' · '))+'</div>';
   if(b.desc)r+='<div class="c">'+esc(b.desc)+'</div>';
   if(occupies(b)&&notWorking(b,postAvail(state.cfg.posts[postIdx(b.post)],b.date)))r+='<div class="w">Мастер не на смене по графику — перенесите клиента</div>';
@@ -514,7 +518,7 @@ gridEl.addEventListener('mouseover',function(e){var t=e.target.closest('.bk');if
 gridEl.addEventListener('mousemove',function(e){if(tip.style.display==='block')tipMove(e)});
 gridEl.addEventListener('mouseleave',function(){tip.style.display='none'});
 gridEl.addEventListener('click',function(){tip.style.display='none'});
-function itemHtml(b){return '<div class="it" data-id="'+b.id+'"><b>'+esc(b.plate||b.client||'Без имени')+'</b><span>'+esc(TN[b.type])+'</span><span>'+esc([b.car,b.client,b.phone].filter(Boolean).join(' · '))+'</span>'+(b.desc?'<span style="font-style:italic;color:var(--mu)">'+esc(b.desc)+'</span>':'')+'<span class="wh">'+fshort(b.date)+', '+fm(b.start)+' · '+esc(postName(b.post))+' · '+SN[st(b)]+'</span></div>'}
+function itemHtml(b){return '<div class="it" data-id="'+b.id+'"><b>'+esc(b.plate||b.client||'Без имени')+'</b><span>'+esc(TN[b.type])+'</span><span>'+esc([carY(b),b.client,b.phone].filter(Boolean).join(' · '))+'</span>'+(b.desc?'<span style="font-style:italic;color:var(--mu)">'+esc(b.desc)+'</span>':'')+'<span class="wh">'+fshort(b.date)+', '+fm(b.start)+' · '+esc(postName(b.post))+' · '+SN[st(b)]+'</span></div>'}
 document.getElementById('grid').addEventListener('click',function(e){
   var t=e.target.closest('button');if(!t)return;
   if(t.dataset.id){openForm(state.b[t.dataset.id]);return}
@@ -571,7 +575,7 @@ function openForm(b,pre){
   document.getElementById('fPost').innerHTML=c.posts.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+' · '+(KINDS[p.kind]||'')+'</option>'}).join('')+(postIdx(d.post)<0&&b?'<option value="'+esc(d.post)+'">Пост удалён</option>':'');
   sv('fPost',d.post);
   fillSelects(d.start,d.len);setType(d.type);
-  sv('fClient',d.client);sv('fPhone',d.phone);sv('fCar',d.car);sv('fPlate',d.plate);sv('fDesc',d.desc);sv('fStatus',b?st(b):'zap');
+  sv('fClient',d.client);sv('fPhone',d.phone);sv('fCar',d.car);sv('fPlate',d.plate);sv('fYear',d.year);sv('fKm',d.km?fkm(d.km).replace(' км',''):'');sv('fDesc',d.desc);sv('fStatus',b?st(b):'zap');
   var by=d.by;if(!b){try{by=localStorage.getItem('zap-by')||''}catch(e){}}sv('fBy',by);
   document.getElementById('fErr').textContent='';
   var del=document.getElementById('fDel');del.textContent='Удалить (отмена)';del.className='eo';del.style.display=b?'':'none';
@@ -585,11 +589,14 @@ document.getElementById('fType').addEventListener('click',function(e){var t=e.ta
 document.getElementById('fLen').addEventListener('change',liveCheck);
 ['fDate','fPost','fStart','fStatus'].forEach(function(id){document.getElementById(id).addEventListener('change',liveCheck)});
 function collect(){
-  return{date:fv('fDate'),post:fv('fPost'),start:+fv('fStart'),len:+fv('fLen'),type:fType,client:fv('fClient').trim(),phone:fv('fPhone').trim(),car:fv('fCar').trim(),plate:fv('fPlate').trim().toUpperCase().replace(/\s+/g,''),desc:fv('fDesc').trim(),status:fv('fStatus'),by:fv('fBy').trim()};
+  return{date:fv('fDate'),post:fv('fPost'),start:+fv('fStart'),len:+fv('fLen'),type:fType,client:fv('fClient').trim(),phone:fv('fPhone').trim(),car:fv('fCar').trim(),year:digits(fv('fYear')),km:digits(fv('fKm')).replace(/^0+(?=\d)/,''),plate:fv('fPlate').trim().toUpperCase().replace(/\s+/g,''),desc:fv('fDesc').trim(),status:fv('fStatus'),by:fv('fBy').trim()};
 }
 function liveCheck(){if(!(canWrite&&KEY))return;document.getElementById('fErr').textContent=check(collect(),edId)}
 document.getElementById('fSave').onclick=function(){
   var d=collect(),err=check(d,edId),e=document.getElementById('fErr');
+  var yNow=new Date().getFullYear();
+  if(!err&&d.year&&(d.year.length!==4||+d.year<1950||+d.year>yNow+1))err='Год выпуска укажите четырьмя цифрами, от 1950 до '+(yNow+1);
+  if(!err&&d.km&&+d.km>3000000)err='Проверьте пробег — слишком большое число';
   if(!err&&!d.client&&!d.phone&&!d.plate)err='Укажите хотя бы имя клиента, телефон или госномер';
   if(err){e.textContent=err;return}
   var id=edId||uid(),old=state.b[id]||{};
