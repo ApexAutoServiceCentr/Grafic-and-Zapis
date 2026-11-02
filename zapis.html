@@ -7,9 +7,9 @@
 <title>Запись на сервис</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--bd:#e2e5ea;--ac:#2563eb;--danger:#dc2626;--ok:#16a34a;--warn:#d97706;
---to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--stx:#f3f4f6;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--stx:#f3f4f6;color-scheme:dark}
+--to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a7f3d0;--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e4b;--stx:#f3f4f6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e4b;--stx:#f3f4f6;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:1200px;margin:0 auto;padding:16px 12px 32px}
@@ -51,7 +51,7 @@ body.ro .sl:hover{background:transparent}
 #tip b{display:block;margin-bottom:2px}
 #tip .r{color:var(--mu)}
 #tip .c{margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere}
-.bk.to{background:var(--to)}.bk.rm{background:var(--rm)}.bk.dg{background:var(--dg)}.bk.gr{background:var(--gr)}
+.bk.to{background:var(--to)}.bk.rm{background:var(--rm)}.bk.dg{background:var(--dg)}.bk.gr{background:var(--gr)}.bk.eq{background:var(--eq)}
 .bk.st-done{border-color:var(--ok)}
 .bk.cf{border:2px solid var(--danger)}
 .bk.nw{border:2px dashed var(--danger)}
@@ -91,6 +91,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .seg button.on.rm{background:var(--rm);border-color:var(--rm);color:var(--stx)}
 .seg button.on.dg{background:var(--dg);border-color:var(--dg);color:var(--stx)}
 .seg button.on.gr{background:var(--gr);border-color:var(--gr);color:var(--stx)}
+.seg button.on.eq{background:var(--eq);border-color:var(--eq);color:var(--stx)}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .acts .sp{flex:1}
 body.ro .eo{display:none!important}
@@ -122,6 +123,7 @@ body.ro .eo{display:none!important}
 <span><b style="background:var(--rm)"></b>Ремонт</span>
 <span><b style="background:var(--dg)"></b>Диагностика</span>
 <span><b style="background:var(--gr)"></b>Гарантия</span>
+<span><b style="background:var(--eq)"></b>Доп. оборудование</span>
 <span><b style="border:2px solid var(--danger)"></b>Наложение (проверьте запись)</span>
 <span><b style="border:2px dashed var(--danger)"></b>Мастер не на смене (перенесите клиента)</span>
 <span><b style="background:repeating-linear-gradient(135deg,transparent 0 5px,var(--bd) 5px 7px);border:1px solid var(--bd)"></b>Пост закрыт по графику смен</span>
@@ -162,8 +164,9 @@ body.ro .eo{display:none!important}
 <script>
 var DN=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],DNF=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
 var MN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-var TYPES=[{k:'to',n:'ТО'},{k:'rm',n:'Ремонт'},{k:'dg',n:'Диагностика'},{k:'gr',n:'Гарантия'}];
+var TYPES=[{k:'to',n:'ТО'},{k:'rm',n:'Ремонт'},{k:'dg',n:'Диагностика'},{k:'gr',n:'Гарантия'},{k:'eq',n:'Дополнительное оборудование'}];
 var TN={};TYPES.forEach(function(t){TN[t.k]=t.n});
+var TS={to:'ТО',rm:'Ремонт',dg:'Диагностика',gr:'Гарантия',eq:'Доп. оборуд.'};
 var STS=[{k:'zap',n:'Записан'},{k:'done',n:'Готов'},{k:'nos',n:'Не приехал'}];
 var SN={};STS.forEach(function(s){SN[s.k]=s.n});
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
@@ -182,10 +185,10 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function now(){return Date.now()}
 
 /* ---------- данные ---------- */
-function defCfg(){return{posts:[{id:'p1',name:'Пост 1',kind:'me',emp:[3,6]},{id:'p2',name:'Пост 2',kind:'me',emp:[4,7]},{id:'p3',name:'Пост 3',kind:'me',emp:[5,8]},{id:'p4',name:'Пост 4',kind:'el',emp:[9,10]}],open:540,close:1140,step:30,cap:3,dur:{to:120,rm:120,dg:60,gr:120},cu:0}}
+function defCfg(){return{posts:[{id:'p1',name:'Пост 1',kind:'me',emp:[3,6]},{id:'p2',name:'Пост 2',kind:'me',emp:[4,7]},{id:'p3',name:'Пост 3',kind:'me',emp:[5,8]},{id:'p4',name:'Пост 4',kind:'el',emp:[9,10]}],open:540,close:1140,step:30,cap:3,cu:0}}
 function emptyState(){return{v:1,cfg:defCfg(),b:{}}}
 var state=emptyState();
-function normCfg(c){var d=defCfg(),k;c=c||{};for(k in d)if(c[k]===undefined)c[k]=d[k];for(k in d.dur)if(!c.dur[k])c.dur[k]=d.dur[k];
+function normCfg(c){var d=defCfg(),k;c=c||{};for(k in d)if(c[k]===undefined)c[k]=d[k];delete c.dur;
   c.posts.forEach(function(p){if(!p.emp){var dp=d.posts.filter(function(x){return x.id===p.id})[0];p.emp=dp?dp.emp.slice():[]}});return c}
 function slots(){var c=state.cfg,r=[],m;for(m=c.open;m<c.close;m+=c.step)r.push(m);return r}
 function live(b){return b&&!b.del}
@@ -199,7 +202,7 @@ function check(bk,ignoreId){
   var c=state.cfg,k,b,n=0;
   if(!bk.date)return 'Укажите дату';
   if(postIdx(bk.post)<0)return 'Выберите пост';
-  if(!(bk.len>0))return 'Укажите длительность работ';
+  if(!(bk.len>0))return 'Выберите, сколько времени займут работы';
   if(bk.start<c.open||bk.start+bk.len>c.close)return 'Работы выходят за часы работы сервиса ('+fm(c.open)+'–'+fm(c.close)+'). Уменьшите длительность или выберите время раньше.';
   if(bk.status==='nos')return '';
   var av=postAvail(postIdx(bk.post)>=0?state.cfg.posts[postIdx(bk.post)]:null,bk.date);
@@ -466,7 +469,7 @@ function render(){
     var j=postIdx(b.post);if(j<0)return;nOcc++;
     var nw=notWorking(b,AV[j]);if(nw)nNw++;
     var r0=Math.max(0,Math.floor((b.start-c.open)/c.step)),r1=Math.min(S.length,Math.ceil((b.start+b.len-c.open)/c.step));if(r1<=r0)r1=r0+1;
-    var span=r1-r0,lines='<span class="ln"><b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+TN[b.type]+(st(b)!=='zap'?'<span class="badge '+st(b)+'">'+SN[st(b)]+'</span>':'')+'</span>';
+    var span=r1-r0,lines='<span class="ln"><b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+(TS[b.type]||TN[b.type])+(st(b)!=='zap'?'<span class="badge '+st(b)+'">'+SN[st(b)]+'</span>':'')+'</span>';
     var car=[b.plate,b.car].filter(Boolean).join(' · '),who=[b.client,b.phone].filter(Boolean).join(' · ');
     if(car)lines+='<span class="ln">'+esc(car)+'</span>';
     if(b.desc)lines+='<span class="cm">'+esc(b.desc)+'</span>';
@@ -527,7 +530,7 @@ function doSearch(){
 document.getElementById('q').addEventListener('input',function(){doSearch();render()});
 
 /* ---------- форма записи ---------- */
-var dlg=document.getElementById('dlg'),edId=null,fType='to',lenTouched=false,delArm=false;
+var dlg=document.getElementById('dlg'),edId=null,fType='to',delArm=false;
 (function(){
   document.getElementById('fType').innerHTML=TYPES.map(function(t){return '<button type="button" data-ty="'+t.k+'" class="'+t.k+'">'+t.n+'</button>'}).join('');
   document.getElementById('fStatus').innerHTML=STS.map(function(s){return '<option value="'+s.k+'">'+s.n+'</option>'}).join('');
@@ -537,6 +540,7 @@ function fillSelects(start,len){
   S.forEach(function(x){o+='<option value="'+x+'"'+(x===start?' selected':'')+'>'+fm(x)+'</option>'});
   if(start!=null&&S.indexOf(start)<0)o='<option value="'+start+'" selected>'+fm(start)+'</option>'+o;
   document.getElementById('fStart').innerHTML=o;o='';
+  o='<option value=""'+(len?'':' selected')+'>Выберите время работ</option>';
   for(m=c.step;m<=c.close-c.open;m+=c.step)o+='<option value="'+m+'"'+(m===len?' selected':'')+'>'+fdur(m)+'</option>';
   document.getElementById('fLen').innerHTML=o;
 }
@@ -545,8 +549,8 @@ function fv(id){return document.getElementById(id).value}
 function sv(id,v){document.getElementById(id).value=v==null?'':v}
 function openForm(b,pre){
   var c=state.cfg,ro=!(canWrite&&KEY);
-  edId=b?b.id:null;delArm=false;lenTouched=!!b;
-  var d=b||{date:cur,post:pre.post||c.posts[0]&&c.posts[0].id,start:pre.start!=null?pre.start:firstFree(cur),type:'to',len:c.dur.to,status:'zap'};
+  edId=b?b.id:null;delArm=false;
+  var d=b||{date:cur,post:pre.post||c.posts[0]&&c.posts[0].id,start:pre.start!=null?pre.start:firstFree(cur),type:'to',len:0,status:'zap'};
   document.getElementById('fTitle').textContent=b?(ro?'Запись':'Изменить запись'):'Новая запись';
   sv('fDate',d.date);
   document.getElementById('fPost').innerHTML=c.posts.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+' · '+(KINDS[p.kind]||'')+'</option>'}).join('')+(postIdx(d.post)<0&&b?'<option value="'+esc(d.post)+'">Пост удалён</option>':'');
@@ -562,8 +566,8 @@ function openForm(b,pre){
   if(!ro&&!b)setTimeout(function(){document.getElementById('fClient').focus()},50);
 }
 function firstFree(date){var S=slots(),i;for(i=0;i<S.length;i++)if(recvCount(date,S[i])<state.cfg.cap)return S[i];return S[0]}
-document.getElementById('fType').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||t.disabled)return;setType(t.dataset.ty);if(!lenTouched)fillSelects(+fv('fStart'),state.cfg.dur[fType]);liveCheck()});
-document.getElementById('fLen').addEventListener('change',function(){lenTouched=true;liveCheck()});
+document.getElementById('fType').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||t.disabled)return;setType(t.dataset.ty);liveCheck()});
+document.getElementById('fLen').addEventListener('change',liveCheck);
 ['fDate','fPost','fStart','fStatus'].forEach(function(id){document.getElementById(id).addEventListener('change',liveCheck)});
 function collect(){
   return{date:fv('fDate'),post:fv('fPost'),start:+fv('fStart'),len:+fv('fLen'),type:fType,client:fv('fClient').trim(),phone:fv('fPhone').trim(),car:fv('fCar').trim(),plate:fv('fPlate').trim().toUpperCase().replace(/\s+/g,''),desc:fv('fDesc').trim(),status:fv('fStatus'),by:fv('fBy').trim()};
@@ -599,8 +603,6 @@ function renderSet(){
   });
   h+='<div class="sub" style="margin:0 0 4px">Пост открыт для записи, когда по графику на смене хотя бы один из его мастеров. С 18:00 до 19:00 — только если кто-то из них дежурит. Пост без мастеров открыт всегда.</div>';
   h+='<div class="row"><button id="pAdd">+ Добавить пост</button></div><div class="err" id="setErr"></div>';
-  h+='<div class="row" style="margin-top:6px"><b>Время по умолчанию для вида работ</b><label>(в записи можно поменять)</label></div>';
-  TYPES.forEach(function(t){var o='',m;for(m=c.step;m<=480;m+=c.step)o+='<option value="'+m+'"'+(m===c.dur[t.k]?' selected':'')+'>'+fdur(m)+'</option>';h+='<div class="row"><label style="min-width:110px">'+t.n+'</label><select data-du="'+t.k+'">'+o+'</select></div>'});
   h+='<div class="row" style="margin-top:6px"><b>Приём клиентов</b></div><div class="row"><label style="min-width:240px">Не больше клиентов на одни полчаса</label><input type="number" id="capI" min="1" max="10" value="'+c.cap+'" style="width:70px"></div><div class="sub" style="margin:0">Обычно равно числу сервисных консультантов на приёмке.</div>';
   var hh='';for(var m=360;m<=1320;m+=30)hh+='<option value="'+m+'">'+fm(m)+'</option>';
   h+='<div class="row" style="margin-top:6px"><b>Часы записи</b></div><div class="row"><label>с</label><select id="openI">'+hh+'</select><label>до</label><select id="closeI">'+hh+'</select></div>';
@@ -615,7 +617,6 @@ document.getElementById('set').addEventListener('change',function(e){
   if(t.dataset.pn!==undefined){c.posts[+t.dataset.pn].name=t.value.trim()||'Пост';cfgTouch()}
   else if(t.dataset.pk!==undefined){c.posts[+t.dataset.pk].kind=t.value;cfgTouch();renderSet()}
   else if(t.dataset.pe!==undefined){var q=t.dataset.pe.split(':'),pp=c.posts[+q[0]],eid=+q[1];pp.emp=(pp.emp||[]).filter(function(x){return x!==eid});if(t.checked)pp.emp.push(eid);cfgTouch()}
-  else if(t.dataset.du!==undefined){c.dur[t.dataset.du]=+t.value;cfgTouch()}
   else if(t.id==='capI'){c.cap=Math.max(1,Math.min(10,parseInt(t.value,10)||1));cfgTouch()}
   else if(t.id==='openI'||t.id==='closeI'){var o=+fv('openI'),cl=+fv('closeI');if(cl<=o){document.getElementById('setErr').textContent='Время окончания должно быть позже начала';renderSet();return}c.open=o;c.close=cl;cfgTouch();renderSet()}
 });
