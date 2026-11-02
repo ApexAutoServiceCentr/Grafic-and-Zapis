@@ -7,9 +7,9 @@
 <title>Запись на сервис</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--bd:#e2e5ea;--ac:#2563eb;--danger:#dc2626;--ok:#16a34a;--warn:#d97706;
---to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a5f3fc;--sh:#fde68a;--ml:#e2e8f0;--okbg:#86efac;--nobg:#fca5a5;--hd:#e9eef6;--hatch:rgba(220,38,38,.45);--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(248,113,113,.55);--stx:#f3f4f6;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(248,113,113,.55);--stx:#f3f4f6;color-scheme:dark}
+--to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a5f3fc;--sh:#fde68a;--ml:#e2e8f0;--okbg:#86efac;--nobg:#fca5a5;--hd:#e9eef6;--hatch:rgba(220,38,38,.16);--col:#aab3c0;--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--stx:#f3f4f6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--stx:#f3f4f6;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:none;margin:0;padding:16px max(12px,env(safe-area-inset-right,0px)) 32px max(12px,env(safe-area-inset-left,0px))}
@@ -49,7 +49,7 @@ html,body{overflow-anchor:none}
 .dh .sub{margin:0}
 .dh .bad{color:var(--danger)}
 .grid{display:grid;position:relative}
-.gh{position:sticky;top:0;background:var(--hd);z-index:3;padding:8px 6px;font-size:15px;font-weight:600;text-align:center;border-bottom:1px solid var(--bd);border-left:1px solid var(--bd)}
+.gh{position:sticky;top:0;background:var(--hd);z-index:3;padding:8px 6px;font-size:15px;font-weight:600;text-align:center;border-bottom:1px solid var(--col);border-left:2px solid var(--col)}
 .gh small{display:block;font-weight:400;color:var(--mu);font-size:12px}
 .gh.tm{position:sticky;left:0;z-index:4;border-left:none;text-align:left}
 .tc{position:sticky;left:0;background:var(--card);z-index:2;font-size:14px;padding:2px 6px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:4px}
@@ -57,7 +57,7 @@ html,body{overflow-anchor:none}
 .tc .rc{font-size:12px;color:var(--mu)}
 .tc .rc.full{color:var(--danger);font-weight:700}
 .sl.sel{outline:2px solid var(--ac);outline-offset:-2px;background:var(--bg)}
-.sl{touch-action:manipulation;border:none;border-bottom:1px solid var(--bd);border-left:1px solid var(--bd);border-radius:0;background:transparent;padding:0;min-height:0;cursor:pointer}
+.sl{touch-action:manipulation;border:none;border-bottom:1px solid var(--bd);border-left:2px solid var(--col);border-radius:0;background:transparent;padding:0;min-height:0;cursor:pointer}
 .sl:hover{background:var(--bg)}
 .sl.full{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--bg) 6px 12px)}
 body.ro .sl{cursor:default}
@@ -78,7 +78,7 @@ body.ro .sl:hover{background:transparent}
 .bk.one .stw{font-size:13px}
 .bk.cf{border:2px solid var(--danger)}
 .bk.nw{border:2px dashed var(--danger)}
-.sl.off,.sl.off:hover{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--hatch) 6px 8px);cursor:not-allowed}
+.sl.off,.sl.off:hover{background:var(--hatch);cursor:not-allowed}
 .gh .who{display:block;font-weight:400;font-size:13px;color:var(--tx)}
 .gh .who.out{color:var(--danger)}
 #tip .w{color:var(--danger);margin-top:4px}
@@ -151,7 +151,7 @@ body.ro .eo{display:none!important}
 <span><b style="background:var(--nobg)"></b>Не приехал</span>
 <span><b style="border:2px solid var(--danger)"></b>Наложение (проверьте запись)</span>
 <span><b style="border:2px dashed var(--danger)"></b>Мастер не на смене (перенесите клиента)</span>
-<span><b style="background:repeating-linear-gradient(135deg,transparent 0 4px,var(--hatch) 4px 6px);border:1px solid var(--bd)"></b>Пост закрыт по графику смен</span>
+<span><b style="background:var(--hatch);border:1px solid var(--bd)"></b>Пост закрыт по графику смен</span>
 </div>
 <div class="sub eo" style="margin-top:8px">Дни идут друг за другом: прокручивайте вниз или вверх, чтобы перейти к следующему или предыдущему дню. Дважды нажмите на свободную клетку, чтобы записать клиента на этот пост и время. Чтобы открыть запись, нажмите на неё один раз. Цифры у времени — сколько клиентов приезжает в эти полчаса и сколько сервисные консультанты успевают принять. Заштрихованное время уже занято по приёму: новую запись с началом в это время сделать нельзя, но работы, начатые раньше, через него продолжаются. Записи со статусом «Готов» становятся зелёными, «Не приехал» — красными и остаются на своём месте. Если клиент отменил запись, просто удалите её.</div>
 </div>
