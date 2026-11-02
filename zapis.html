@@ -12,7 +12,9 @@
 :root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e4b;--stx:#f3f4f6;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:1200px;margin:0 auto;padding:16px 12px 32px}
+main{max-width:none;margin:0;padding:16px max(12px,env(safe-area-inset-right,0px)) 32px max(12px,env(safe-area-inset-left,0px))}
+@media (min-width:1000px){main{padding-left:20px;padding-right:20px}}
+#setBox .set,#ghBox .set{max-width:900px}
 h1{font-size:20px;margin:0}
 h2{font-size:16px;margin:22px 0 8px}
 .ttl{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
@@ -45,6 +47,7 @@ body.ro .sl{cursor:default}
 body.ro .sl:hover{background:transparent}
 .bk{z-index:1;margin:2px 3px;border-radius:8px;padding:4px 7px;font-size:12px;line-height:1.3;overflow:hidden;cursor:pointer;color:var(--stx);border:1px solid transparent;text-align:left;display:block}
 .bk b{font-size:12px}
+.bk.one{margin:1px 3px;padding:1px 6px;font-size:11px;line-height:1.2}.bk.one b{font-size:11px}.bk.one .badge{font-size:9px;padding:0 3px}
 .bk .ln{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bk .cm{display:block;font-style:italic;opacity:.85;white-space:normal;overflow-wrap:anywhere}
 #tip{position:fixed;z-index:20;max-width:300px;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.18);pointer-events:none;display:none}
@@ -92,10 +95,18 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .seg button.on.dg{background:var(--dg);border-color:var(--dg);color:var(--stx)}
 .seg button.on.gr{background:var(--gr);border-color:var(--gr);color:var(--stx)}
 .seg button.on.eq{background:var(--eq);border-color:var(--eq);color:var(--stx)}
-.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;position:sticky;bottom:0;background:var(--card);padding:8px 0 2px;z-index:2}
 .acts .sp{flex:1}
 body.ro .eo{display:none!important}
 @media (max-width:520px){.fg{grid-template-columns:1fr}.fg .f.w2{grid-column:span 1}}
+@media (max-width:599px){
+.bar{gap:6px}.bar .rng{min-width:0;font-size:14px}
+.gh{padding:6px 2px;font-size:12px}.gh small,.gh .who{font-size:10px}
+.tc{padding:2px 3px;font-size:11px;flex-direction:column;justify-content:center;align-items:flex-start;gap:0;line-height:1.1}.tc .rc{font-size:10px}
+.bk{margin:1px;padding:2px 4px;font-size:11px;border-radius:6px}.bk b{font-size:11px}
+.bar .rng{order:-1;flex-basis:100%;text-align:left}
+.dlg{padding:12px}.fg input,.fg select,.fg textarea{padding:7px 9px}
+}
 </style>
 </head>
 <body class="ro">
@@ -447,12 +458,14 @@ var cur=iso(new Date());
 function rerender(){render();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
 function render(){
   var c=state.cfg,S=slots(),P=c.posts,l=dayList(cur),cf=conflicts(cur),h='',i,Q=query();
-  document.getElementById('rng').textContent=fdate(cur)+(cur===iso(new Date())?' · сегодня':'');
+  var nar=innerWidth<600,dd=parseIso(cur);
+  document.getElementById('rng').textContent=(nar?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()].slice(0,3):fdate(cur))+(cur===iso(new Date())?' · сегодня':'');
   document.getElementById('dPick').value=cur;
   var g=document.getElementById('grid');
-  g.style.gridTemplateColumns='76px repeat('+P.length+',minmax(118px,1fr))';
-  g.style.gridTemplateRows='auto repeat('+S.length+',30px)';
-  g.style.minWidth=(76+P.length*118)+'px';
+  var tw=nar?44:76,cw=nar?62:118;
+  g.style.gridTemplateColumns=tw+'px repeat('+P.length+',minmax('+cw+'px,1fr))';
+  g.style.gridTemplateRows='auto repeat('+S.length+',32px)';
+  g.style.minWidth=(tw+P.length*cw)+'px';
   h+='<div class="gh tm" style="grid-row:1;grid-column:1">Время<small>приём</small></div>';
   var AV=P.map(function(p){return postAvail(p,cur)});
   P.forEach(function(p,j){var a=AV[j],w='';
@@ -471,10 +484,12 @@ function render(){
     var r0=Math.max(0,Math.floor((b.start-c.open)/c.step)),r1=Math.min(S.length,Math.ceil((b.start+b.len-c.open)/c.step));if(r1<=r0)r1=r0+1;
     var span=r1-r0,lines='<span class="ln"><b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+(TS[b.type]||TN[b.type])+(st(b)!=='zap'?'<span class="badge '+st(b)+'">'+SN[st(b)]+'</span>':'')+'</span>';
     var car=[b.plate,b.car].filter(Boolean).join(' · '),who=[b.client,b.phone].filter(Boolean).join(' · ');
+    if(span===1){var l2=[b.plate||b.car,b.desc].filter(Boolean).join(' · ');if(l2)lines+='<span class="ln">'+esc(l2)+'</span>'}
+    else{
     if(car)lines+='<span class="ln">'+esc(car)+'</span>';
     if(b.desc)lines+='<span class="cm">'+esc(b.desc)+'</span>';
-    if(who)lines+='<span class="ln">'+esc(who)+'</span>';
-    h+='<button class="bk '+b.type+' st-'+st(b)+(cf[b.id]?' cf':'')+(nw?' nw':'')+(Q?(match(b,Q)?' hit':' dim'):'')+'" style="grid-row:'+(r0+2)+' / span '+span+';grid-column:'+(j+2)+'" data-id="'+b.id+'" aria-label="'+esc(TN[b.type]+', '+fm(b.start)+'–'+fm(b.start+b.len)+(car?', '+car:'')+(who?', '+who:'')+(b.desc?', '+b.desc:''))+'">'+lines+'</button>';
+    if(who&&(span>=3||!(car&&b.desc)))lines+='<span class="ln">'+esc(who)+'</span>';}
+    h+='<button class="bk '+(span===1?'one ':'')+b.type+' st-'+st(b)+(cf[b.id]?' cf':'')+(nw?' nw':'')+(Q?(match(b,Q)?' hit':' dim'):'')+'" style="grid-row:'+(r0+2)+' / span '+span+';grid-column:'+(j+2)+'" data-id="'+b.id+'" aria-label="'+esc(TN[b.type]+', '+fm(b.start)+'–'+fm(b.start+b.len)+(car?', '+car:'')+(who?', '+who:'')+(b.desc?', '+b.desc:''))+'">'+lines+'</button>';
   });
   g.innerHTML=h;
   var tot=0;l.forEach(function(b){if(occupies(b))tot+=b.len});
@@ -659,6 +674,7 @@ document.getElementById('gToggle').onclick=function(){ghOpen=!ghOpen;var b=docum
 /* ---------- запуск ---------- */
 async function refreshAll(){var b=document.getElementById('refB'),i=document.getElementById('refI');if(b.disabled)return;b.disabled=true;i.classList.add('spin');var t0=Date.now();await pull();setTimeout(function(){i.classList.remove('spin');b.disabled=false},Math.max(0,600-(Date.now()-t0)))}
 document.getElementById('refB').onclick=refreshAll;
+var rzT=null,rzN=innerWidth<600;addEventListener('resize',function(){clearTimeout(rzT);rzT=setTimeout(function(){var n=innerWidth<600;if(n!==rzN){rzN=n;if(document.getElementById('app').style.display!=='none')render()}},150)});
 (async function(){
   if(!window.crypto||!crypto.subtle){document.getElementById('syncSt').textContent='Этот браузер не поддерживает шифрование. Откройте страницу по адресу https:// в современном браузере.';return}
   loadGraphCache();
