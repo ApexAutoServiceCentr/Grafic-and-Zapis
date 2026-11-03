@@ -128,7 +128,6 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <div class="set" id="set"></div>
 <div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла; для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс по календарю (праздничные дни Казахстана учитываются автоматически, если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную режимом «Выходной»). Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит (для 4/2 по умолчанию 1-й и 4-й, у 2/2 и 5/2 дежурств нет, они работают 9–18). При смене типа графика дежурные дни сбрасываются к значениям по умолчанию. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой (например, первая начинает в понедельник, вторая в четверг), тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой, и новому сотруднику автоматически назначается свободный дежурный день смены. Если два дежурства приходятся на один день, в таблице в строке «На работе» число дежурных покраснеет. Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, дежурные дни выбираются так же, как у 4/2, праздничные дни РК при этом не учитываются.</div>
 </div>
-<div class="mi eo"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и цикл» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></div>
 <div class="mi eo"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></div>
 <div class="bar eo eg fl" style="margin-top:12px;margin-bottom:6px"><button id="gToggle" aria-expanded="true">Синхронизация GitHub ▾</button></div>
 <div id="ghBox" class="eo eg">
@@ -139,6 +138,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 </div>
 <div class="sub" style="margin-top:8px">Просмотр графика работает без токена. Чтобы править, создайте токен на GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens. Выберите доступ только к этому репозиторию и право Repository permissions → Contents: Read and write. Токен сохраняется только в этом браузере и отправляется только на api.github.com. Данные графика лежат в файле data.json в репозитории; страница и репозиторий публичны, поэтому имена сотрудников видны всем, у кого есть адрес.</div>
 </div>
+<div class="mi eo" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd)"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и цикл» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></div>
 </div>
 </div>
 <div class="bar">
@@ -180,7 +180,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 </div>
 <div class="sub eo" style="margin-top:8px">Выберите режим и нажимайте на клетки. «Смена» переключает выходной → рабочий → дежурство. Повторное нажатие тем же режимом снимает отметку, «По циклу» возвращает клетку к графику 4/2. Часы без обеда: рабочий, обучение и командировка 8 ч, дежурство 9 ч, отпуск, больничный и отпуск без содержания 0 ч. Обучение и командировку можно ставить и на выходной день, такие дни помечены синим квадратиком, но обучение на месте / вебинар в выходной часов не даёт (0 ч) и присутствием на работе не считается, а командировка в выходной считается как 8 ч. К — любые выезды в другие города и страны: рабочие визиты, командировки и обучение с выездом. В строке «На работе» считаются рабочие, дежурные и обучающиеся на месте в рабочие дни; командировки и отпуск не считаются, красным подсвечивается день, когда в отделе на месте меньше минимума (он задаётся в настройках по отделам).</div>
 </main>
-<div id="pwM" class="pwm" hidden><div class="pwb"><div id="pwT" style="font-weight:600;margin-bottom:8px"></div><input type="password" id="pwI" autocomplete="new-password" placeholder="Пароль"><input type="password" id="pwI2" autocomplete="new-password" placeholder="Повторите пароль"><div id="pwE" style="color:var(--danger);font-size:13px;min-height:18px"></div><div style="display:flex;gap:8px"><button id="pwOk" class="on">OK</button><button id="pwNo">Отмена</button></div></div></div>
+<div id="pwM" class="pwm" hidden><div class="pwb"><div id="pwT" style="font-weight:600;margin-bottom:8px"></div><input type="password" id="pwI0" autocomplete="off" placeholder="Старый пароль" style="display:none"><input type="password" id="pwI" autocomplete="new-password" placeholder="Пароль"><input type="password" id="pwI2" autocomplete="new-password" placeholder="Повторите пароль"><div id="pwE" style="color:var(--danger);font-size:13px;min-height:18px"></div><div style="display:flex;gap:8px"><button id="pwOk" class="on">OK</button><button id="pwNo">Отмена</button></div></div></div>
 <script>
 var DN=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 var MN=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
@@ -347,6 +347,7 @@ document.getElementById('tbl').addEventListener('click',function(ev){
   if(b.dataset.dc){dCol[b.dataset.dc]=dCol[b.dataset.dc]?0:1;try{localStorage.setItem('shift-app-dcol',JSON.stringify(dCol))}catch(e){}render();return}
   if(!b.dataset.i)return;
   if(!canWrite)return;
+  if(locked()||brush===null){updCur();return}
   var i=+b.dataset.i,d=+b.dataset.d,k=ok(i,d),bs=base(i,d),n;
   if(brush==='auto')delete state.ov[k];
   else{
@@ -359,8 +360,7 @@ document.getElementById('tbl').addEventListener('click',function(ev){
 });
 document.getElementById('brush').addEventListener('click',function(ev){
   var b=ev.target.closest('button');if(!b)return;
-  var v=b.dataset.b;brush=(v==='cyc'||v==='auto')?v:+v;
-  Array.prototype.forEach.call(this.querySelectorAll('button'),function(x){x.className=x===b?'on':''});updCur();
+  if(locked())return;var v=b.dataset.b;setBrush((v==='cyc'||v==='auto')?v:+v);updCur();
 });
 document.getElementById('set').addEventListener('input',function(ev){
   var t=ev.target;
@@ -419,21 +419,19 @@ document.getElementById('today').onclick=function(){
 document.getElementById('m-toggle').onclick=function(){setMode(mode==='week'?'month':'week')};
 
 var collapsed=false;try{collapsed=localStorage.getItem('shift-app-ui')==='1'}catch(e){}
+function setBrush(v){brush=v;Array.prototype.forEach.call(document.querySelectorAll('#brush button'),function(x){x.className=(v!==null&&x.dataset.b===String(v))?'on':''})}
 function updCur(){
-  var b=document.querySelector('#brush button.on');
-  document.getElementById('bCur').textContent=(collapsed&&b)?'Выбрано: '+b.textContent:'';
+  var b=document.querySelector('#brush button.on'),t='';
+  if(locked())t='Правки закрыты паролем: откройте «Режимы корректировки»';
+  else if(brush===null)t='Режим клика не выбран: выберите режим, чтобы править клетки';
+  else if(collapsed&&b)t='Выбрано: '+b.textContent;
+  document.getElementById('bCur').textContent=t;
 }
-document.getElementById('bToggle').onclick=function(){
-  collapsed=!collapsed;try{localStorage.setItem('shift-app-ui',collapsed?'1':'0')}catch(e){}
-  document.getElementById('brush').style.display=collapsed?'none':'';
-  this.textContent='Режимы корректировки '+(collapsed?'▸':'▾');
-  this.setAttribute('aria-expanded',collapsed?'false':'true');
-  updCur();
-};
-function applyUI(){var t=document.getElementById('bToggle');document.getElementById('brush').style.display=collapsed?'none':'';t.textContent='Режимы корректировки '+(collapsed?'▸':'▾');t.setAttribute('aria-expanded',collapsed?'false':'true');updCur()}
+document.getElementById('bToggle').onclick=async function(){var open=collapsed||locked();if(open){if(!(await gate()))return;collapsed=false}else collapsed=true;try{localStorage.setItem('shift-app-ui',collapsed?'1':'0')}catch(e){}applyUI()};
+function applyUI(){if(state.pw){if(locked()&&brush!==null)setBrush(null)}else if(brush===null)setBrush('cyc');var t=document.getElementById('bToggle'),h=collapsed||locked();document.getElementById('brush').style.display=h?'none':'';t.textContent='Режимы корректировки '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');updCur()}
 /* ---------- пароль на настройки ---------- */
-var UK='shift-unlock';
-function unlocked(){try{return !!state.pw&&sessionStorage.getItem(UK)===state.pw.h}catch(e){return false}}
+var UNL=null;
+function unlocked(){return !!state.pw&&UNL===state.pw.h}
 function locked(){return !!state.pw&&!unlocked()}
 function hexb(h){var a=new Uint8Array(h.length/2),i;for(i=0;i<a.length;i++)a[i]=parseInt(h.substr(i*2,2),16);return a}
 function bhex(a){return Array.prototype.map.call(a,function(x){return (x<16?'0':'')+x.toString(16)}).join('')}
@@ -443,17 +441,22 @@ async function hashPw(pw,saltHex){
   var b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:hexb(saltHex),iterations:150000,hash:'SHA-256'},k,256);
   return bhex(new Uint8Array(b));
 }
-function pwDialog(title,two,check){
+function pwDialog(title,o){
+  o=o||{};
   return new Promise(function(res){
-    var m=document.getElementById('pwM'),i1=document.getElementById('pwI'),i2=document.getElementById('pwI2'),er=document.getElementById('pwE'),ok=document.getElementById('pwOk'),no=document.getElementById('pwNo');
+    var m=document.getElementById('pwM'),i0=document.getElementById('pwI0'),i1=document.getElementById('pwI'),i2=document.getElementById('pwI2'),er=document.getElementById('pwE'),ok=document.getElementById('pwOk'),no=document.getElementById('pwNo');
     document.getElementById('pwT').textContent=title;
-    i1.value='';i2.value='';er.textContent='';i2.style.display=two?'':'none';m.hidden=false;setTimeout(function(){i1.focus()},30);
+    i0.value='';i1.value='';i2.value='';er.textContent='';
+    i0.style.display=o.old?'':'none';i2.style.display=o.two?'':'none';
+    i1.placeholder=o.old?'Новый пароль (пусто — убрать пароль)':'Пароль';
+    m.hidden=false;setTimeout(function(){(o.old?i0:i1).focus()},30);
     function done(v){m.hidden=true;ok.onclick=no.onclick=m.onkeydown=null;res(v)}
     async function submit(){
       var v=i1.value;er.textContent='';
-      if(two&&v!==i2.value){er.textContent='Пароли не совпадают';return}
+      if(o.old&&!i0.value){er.textContent='Введите старый пароль';return}
+      if(o.two&&v!==i2.value){er.textContent='Новые пароли не совпадают';return}
       ok.disabled=true;
-      try{var e=check?await check(v):'';if(e){er.textContent=e;ok.disabled=false;return}}catch(x){er.textContent='Пароль недоступен: откройте страницу по адресу https://…';ok.disabled=false;return}
+      try{var e=o.check?await o.check(v,i0.value):'';if(e){er.textContent=e;ok.disabled=false;return}}catch(x){er.textContent='Пароль недоступен: откройте страницу по адресу https://…';ok.disabled=false;return}
       ok.disabled=false;done(v);
     }
     ok.onclick=submit;no.onclick=function(){done(null)};
@@ -462,25 +465,29 @@ function pwDialog(title,two,check){
 }
 async function gate(){
   if(!state.pw||unlocked())return true;
-  var p=await pwDialog('Введите пароль',false,async function(v){
+  var p=await pwDialog('Введите пароль',{check:async function(v){
     var h=await hashPw(v,state.pw.s);
     if(h!==state.pw.h)return 'Неверный пароль';
-    try{sessionStorage.setItem(UK,h)}catch(e){}return '';
-  });
-  return p!==null;
+    UNL=h;return '';
+  }});
+  if(p!==null){applyUI();return true}
+  return false;
 }
 document.getElementById('pwB').onclick=async function(){
   if(!canWrite)return;
-  if(!(await gate()))return;
   var had=!!state.pw;
-  var p=await pwDialog(had?'Новый пароль (пусто — убрать пароль)':'Придумайте пароль',true,async function(v){return (!had&&!v)?'Введите пароль':''});
+  var p=await pwDialog(had?'Смена пароля':'Придумайте пароль',{old:had,two:true,check:async function(v,o){
+    if(had){var h=await hashPw(o,state.pw.s);if(h!==state.pw.h)return 'Старый пароль неверный'}
+    if(!had&&!v)return 'Введите пароль';
+    return '';
+  }});
   if(p===null)return;
-  if(p===''){state.pw=undefined;try{sessionStorage.removeItem(UK)}catch(e){}}
-  else{var sl=bhex(crypto.getRandomValues(new Uint8Array(16)));state.pw={s:sl,h:await hashPw(p,sl)};try{sessionStorage.setItem(UK,state.pw.h)}catch(e){}}
+  if(p===''){state.pw=undefined;UNL=null;}
+  else{var sl=bhex(crypto.getRandomValues(new Uint8Array(16)));state.pw={s:sl,h:await hashPw(p,sl)};UNL=state.pw.h;}
   save();applySet();
 };
 var setCol=false;try{setCol=localStorage.getItem('shift-app-set')==='1'}catch(e){}
-function applySet(){var t=document.getElementById('sToggle'),h=setCol||locked();document.getElementById('setBox').style.display=h?'none':'';t.textContent='Сотрудники и цикл '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');var b=document.getElementById('pwB');if(b)b.textContent=state.pw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки'}
+function applySet(){var t=document.getElementById('sToggle'),h=setCol||locked();document.getElementById('setBox').style.display=h?'none':'';t.textContent='Сотрудники и цикл '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');applyUI();var b=document.getElementById('pwB');if(b)b.textContent=state.pw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки'}
 document.getElementById('sToggle').onclick=async function(){var open=setCol||locked();if(open){if(!(await gate()))return;setCol=false}else setCol=true;try{localStorage.setItem('shift-app-set',setCol?'1':'0')}catch(e){}applySet()};
 try{var sm=localStorage.getItem('shift-app-mode');if(sm==='month'||sm==='week')mode=sm}catch(e){}
 document.getElementById('m-toggle').textContent=mode==='week'?'Вид: неделя ⇄':'Вид: месяц ⇄';
