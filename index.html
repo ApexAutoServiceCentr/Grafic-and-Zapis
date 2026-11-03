@@ -140,7 +140,8 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <div class="set" id="set"></div>
 <div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла. Для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс, праздничные дни Казахстана учитываются автоматически (если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную). Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, праздничные дни РК при этом не учитываются. Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит; выбираются вручную, по умолчанию дежурств нет (у 2/2 их нет вообще). При смене типа графика дежурные дни очищаются. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой, тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой. Если два дежурства приходятся на один день, в строке «На работе» число дежурных покраснеет. Минимум на работе в день задаётся в каждом отделе.</div>
 </div>
-<div class="set eo" id="brush">
+<div class="eo" id="brush">
+<div class="set">
 <div class="row"><label>Режим клика по клетке: выберите режим и нажимайте на клетки таблицы</label></div>
 <div class="row">
 <button data-b="cyc" class="bm on">Смена</button>
@@ -150,6 +151,8 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <button data-b="3" class="bm">Обучение на месте / вебинар</button>
 <button data-b="5" class="bm">Командировка / обучение с выездом</button>
 </div>
+</div>
+<div class="sub" id="hint" style="margin-top:8px">Выберите режим и нажимайте на клетки. «Смена» переключает выходной → рабочий → дежурство. Повторное нажатие тем же режимом снимает отметку. Часы без обеда: рабочий, обучение и командировка 8 ч, дежурство 9 ч, отпуск, больничный и отпуск без содержания 0 ч. Обучение и командировку можно ставить и на выходной день, такие дни помечены синим квадратиком, но обучение на месте / вебинар в выходной часов не даёт (0 ч) и присутствием на работе не считается, а командировка в выходной считается как 8 ч. К — любые выезды в другие города и страны: рабочие визиты, командировки и обучение с выездом. В строке «На работе» считаются рабочие, дежурные и обучающиеся на месте в рабочие дни; командировки и отпуск не считаются, красным подсвечивается день, когда в отделе на месте меньше минимума (он задаётся в настройках по отделам).</div>
 </div>
 <div id="ghBox" class="eo eg">
 <div class="set">
@@ -179,7 +182,6 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <span><b style="padding:0 2px;color:var(--danger)">●</b>Ручная правка</span>
 <span><b style="padding:0 2px;color:var(--ac)">■</b>Обучение или командировка в выходной</span>
 </div>
-<div class="sub eo" id="hint" style="margin-top:8px">Выберите режим и нажимайте на клетки. «Смена» переключает выходной → рабочий → дежурство. Повторное нажатие тем же режимом снимает отметку. Часы без обеда: рабочий, обучение и командировка 8 ч, дежурство 9 ч, отпуск, больничный и отпуск без содержания 0 ч. Обучение и командировку можно ставить и на выходной день, такие дни помечены синим квадратиком, но обучение на месте / вебинар в выходной часов не даёт (0 ч) и присутствием на работе не считается, а командировка в выходной считается как 8 ч. К — любые выезды в другие города и страны: рабочие визиты, командировки и обучение с выездом. В строке «На работе» считаются рабочие, дежурные и обучающиеся на месте в рабочие дни; командировки и отпуск не считаются, красным подсвечивается день, когда в отделе на месте меньше минимума (он задаётся в настройках по отделам).</div>
 </main>
 <div id="pwM" class="pwm" hidden><div class="pwb"><div id="pwT" style="font-weight:600;margin-bottom:8px"></div><input type="password" id="pwI0" autocomplete="off" placeholder="Старый пароль" style="display:none"><input type="password" id="pwI" autocomplete="new-password" placeholder="Пароль"><input type="password" id="pwI2" autocomplete="new-password" placeholder="Повторите пароль"><div id="pwE" style="color:var(--danger);font-size:13px;min-height:18px"></div><div style="display:flex;gap:8px"><button id="pwOk" class="on">OK</button><button id="pwNo">Отмена</button></div></div></div>
 <script>
@@ -444,7 +446,7 @@ function updCur(){
   else if(collapsed&&b)t='Выбрано: '+b.textContent;
   document.getElementById('bCur').textContent=t;
 }
-document.getElementById('bToggle').onclick=async function(){var open=collapsed||locked();if(open){if(!(await gate()))return;collapsed=false}else collapsed=true;applyUI()};
+document.getElementById('bToggle').onclick=async function(){var open=collapsed||locked();if(open){if(!(await gate()))return;showOnly('b')}else collapsed=true;applyUI()};
 function applyUI(){var hn=document.getElementById('hint');if(hn)hn.style.display=locked()?'none':'';if(state.pw){if(locked()&&brush!==null)setBrush(null)}else if(brush===null)setBrush('cyc');var t=document.getElementById('bToggle'),h=collapsed||locked();document.getElementById('brush').style.display=h?'none':'';t.textContent='Режимы корректировки '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');updCur()}
 /* ---------- пароль на настройки ---------- */
 var UNL=null;
@@ -505,7 +507,7 @@ document.getElementById('pwB').onclick=async function(){
 };
 var setCol=true;
 function applySet(){var t=document.getElementById('sToggle'),h=setCol||locked();document.getElementById('setBox').style.display=h?'none':'';t.textContent='Сотрудники и график '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');applyUI();var b=document.getElementById('pwB');if(b)b.textContent=state.pw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки'}
-document.getElementById('sToggle').onclick=async function(){var open=setCol||locked();if(open){if(!(await gate()))return;setCol=false;sdOpen={};renderSet()}else setCol=true;applySet()};
+document.getElementById('sToggle').onclick=async function(){var open=setCol||locked();if(open){if(!(await gate()))return;showOnly('s')}else setCol=true;applySet()};
 try{var sm=localStorage.getItem('shift-app-mode');if(sm==='month'||sm==='week')mode=sm}catch(e){}
 document.getElementById('m-toggle').textContent=mode==='week'?'Вид: неделя ⇄':'Вид: месяц ⇄';
 document.getElementById('set').addEventListener('click',function(ev){
@@ -635,16 +637,18 @@ async function syncNow(){
   else if(syncAgain){syncAgain=false;schedSync()}
 }
 function schedSyncPublic(){schedSync()}
+function showOnly(k){setCol=k!=='s';collapsed=k!=='b';ghCol=k!=='g';sdOpen={};applyUI();applySet();applyGh();renderSet()}
+function collapseAll(){showOnly('')}
 var menuB=document.getElementById('menuB'),menuP=document.getElementById('menuPanel');
-function menuSet(o){menuP.hidden=!o;menuB.setAttribute('aria-expanded',o?'true':'false');if(!o){disarm();collapsed=true;setCol=true;sdOpen={};applyUI();applySet();renderSet()}}
+menuP.addEventListener('click',function(e){var t=e.target;if(t===menuP||t.classList.contains('mrow')||t.classList.contains('mi'))collapseAll()});
+function menuSet(o){menuP.hidden=!o;menuB.setAttribute('aria-expanded',o?'true':'false');if(!o){disarm();collapseAll()}}
 menuB.onclick=function(){menuSet(menuP.hidden)};
 document.addEventListener('pointerdown',function(e){if(!menuP.hidden&&!menuP.contains(e.target)&&!menuB.contains(e.target)&&!document.getElementById('pwM').contains(e.target))menuSet(false)});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!menuP.hidden&&document.getElementById('pwM').hidden){menuSet(false);menuB.focus()}});
 /* блок «Синхронизация GitHub» */
-var ghCol=false;
-try{var _gc=localStorage.getItem('shift-app-gh');ghCol=_gc===null?!!token:_gc==='1'}catch(e){}
+var ghCol=true;
 function applyGh(){var t=document.getElementById('gToggle');document.getElementById('ghBox').style.display=ghCol?'none':'';t.textContent='Синхронизация GitHub '+(ghCol?'▸':'▾');t.setAttribute('aria-expanded',ghCol?'false':'true')}
-document.getElementById('gToggle').onclick=function(){ghCol=!ghCol;try{localStorage.setItem('shift-app-gh',ghCol?'1':'0')}catch(e){}applyGh()};
+document.getElementById('gToggle').onclick=function(){if(ghCol)showOnly('g');else{ghCol=true;applyGh()}};
 function fillGh(){document.getElementById('ghOwner').value=GH.owner;document.getElementById('ghRepo').value=GH.repo;document.getElementById('ghTok').value=''}
 document.getElementById('ghSave').onclick=function(){
   var o=document.getElementById('ghOwner').value.trim(),r=document.getElementById('ghRepo').value.trim(),t=document.getElementById('ghTok').value.trim();
