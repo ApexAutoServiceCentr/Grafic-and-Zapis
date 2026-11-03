@@ -15,6 +15,15 @@ main{max-width:960px;margin:0 auto;padding:16px 12px 32px}
 body.mo main{max-width:1560px}
 h1{font-size:20px;margin:0}
 .ttl{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+#m-toggle{background:#134e4a;border-color:#2dd4bf;color:#fff}
+#today{background:var(--ac);border-color:var(--ac);color:#fff}
+#bCur:empty{display:none}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--mu);flex:none;cursor:help}
+.dot.g{background:#22c55e}.dot.n{background:var(--mu)}.dot.w{background:#f59e0b}.dot.r{background:var(--danger)}
+#syncTx{font-size:13px;color:var(--mu)}
+#nType{min-width:110px}#nDept{min-width:190px}
+.fld{display:flex;flex-direction:column;gap:3px;min-width:0}
+.fld>label{font-size:12px;color:var(--mu)}
 #refB{padding:2px 10px;font-size:18px;line-height:1.2}
 #refI{display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -76,7 +85,7 @@ th .tg{margin-left:2px}
 .dayh th{padding-top:14px}
 th.sumh{position:relative}
 .tgs{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0!important;padding:0 6px;font-size:10px;line-height:12px;border:none;background:none}
-th.mh{font-size:12px;color:var(--tx);font-weight:700;line-height:1.2}
+th.mh{font-size:16px;color:var(--tx);font-weight:700;line-height:1.2;text-align:center;padding-left:2px;padding-right:2px}
 .bar select{font:inherit;padding:8px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
 .arm{color:var(--danger);border-color:var(--danger)}
 .soon{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:12px}
@@ -100,17 +109,17 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 </head>
 <body>
 <main>
-<div class="ttl"><h1>График смен</h1><button id="refB" title="Обновить" aria-label="Обновить"><span id="refI">↻</span></button></div>
+<div class="ttl"><h1>График смен</h1><button id="refB" title="Обновить" aria-label="Обновить"><span id="refI">↻</span></button><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span></div>
 <div class="bar">
-<button id="m-toggle" class="on">Вид: неделя ⇄</button>
+<button id="m-toggle">Вид: неделя ⇄</button>
+<button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button>
 <button id="prev" aria-label="Назад">‹</button>
 <div class="rng" id="rng"></div>
 <button id="next" aria-label="Вперёд">›</button>
 <button id="today">Сегодня</button>
 <select id="dFilter" aria-label="Отдел"></select>
 </div>
-<div class="bar eo fl" style="margin-bottom:6px"><button id="bToggle" aria-expanded="true">Режимы корректировки ▾</button><span id="bCur" class="sub" style="margin:0"></span></div>
-<div id="syncSt" class="sub" style="margin:0 0 8px"></div>
+<div id="bCur" class="sub eo" style="margin:-4px 0 8px"></div>
 <div class="brush eo fl" id="brush">
 <span>Нажатие на клетку:</span>
 <button data-b="cyc" class="on">Смена</button>
@@ -169,7 +178,7 @@ function fresh(){var m=mon(new Date());var names=['Анна','Игорь','Ма�
   return{w:[0,2,4].map(function(o,i){var d=new Date(m);d.setDate(m.getDate()+o);return{name:names[i],start:iso(d)}}),ov:{}}}
 var state=fresh();
 try{var raw=localStorage.getItem('shift-app-2');if(raw){var p=JSON.parse(raw);if(p&&p.w)state=p}}catch(e){}
-function normState(){var mx=-1;state.w.forEach(function(w,i){if(w.id===undefined)w.id=i;if(!w.type)w.type='4/2';if(!w.dept)w.dept='of';if(w.type==='2/3')w.type='2/2';if(w.type==='2/2')w.duty=[];if(!w.duty)w.duty=w.type==='4/2'?[1,4]:[];if(w.id>mx)mx=w.id});if(state.nid===undefined||state.nid<=mx)state.nid=mx+1;if(state.min===undefined)state.min=2;if(!state.dmin)state.dmin={sc:1,me:2,el:0,of:0,wh:0,cw:0};if(!state.a33)state.a33=iso(mon(new Date()));state.w.forEach(function(w){if(w.team!==undefined){if(w.type==='3/3'&&state.a33)w.start=(function(n){var x=dateOf(n);return x.getUTCFullYear()+'-'+pad(x.getUTCMonth()+1)+'-'+pad(x.getUTCDate())})(dnum(state.a33)+(w.team===2?3:0));delete w.team}})}
+function normState(){var mx=-1;state.w.forEach(function(w,i){if(w.id===undefined)w.id=i;if(!w.type)w.type='4/2';if(!w.dept)w.dept='of';if(w.type==='2/3')w.type='2/2';if(w.type==='2/2')w.duty=[];if(!w.duty)w.duty=[];if(w.id>mx)mx=w.id});if(state.nid===undefined||state.nid<=mx)state.nid=mx+1;if(state.min===undefined)state.min=2;if(!state.dmin)state.dmin={sc:1,me:2,el:0,of:0,wh:0,cw:0};if(!state.a33)state.a33=iso(mon(new Date()));state.w.forEach(function(w){if(w.team!==undefined){if(w.type==='3/3'&&state.a33)w.start=(function(n){var x=dateOf(n);return x.getUTCFullYear()+'-'+pad(x.getUTCMonth()+1)+'-'+pad(x.getUTCDate())})(dnum(state.a33)+(w.team===2?3:0));delete w.team}})}
 normState();
 function cacheLocal(){try{localStorage.setItem('shift-app-2',JSON.stringify(state))}catch(e){}}
 function save(){cacheLocal();if(typeof schedSync==='function')schedSync()}
@@ -281,17 +290,19 @@ function renderSoon(){
 var delArm=-1;
 function sd(w){return dnum(w.start)}
 function ph(s){return((dnum(s)%6)+6)%6}
-function defDuty(t,s,ex,dp){
+function defDuty(t,s,ex,dp){return[];
+
   if(t==='4/2')return[1,4];
   if(t==='3/3'){var u=[],n;state.w.forEach(function(w,i){if(i!==ex&&w.dept===dp&&w.type==='3/3'&&ph(w.start)===ph(s))u=u.concat(w.duty)});for(n=1;n<=3;n++)if(u.indexOf(n)<0)return[n]}
   return[];
 }
-function nTog(){var f=document.getElementById('nType').value==='5/2';document.getElementById('nCalW').style.display=f?'':'none';document.getElementById('nStartW').style.display=(f&&document.getElementById('nCal').value==='1')?'none':''}
+function nTog(){var er=document.getElementById('nErr');if(er)er.textContent='';var f=document.getElementById('nType').value==='5/2';document.getElementById('nCalW').style.display=f?'':'none';document.getElementById('nStartW').style.display=(f&&document.getElementById('nCal').value==='1')?'none':''}
 function opts(c){return ['2/2','3/3','4/2','5/2'].map(function(t){return '<option'+(t===c?' selected':'')+'>'+t+'</option>'}).join('')}
 function addEmp(){
   var nm=document.getElementById('nName').value.trim(),t=document.getElementById('nType').value,s=document.getElementById('nStart').value||iso(mon(new Date()));
-  if(!nm)return;
-  var dp=document.getElementById('nDept').value;var nw={id:state.nid++,name:nm,type:t,dept:dp,start:s,duty:defDuty(t,s,-1,dp)};if(t==='5/2'&&document.getElementById('nCal').value==='0')nw.cal=false;state.w.push(nw);
+  var dp=document.getElementById('nDept').value;
+  if(!nm||!t||!dp){document.getElementById('nErr').textContent='Заполните имя, выберите график работы и отдел';return}
+  var nw={id:state.nid++,name:nm,type:t,dept:dp,start:s,duty:defDuty(t,s,-1,dp)};if(t==='5/2'&&document.getElementById('nCal').value==='0')nw.cal=false;state.w.push(nw);
   delArm=-1;save();render();renderSet();
 }
 function renderSet(){
@@ -302,7 +313,7 @@ function renderSet(){
     for(n=1;n<=nd;n++)ch+='<button class="sm'+(w.duty.indexOf(n)>=0?' on':'')+'" data-duty="'+i+':'+n+'">'+n+'</button>';
     h+='<div class="emp"><div class="row"><input type="text" maxlength="30" data-n="'+i+'" value="'+esc(w.name)+'" aria-label="Имя"><select data-t="'+i+'">'+opts(w.type)+'</select><select data-dp="'+i+'">'+dOpts(w.dept)+'</select><button class="sm'+(delArm===i?' arm':'')+'" data-del="'+i+'">'+(delArm===i?'Удалить?':'✕')+'</button></div>'+(w.type==='5/2'?'<div class="row"><label>Привязка</label><select data-cal="'+i+'"><option value="1"'+(w.cal!==false?' selected':'')+'>По календарю (Пн–Пт)</option><option value="0"'+(w.cal===false?' selected':'')+'>Со сдвигом выходных</option></select></div>':'')+(isCal(w)?'<div class="row"><label>Пн–Пт рабочие, Сб–Вс выходные (по календарю)</label></div>':'<div class="row"><label>Первый рабочий день цикла'+(w.type==='5/2'?' (5 рабочих, потом 2 выходных)':'')+'</label><input type="date" data-s="'+i+'" value="'+w.start+'"></div>'+(w.type==='2/2'?'':''+(w.type==='2/2'?'':'<div class="row"><label>Дежурные дни:</label>'+ch+'</div>'+warn)))+'</div>';
   });
-  h+='<div class="emp"><div class="row"><b>Новый сотрудник</b></div><div class="row"><input type="text" id="nName" maxlength="30" placeholder="Имя"><select id="nType">'+opts('4/2')+'</select><select id="nDept">'+dOpts('sc')+'</select></div><div class="row" id="nCalW" style="display:none"><label>Привязка 5/2</label><select id="nCal"><option value="1">По календарю (Пн–Пт)</option><option value="0">Со сдвигом выходных</option></select></div><div class="row" id="nStartW"><label>Первый рабочий день цикла</label><input type="date" id="nStart" value="'+iso(mon(new Date()))+'"></div><div class="row"><button class="on" id="nAdd">Добавить</button></div></div>';
+  h+='<div class="emp"><div class="row"><b>Новый сотрудник</b></div><div class="row"><div class="fld" style="flex:1;min-width:130px"><label for="nName">Имя сотрудника</label><input type="text" id="nName" maxlength="30" placeholder="Например: Иванов И."></div><div class="fld"><label for="nType">График работы</label><select id="nType"><option value="" selected></option>'+opts('')+'</select></div><div class="fld"><label for="nDept">Отдел</label><select id="nDept"><option value="" selected></option>'+dOpts('')+'</select></div></div><div class="row" id="nCalW" style="display:none"><label>Привязка 5/2</label><select id="nCal"><option value="1">По календарю (Пн–Пт)</option><option value="0">Со сдвигом выходных</option></select></div><div class="row" id="nStartW"><label>Первый рабочий день цикла</label><input type="date" id="nStart" value="'+iso(mon(new Date()))+'"></div><div class="row" id="nErr" style="color:var(--danger);font-size:13px"></div><div class="row"><button class="on" id="nAdd">Добавить</button></div></div>';
   
   h+='<div class="row"><b>Минимум на работе в день по отделам</b><label>(0 — не важно)</label></div>';
   DEPTS.forEach(function(D){h+='<div class="row"><label style="min-width:170px">'+D.n+'</label><input type="number" min="0" max="20" data-dm="'+D.k+'" value="'+((state.dmin&&state.dmin[D.k])||0)+'" style="width:70px"></div>'});
@@ -340,7 +351,7 @@ document.getElementById('set').addEventListener('input',function(ev){
   else if(t.dataset.t!==undefined){var w0=state.w[+t.dataset.t];w0.type=t.value;w0.duty=defDuty(w0.type,w0.start,+t.dataset.t,w0.dept);save();render();renderSet();return}
   else if(t.dataset.a!==undefined&&t.value){state.a33=t.value}
   else if(t.dataset.tm!==undefined){var w2=state.w[+t.dataset.tm];w2.team=+t.value;w2.duty=defDuty('3/3',w2.team,+t.dataset.tm);save();render();renderSet();return}
-  else if(t.dataset.dp!==undefined){var w3=state.w[+t.dataset.dp];w3.dept=t.value;if(w3.type==='3/3')w3.duty=defDuty('3/3',w3.start,+t.dataset.dp,w3.dept);save();render();renderSet();return}
+  else if(t.dataset.dp!==undefined){var w3=state.w[+t.dataset.dp];w3.dept=t.value;save();render();renderSet();return}
   else if(t.dataset.dm!==undefined){state.dmin[t.dataset.dm]=Math.max(0,parseInt(t.value,10)||0)}
   else if(t.id==='nType'||t.id==='nCal'){nTog();return}
   else if(t.dataset.cal!==undefined){var wc=state.w[+t.dataset.cal];if(t.value==='0')wc.cal=false;else{delete wc.cal;wc.duty=[]}save();render();renderSet();return}
@@ -430,7 +441,8 @@ var token='';try{token=localStorage.getItem('shift-gh-token')||''}catch(e){}
 var canWrite=!!token,conn='connecting',stMsg='',remoteSha=null,remoteReady=false,syncTimer=null,syncing=false,syncAgain=false,retryTimer=null;
 var synced={cfg:'',ov:{}};
 var ST={connecting:'Загрузка с GitHub…',ok:'GitHub · синхронизировано',ro:'Только просмотр',empty:'В репозитории ещё нет данных · введите токен, чтобы создать их',err:'Ошибка сохранения, повторяю…',slow:'Нет связи с GitHub, показаны сохранённые данные',bad:'GitHub отклонил токен · проверьте токен и его права',rate:'GitHub ограничил число запросов · попробуйте позже'};
-function setSt(){document.body.classList.toggle('ro',!canWrite);var e=document.getElementById('syncSt');if(e)e.textContent=stMsg||ST[conn]||''}
+var STC={connecting:'w',ok:'g',ro:'n',empty:'w',err:'r',slow:'w',bad:'r',rate:'r'};
+function setSt(){document.body.classList.toggle('ro',!canWrite);var m=stMsg||ST[conn]||'',c=stMsg?'r':(STC[conn]||'n'),d=document.getElementById('syncDot'),t=document.getElementById('syncTx');if(d){d.className='dot '+c;d.title=m;d.setAttribute('aria-label',m)}if(t)t.textContent=(c==='r'||c==='w')?m:''}
 function lockSet(){if(canWrite)return;[].forEach.call(document.querySelectorAll('#set input,#set select,#set button'),function(x){x.disabled=true})}
 function busy(){return syncTimer!==null||syncing}
 function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
