@@ -14,7 +14,10 @@ body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-appl
 main{max-width:960px;margin:0 auto;padding:16px 12px 32px}
 body.mo main{max-width:1560px}
 h1{font-size:20px;margin:0}
-.ttl{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.ttl{display:flex;align-items:center;gap:8px 10px;margin:0 0 10px;flex-wrap:wrap}
+.ttl .rng{flex:1;text-align:center;font-weight:600;min-width:100px;white-space:nowrap}
+#dFilter{max-width:200px}
+.ttl select{font:inherit;padding:8px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
 #m-toggle{background:#134e4a;border-color:#2dd4bf;color:#fff}
 #today{background:var(--ac);border-color:var(--ac);color:#fff}
 #bCur:empty{display:none}
@@ -29,16 +32,13 @@ h1{font-size:20px;margin:0}
 .pwb input{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
 .menu .bar{margin:6px 0}
 .mi{margin:6px 0}
+.mrow{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--mu);flex:none;cursor:help}
 .dot.g{background:#22c55e}.dot.n{background:var(--mu)}.dot.w{background:#f59e0b}.dot.r{background:var(--danger)}
 #syncTx{font-size:13px;color:var(--mu)}
 #nType{min-width:110px}#nDept{min-width:190px}
 .fld{display:flex;flex-direction:column;gap:3px;min-width:0}
 .fld>label{font-size:12px;color:var(--mu)}
-#refB{padding:2px 10px;font-size:18px;line-height:1.2}
-#refI{display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
-#refI.spin{animation:spin .8s linear infinite}
 h2{font-size:16px;margin:22px 0 8px}
 .sub{color:var(--mu);font-size:13px;margin-bottom:12px}
 .bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
@@ -121,36 +121,21 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <body>
 <main>
 <div id="top">
-<div class="ttlw"><div class="ttl"><h1>График смен</h1><button id="refB" title="Обновить" aria-label="Обновить"><span id="refI">↻</span></button><button id="menuB" class="eo eg" aria-expanded="false" aria-haspopup="true">☰ Меню</button><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span></div>
-<div id="menuPanel" class="menu" hidden>
-<div class="bar eo fl" style="margin-top:20px;margin-bottom:6px"><button id="sToggle" aria-expanded="true">Сотрудники и цикл ▾</button></div>
-<div id="setBox" class="eo">
-<div class="set" id="set"></div>
-<div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла; для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс по календарю (праздничные дни Казахстана учитываются автоматически, если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную режимом «Выходной»). Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит (для 4/2 по умолчанию 1-й и 4-й, у 2/2 и 5/2 дежурств нет, они работают 9–18). При смене типа графика дежурные дни сбрасываются к значениям по умолчанию. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой (например, первая начинает в понедельник, вторая в четверг), тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой, и новому сотруднику автоматически назначается свободный дежурный день смены. Если два дежурства приходятся на один день, в таблице в строке «На работе» число дежурных покраснеет. Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, дежурные дни выбираются так же, как у 4/2, праздничные дни РК при этом не учитываются.</div>
-</div>
-<div class="mi eo"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></div>
-<div class="bar eo eg fl" style="margin-top:12px;margin-bottom:6px"><button id="gToggle" aria-expanded="true">Синхронизация GitHub ▾</button></div>
-<div id="ghBox" class="eo eg">
-<div class="set">
-<div class="row"><label style="min-width:90px">Репозиторий</label><input type="text" id="ghOwner" style="max-width:160px" placeholder="владелец" autocomplete="off"><span>/</span><input type="text" id="ghRepo" style="max-width:190px" placeholder="репозиторий" autocomplete="off"></div>
-<div class="row"><label style="min-width:90px">Токен</label><input type="password" id="ghTok" placeholder="github_pat_…" autocomplete="off"><button id="ghSave" class="on">Сохранить</button><button id="ghDel">Удалить токен</button></div>
-<div class="row"><button id="ghExp">Скачать копию данных</button><button id="ghImp">Загрузить копию…</button><input type="file" id="ghFile" accept="application/json,.json" style="display:none"></div>
-</div>
-<div class="sub" style="margin-top:8px">Просмотр графика работает без токена. Чтобы править, создайте токен на GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens. Выберите доступ только к этому репозиторию и право Repository permissions → Contents: Read and write. Токен сохраняется только в этом браузере и отправляется только на api.github.com. Данные графика лежат в файле data.json в репозитории; страница и репозиторий публичны, поэтому имена сотрудников видны всем, у кого есть адрес.</div>
-</div>
-<div class="mi eo" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd)"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и цикл» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></div>
-</div>
-</div>
-<div class="bar">
+<div class="ttlw"><div class="ttl"><h1>График смен</h1><button id="menuB" class="eo eg" aria-expanded="false" aria-haspopup="true">☰ Меню</button><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span>
 <button id="m-toggle">Вид: неделя ⇄</button>
-<button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button>
 <button id="prev" aria-label="Назад">‹</button>
 <div class="rng" id="rng"></div>
 <button id="next" aria-label="Вперёд">›</button>
 <button id="today">Сегодня</button>
 <select id="dFilter" aria-label="Отдел"></select>
 </div>
-<div id="bCur" class="sub eo" style="margin:-4px 0 8px"></div>
+<div id="menuPanel" class="menu" hidden>
+<div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и цикл ▾</button><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button></div>
+<div class="mrow"><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
+<div id="setBox" class="eo">
+<div class="set" id="set"></div>
+<div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла; для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс по календарю (праздничные дни Казахстана учитываются автоматически, если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную режимом «Выходной»). Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит (для 4/2 по умолчанию 1-й и 4-й, у 2/2 и 5/2 дежурств нет, они работают 9–18). При смене типа графика дежурные дни сбрасываются к значениям по умолчанию. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой (например, первая начинает в понедельник, вторая в четверг), тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой, и новому сотруднику автоматически назначается свободный дежурный день смены. Если два дежурства приходятся на один день, в таблице в строке «На работе» число дежурных покраснеет. Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, дежурные дни выбираются так же, как у 4/2, праздничные дни РК при этом не учитываются.</div>
+</div>
 <div class="brush eo fl" id="brush">
 <span>Нажатие на клетку:</span>
 <button data-b="cyc" class="on">Смена</button>
@@ -162,6 +147,18 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <button data-b="0">Выходной</button>
 <button data-b="auto">По циклу</button>
 </div>
+<div id="ghBox" class="eo eg">
+<div class="set">
+<div class="row"><label style="min-width:90px">Репозиторий</label><input type="text" id="ghOwner" style="max-width:160px" placeholder="владелец" autocomplete="off"><span>/</span><input type="text" id="ghRepo" style="max-width:190px" placeholder="репозиторий" autocomplete="off"></div>
+<div class="row"><label style="min-width:90px">Токен</label><input type="password" id="ghTok" placeholder="github_pat_…" autocomplete="off"><button id="ghSave" class="on">Сохранить</button><button id="ghDel">Удалить токен</button></div>
+<div class="row"><button id="ghExp">Скачать копию данных</button><button id="ghImp">Загрузить копию…</button><input type="file" id="ghFile" accept="application/json,.json" style="display:none"></div>
+</div>
+<div class="sub" style="margin-top:8px">Просмотр графика работает без токена. Чтобы править, создайте токен на GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens. Выберите доступ только к этому репозиторию и право Repository permissions → Contents: Read and write. Токен сохраняется только в этом браузере и отправляется только на api.github.com. Данные графика лежат в файле data.json в репозитории; страница и репозиторий публичны, поэтому имена сотрудников видны всем, у кого есть адрес.</div>
+</div>
+<div class="mi eo" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd)"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и цикл» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></div>
+</div>
+</div>
+<div id="bCur" class="sub eo" style="margin:-4px 0 8px"></div>
 <div class="soon" id="soon"></div>
 </div>
 <div class="wrap"><table id="tbl"></table></div>
@@ -617,16 +614,6 @@ async function syncNow(){
   else if(syncAgain){syncAgain=false;schedSync()}
 }
 function schedSyncPublic(){schedSync()}
-async function refreshAll(){
-  var b=document.getElementById('refB'),i=document.getElementById('refI');
-  if(b.disabled)return;
-  b.disabled=true;i.classList.add('spin');
-  var t0=Date.now();
-  await pull();
-  render();
-  setTimeout(function(){i.classList.remove('spin');b.disabled=false},Math.max(0,600-(Date.now()-t0)));
-}
-document.getElementById('refB').onclick=refreshAll;
 var menuB=document.getElementById('menuB'),menuP=document.getElementById('menuPanel');
 function menuSet(o){menuP.hidden=!o;menuB.setAttribute('aria-expanded',o?'true':'false');if(!o)disarm()}
 menuB.onclick=function(){menuSet(menuP.hidden)};
