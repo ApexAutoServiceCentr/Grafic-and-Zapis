@@ -129,7 +129,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .seg button.on.sh{background:var(--sh);border-color:var(--sh);color:var(--stx)}
 .seg button.on.ml{background:var(--ml);border-color:var(--ml);color:var(--stx)}
 /* телефон с постоянным +7 */
-.ph{display:flex;align-items:stretch}.ph .pre{display:flex;align-items:center;padding:0 10px;border:1px solid var(--bd);border-right:none;border-radius:10px 0 0 10px;background:var(--card);color:var(--tx);font-weight:600}.ph input{flex:1;min-width:0;border-radius:0 10px 10px 0}
+.ph{display:flex;align-items:center;border:1px solid var(--bd);border-radius:10px;background:var(--bg);cursor:text}.ph:focus-within{outline:2px solid var(--ac);outline-offset:-1px}.ph .pre{padding-left:10px;font-weight:800;font-size:17px;color:var(--tx);user-select:all}.ph input{flex:1;min-width:0;border:none!important;background:transparent;outline:none;padding-left:6px}
 .pulse .seg.ton{animation:tp .7s ease}@keyframes tp{0%{transform:scale(.97);opacity:.4}100%{transform:none;opacity:1}}
 .seg.ton button{min-width:58px;padding:5px 8px;font-size:13px}
 .seg.ton button.on{background:var(--to);border-color:var(--ac);color:var(--stx)}
@@ -140,6 +140,10 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .cnt button{padding:5px 10px;font-size:13px;border-radius:999px}
 .cnt button b{margin-left:4px}
 .cnt button.z b{color:var(--mu)}
+.nowl{align-self:start;height:0;border-top:2px solid var(--danger);position:relative;z-index:4;pointer-events:none}
+.nowl::before{content:'';position:absolute;left:-5px;top:-6px;width:10px;height:10px;border-radius:50%;background:var(--danger)}
+.tc .rc.lb{font-size:10px;letter-spacing:-.01em}
+.tc.now{color:var(--danger);font-weight:700}.tc.now .rc{color:var(--danger)}
 .day.past .wrap{opacity:.6;filter:saturate(.6)}
 .day.past .dh{opacity:.65}
 .acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;position:sticky;bottom:0;background:var(--card);padding:8px 0 2px;z-index:2}
@@ -274,7 +278,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function now(){return Date.now()}
 
 /* ---------- данные ---------- */
-function defCfg(){return{posts:[{id:'p1',name:'Пост 1',kind:'me',emp:[3,6]},{id:'p2',name:'Пост 2',kind:'me',emp:[4,7]},{id:'p3',name:'Пост 3',kind:'me',emp:[5,8]},{id:'p4',name:'Пост 4',kind:'el',emp:[9,10]}],open:540,close:1140,step:30,cap:3,cu:0}}
+function defCfg(){return{posts:[{id:'p1',name:'Пост 1',kind:'me',emp:[3,6]},{id:'p2',name:'Пост 2',kind:'me',emp:[4,7]},{id:'p3',name:'Пост 3',kind:'me',emp:[5,8]},{id:'p4',name:'Пост 4',kind:'el',emp:[9,10]}],open:540,close:1140,step:30,cap:3,brk:[780,810],cu:0}}
 function emptyState(){return{v:1,cfg:defCfg(),b:{}}}
 var state=emptyState();
 function normCfg(c){var d=defCfg(),k;c=c||{};for(k in d)if(c[k]===undefined)c[k]=d[k];delete c.dur;
@@ -287,9 +291,12 @@ function postName(id){var i=postIdx(id);return i<0?'Пост удалён':state
 function dayList(date){var r=[],k,b;for(k in state.b){b=state.b[k];if(live(b)&&b.date===date)r.push(b)}r.sort(function(a,b){return a.start-b.start||postIdx(a.post)-postIdx(b.post)});return r}
 
 /* Проверка записи перед сохранением: часы работы, пост без наложений, не больше cap приёмов на полчаса */
+function isBrk(m){var b=state.cfg.brk||[];return b.indexOf(m)>=0}
 function check(bk,ignoreId){
   var c=state.cfg,k,b,n=0;
   if(!bk.date)return 'Укажите дату';
+  if(!bk.type)return 'Выберите вид работ';
+  if(isBrk(bk.start))return 'С '+fm(state.cfg.brk[0])+' до '+fm(state.cfg.brk[state.cfg.brk.length-1]+state.cfg.step)+' обед, запись на это время закрыта. Выберите другое время приезда.';
   if(postIdx(bk.post)<0)return 'Выберите пост';
   if(!(bk.len>0))return 'Выберите, сколько времени займут работы';
   if(bk.start<c.open||bk.start+bk.len>c.close)return 'Работы выходят за часы работы сервиса ('+fm(c.open)+'–'+fm(c.close)+'). Уменьшите длительность или выберите время раньше.';
@@ -555,8 +562,9 @@ function dayHtml(D){
     h+='<div class="gh" style="grid-row:1;grid-column:'+(j+2)+'">'+esc(p.name)+'<small>'+(KINDS[p.kind]||'')+'</small>'+w+'</div>'});
   S.forEach(function(m,r){
     var n=recvCount(D,m),full=n>=c.cap;
-    h+='<div class="tc'+(m%60===0?' hr':'')+'" style="grid-row:'+(r+2)+';grid-column:1"><span>'+fm(m)+'</span><span class="rc'+(full?' full':'')+'" title="Приезжает клиентов / можно принять">'+n+'/'+c.cap+'</span></div>';
-    P.forEach(function(p,j){var a=AV[j],off=!a.free&&(!a.open||m>=a.end);h+='<button class="sl'+(off?' off':(full?' full':''))+'" style="grid-row:'+(r+2)+';grid-column:'+(j+2)+'" data-p="'+p.id+'" data-t="'+m+'" aria-label="'+esc(p.name)+', '+fm(m)+'"></button>'});
+    var brk=isBrk(m);
+    h+='<div class="tc'+(m%60===0?' hr':'')+'" data-m="'+m+'" style="grid-row:'+(r+2)+';grid-column:1"><span>'+fm(m)+'</span>'+(brk?'<span class="rc lb" title="Обед: запись на это время закрыта">обед</span>':'<span class="rc'+(full?' full':'')+'" title="Приезжает клиентов / можно принять">'+n+'/'+c.cap+'</span>')+'</div>';
+    P.forEach(function(p,j){var a=AV[j],off=!a.free&&(!a.open||m>=a.end);h+='<button class="sl'+(off?' off':(full?' full':''))+(brk?' brk':'')+'" style="grid-row:'+(r+2)+';grid-column:'+(j+2)+'" data-p="'+p.id+'" data-t="'+m+'" aria-label="'+esc(p.name)+', '+fm(m)+'"></button>'});
   });
   var nOcc=0,nOff=0,nNw=0,tot=0;
   l.forEach(function(b){
@@ -582,6 +590,18 @@ function renderCnt(){var el=document.getElementById('cnt'),t=iso(new Date()),L=n
   for(i=0;i<3;i++){d=addDays(t,i);n=0;for(k in state.b){b=state.b[k];if(live(b)&&b.date===d&&st(b)!=='nos')n++}h+='<button type="button" class="'+(n?'':'z')+'" data-go="'+d+'" title="Записано на '+fdate(d)+'">'+L[i]+'<b>'+n+'</b></button>'}
   el.innerHTML=h;el.style.display=appVisible()?'':'none'}
 document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(t)goto(t.dataset.go,true)});
+/* линия текущего времени в сегодняшнем дне, обновляется раз в минуту */
+function updNow(){
+  [].forEach.call(document.querySelectorAll('#days .nowl'),function(x){x.remove()});
+  [].forEach.call(document.querySelectorAll('#days .tc.now'),function(x){x.classList.remove('now')});
+  var sec=secOf(iso(new Date()));if(!sec)return;
+  var c=state.cfg,d=new Date(),m=d.getHours()*60+d.getMinutes();if(m<c.open||m>=c.close)return;
+  var r=Math.floor((m-c.open)/c.step),fr=((m-c.open)%c.step)/c.step,g=sec.querySelector('.grid'),tc=sec.querySelector('.tc[data-m="'+(c.open+r*c.step)+'"]');
+  if(tc)tc.classList.add('now');
+  var ln=document.createElement('div');ln.className='nowl';ln.style.gridRow=String(r+2);ln.style.gridColumn='2 / -1';ln.style.marginTop=Math.round(fr*RH)+'px';ln.title='Сейчас '+fm(m);
+  g.appendChild(ln);
+}
+setInterval(function(){if(appVisible())updNow()},60000);
 function render(){
   nar=innerWidth<600;if(appVisible())RH=nar?34:calcRH();
   if(!RS){RS=addDays(cur,-2);RE=addDays(cur,12)}
@@ -589,7 +609,7 @@ function render(){
   for(d=RS;d<=RE;d=addDays(d,1))h+=dayHtml(d);
   box.innerHTML=h;
   if(ad&&secOf(ad))scrollBy(0,secOf(ad).getBoundingClientRect().top-off);
-  headRng();renderCnt();
+  headRng();renderCnt();updNow();
   if(needScroll&&appVisible()){needScroll=false;goto(cur)}
 }
 function goto(date,smooth){
@@ -637,7 +657,7 @@ document.getElementById('days').addEventListener('click',function(e){
 });
 /* пустая клетка открывает новую запись двойным кликом (на телефоне — двойным касанием) */
 document.getElementById('days').addEventListener('dblclick',function(e){
-  var t=e.target.closest('button.sl');if(!t||t.classList.contains('off'))return;
+  var t=e.target.closest('button.sl');if(!t||t.classList.contains('off')||t.classList.contains('brk'))return;
   if(canWrite&&KEY){var sel=window.getSelection&&getSelection();if(sel&&sel.removeAllRanges)sel.removeAllRanges();openForm(null,{post:t.dataset.p,start:+t.dataset.t,date:t.closest('.day').dataset.d})}
 });
 function listClick(e){var t=e.target.closest('.it');if(t&&state.b[t.dataset.id]){var b=state.b[t.dataset.id];if(!secOf(b.date)||b.date!==cur)goto(b.date,false);openForm(b)}}
@@ -670,7 +690,7 @@ var dlg=document.getElementById('dlg'),edId=null,fType='to',delArm=false;
 })();
 function fillSelects(start,len){
   var c=state.cfg,S=slots(),o='',m;
-  S.forEach(function(x){o+='<option value="'+x+'"'+(x===start?' selected':'')+'>'+fm(x)+'</option>'});
+  S.forEach(function(x){if(isBrk(x)&&x!==start)return;o+='<option value="'+x+'"'+(x===start?' selected':'')+'>'+fm(x)+(isBrk(x)?' (обед)':'')+'</option>'});
   if(start!=null&&S.indexOf(start)<0)o='<option value="'+start+'" selected>'+fm(start)+'</option>'+o;
   document.getElementById('fStart').innerHTML=o;o='';
   o='<option value=""'+(len?'':' selected')+'>Выберите время работ</option>';
@@ -683,7 +703,7 @@ function sv(id,v){document.getElementById(id).value=v==null?'':v}
 function openForm(b,pre){
   var c=state.cfg,ro=!(canWrite&&KEY);
   edId=b?b.id:null;delArm=false;
-  var d=b||{date:pre.date||cur,post:pre.post||c.posts[0]&&c.posts[0].id,start:pre.start!=null?pre.start:firstFree(pre.date||cur),type:'to',len:0,status:'zap'};
+  var d=b||{date:pre.date||cur,post:pre.post||c.posts[0]&&c.posts[0].id,start:pre.start!=null?pre.start:firstFree(pre.date||cur),type:'',len:0,status:'zap'};
   document.getElementById('fTitle').textContent=b?(ro?'Запись':'Изменить запись'):'Новая запись';
   sv('fDate',d.date);
   document.getElementById('fPost').innerHTML=c.posts.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+' · '+(KINDS[p.kind]||'')+'</option>'}).join('')+(postIdx(d.post)<0&&b?'<option value="'+esc(d.post)+'">Пост удалён</option>':'');
@@ -698,7 +718,7 @@ function openForm(b,pre){
   dlg.showModal();
   if(!ro&&!b)setTimeout(function(){document.getElementById('fClient').focus()},50);
 }
-function firstFree(date){var S=slots(),i;for(i=0;i<S.length;i++)if(recvCount(date,S[i])<state.cfg.cap)return S[i];return S[0]}
+function firstFree(date){var S=slots(),i;for(i=0;i<S.length;i++)if(!isBrk(S[i])&&recvCount(date,S[i])<state.cfg.cap)return S[i];return S[0]}
 document.getElementById('fType').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||t.disabled)return;setType(t.dataset.ty);if(t.dataset.ty==='to'){var w=document.getElementById('fTonW');w.classList.add('pulse');setTimeout(function(){w.classList.remove('pulse')},700);var f=w.querySelector('button.on')||w.querySelector('button');if(f)f.focus({preventScroll:true})}liveCheck()});
 document.getElementById('fLen').addEventListener('change',liveCheck);
 ['fDate','fPost','fStart','fStatus'].forEach(function(id){document.getElementById(id).addEventListener('change',liveCheck)});
@@ -714,6 +734,10 @@ function phLocal(v){var d=digits(v);if(d.length===11&&(d[0]==='7'||d[0]==='8'))d
 function phFmt(d){return [d.slice(0,3),d.slice(3,6),d.slice(6,8),d.slice(8,10)].filter(Boolean).join(' ')}
 function setPhone(v){sv('fPhone',phFmt(phLocal(v)))}
 function getPhone(){var d=phLocal(fv('fPhone'));return d?'+7 '+phFmt(d):''}
+document.querySelector('.ph').addEventListener('mousedown',function(e){if(e.target===this){e.preventDefault();document.getElementById('fPhone').focus()}});
+/* при копировании номера из поля «+7» копируется вместе с ним */
+document.getElementById('fPhone').addEventListener('copy',function(e){var el=this,a=el.selectionStart||0,z=el.selectionEnd||0,t=el.value.slice(a,z);if(!t)return;if(a===0)t='+7 '+t;e.clipboardData.setData('text/plain',t);e.preventDefault()});
+document.getElementById('fPhone').addEventListener('cut',function(e){var el=this,a=el.selectionStart||0,z=el.selectionEnd||0,t=el.value.slice(a,z);if(!t)return;e.clipboardData.setData('text/plain',a===0?'+7 '+t:t);el.value=el.value.slice(0,a)+el.value.slice(z);e.preventDefault()});
 document.getElementById('fPhone').addEventListener('input',function(){var el=this,d=digits(el.value);if(d.length>10&&(d[0]==='7'||d[0]==='8'))d=d.slice(1);d=d.slice(0,10);var f=phFmt(d);if(el.value!==f){el.value=f}});
 function fixBrand(v){v=String(v||'').trim();return brandKey(v)||v}
 function fillModels(){var k=brandKey(fv('fBrand')),l=k?BRANDS[k]:[].concat.apply([],Object.keys(BRANDS).map(function(x){return BRANDS[x]}));document.getElementById('modelList').innerHTML=l.map(function(m){return '<option value="'+esc(m)+'">'}).join('')}
