@@ -15,16 +15,17 @@ main{max-width:960px;margin:0 auto;padding:0 12px 32px}
 body.mo main{max-width:1560px}
 h1{font-size:20px;margin:0}
 .ttl{display:flex;align-items:center;gap:8px 10px;margin:0 0 10px;flex-wrap:wrap}
-.ttl .rng{flex:1;text-align:center;font-weight:600;min-width:100px;white-space:nowrap}
-#dFilter{max-width:200px}
+.ttl .rng{flex:1;text-align:center;font-weight:600;min-width:142px;white-space:nowrap}
+#dFilter{max-width:170px}
 .ttl select{font:inherit;padding:8px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
 #m-toggle{background:#134e4a;border-color:#2dd4bf;color:#fff}
 #today{background:var(--ac);border-color:var(--ac);color:#fff}
 #bCur:empty{display:none}
-#top{position:sticky;top:0;z-index:30;background:var(--bg);padding-top:14px}
+#top{position:sticky;top:0;z-index:30;background:var(--bg);padding-top:14px;border-bottom:1px solid var(--bd);margin-bottom:8px}
+#top .soon{margin-bottom:8px}
 @media (max-width:760px),(max-height:620px){#top{position:static}}
 .ttlw{position:relative}
-.menu{position:absolute;left:0;top:100%;z-index:40;width:min(660px,100%);max-height:calc(100vh - 72px);overflow-y:auto;overscroll-behavior:contain;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.28)}
+.menu{overflow-y:auto;overscroll-behavior:contain;padding:4px 0 10px;border-top:1px solid var(--bd)}
 .menu[hidden]{display:none}
 .pwm{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
 .pwm[hidden]{display:none}
@@ -125,7 +126,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <body>
 <main>
 <div id="top">
-<div class="ttlw"><div class="ttl"><h1>График смен</h1><button id="menuB" class="eo eg" aria-expanded="false" aria-haspopup="true">☰ Меню</button><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span>
+<div class="ttlw"><div class="ttl"><h1>График смен</h1><button id="menuB" class="eo eg" aria-expanded="false" aria-haspopup="true">☰ Меню ▸</button><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span>
 <button id="m-toggle">Вид: неделя ⇄</button>
 <button id="prev" aria-label="Назад">‹</button>
 <div class="rng" id="rng"></div>
@@ -446,7 +447,7 @@ function updCur(){
   else if(collapsed&&b)t='Выбрано: '+b.textContent;
   document.getElementById('bCur').textContent=t;
 }
-document.getElementById('bToggle').onclick=async function(){var open=collapsed||locked();if(open){if(!(await gate()))return;showOnly('b')}else collapsed=true;applyUI()};
+document.getElementById('bToggle').onclick=async function(){var open=collapsed||locked();if(open){if(!(await gate()))return;showOnly('b')}else keepTbl(function(){collapsed=true;applyUI();fitMenu()})};
 function applyUI(){var hn=document.getElementById('hint');if(hn)hn.style.display=locked()?'none':'';if(state.pw){if(locked()&&brush!==null)setBrush(null)}else if(brush===null)setBrush('cyc');var t=document.getElementById('bToggle'),h=collapsed||locked();document.getElementById('brush').style.display=h?'none':'';t.textContent='Режимы корректировки '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');updCur()}
 /* ---------- пароль на настройки ---------- */
 var UNL=null;
@@ -507,7 +508,7 @@ document.getElementById('pwB').onclick=async function(){
 };
 var setCol=true;
 function applySet(){var t=document.getElementById('sToggle'),h=setCol||locked();document.getElementById('setBox').style.display=h?'none':'';t.textContent='Сотрудники и график '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');applyUI();var b=document.getElementById('pwB');if(b)b.textContent=state.pw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки'}
-document.getElementById('sToggle').onclick=async function(){var open=setCol||locked();if(open){if(!(await gate()))return;showOnly('s')}else setCol=true;applySet()};
+document.getElementById('sToggle').onclick=async function(){var open=setCol||locked();if(open){if(!(await gate()))return;showOnly('s')}else keepTbl(function(){setCol=true;applySet();fitMenu()})};
 try{var sm=localStorage.getItem('shift-app-mode');if(sm==='month'||sm==='week')mode=sm}catch(e){}
 document.getElementById('m-toggle').textContent=mode==='week'?'Вид: неделя ⇄':'Вид: месяц ⇄';
 document.getElementById('set').addEventListener('click',function(ev){
@@ -524,7 +525,7 @@ document.getElementById('set').addEventListener('click',function(ev){
       delArm=-1;save();render();renderSet();
     }else{delArm=di;renderSet()}
   }else if(b.dataset.add!==undefined){addEmp(b.dataset.add)}
-  else if(b.dataset.sd!==undefined){sdOpen[b.dataset.sd]=!sdOpen[b.dataset.sd];renderSet()}
+  else if(b.dataset.sd!==undefined){keepTbl(function(){sdOpen[b.dataset.sd]=!sdOpen[b.dataset.sd];renderSet();fitMenu()})}
 });
 applyUI();applySet();renderSet();render();
 /* ---------- синхронизация через GitHub ---------- */
@@ -637,18 +638,32 @@ async function syncNow(){
   else if(syncAgain){syncAgain=false;schedSync()}
 }
 function schedSyncPublic(){schedSync()}
-function showOnly(k){setCol=k!=='s';collapsed=k!=='b';ghCol=k!=='g';sdOpen={};applyUI();applySet();applyGh();renderSet()}
+function keepTbl(fn){
+  var tb=document.getElementById('tbl'),t0=tb.getBoundingClientRect().top,st=getComputedStyle(document.getElementById('top')).position==='sticky';
+  fn();
+  if(st)scrollBy(0,tb.getBoundingClientRect().top-t0);
+}
+function showOnly(k){keepTbl(function(){setCol=k!=='s';collapsed=k!=='b';ghCol=k!=='g';sdOpen={};applyUI();applySet();applyGh();renderSet();fitMenu()})}
 function collapseAll(){showOnly('')}
 var menuB=document.getElementById('menuB'),menuP=document.getElementById('menuPanel');
+function fitMenu(){var h=document.getElementById('top');if(menuP.hidden)return;menuP.style.maxHeight='none';menuP.style.maxHeight=Math.max(160,innerHeight-(h.offsetHeight-menuP.offsetHeight)-24)+'px'}
+addEventListener('resize',fitMenu);
 menuP.addEventListener('click',function(e){var t=e.target;if(t===menuP||t.classList.contains('mrow')||t.classList.contains('mi'))collapseAll()});
-function menuSet(o){menuP.hidden=!o;menuB.setAttribute('aria-expanded',o?'true':'false');if(!o){disarm();collapseAll()}}
+menuP.addEventListener('change',function(){fitMenu()});
+function menuSet(o){
+  keepTbl(function(){
+    menuP.hidden=!o;menuB.textContent='☰ Меню '+(o?'▾':'▸');menuB.setAttribute('aria-expanded',o?'true':'false');
+    if(!o){disarm();collapseAll()}
+    fitMenu();
+  });
+}
 menuB.onclick=function(){menuSet(menuP.hidden)};
 document.addEventListener('pointerdown',function(e){if(!menuP.hidden&&!menuP.contains(e.target)&&!menuB.contains(e.target)&&!document.getElementById('pwM').contains(e.target))menuSet(false)});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!menuP.hidden&&document.getElementById('pwM').hidden){menuSet(false);menuB.focus()}});
 /* блок «Синхронизация GitHub» */
 var ghCol=true;
 function applyGh(){var t=document.getElementById('gToggle');document.getElementById('ghBox').style.display=ghCol?'none':'';t.textContent='Синхронизация GitHub '+(ghCol?'▸':'▾');t.setAttribute('aria-expanded',ghCol?'false':'true')}
-document.getElementById('gToggle').onclick=function(){if(ghCol)showOnly('g');else{ghCol=true;applyGh()}};
+document.getElementById('gToggle').onclick=function(){if(ghCol)showOnly('g');else keepTbl(function(){ghCol=true;applyGh();fitMenu()})};
 function fillGh(){document.getElementById('ghOwner').value=GH.owner;document.getElementById('ghRepo').value=GH.repo;document.getElementById('ghTok').value=''}
 document.getElementById('ghSave').onclick=function(){
   var o=document.getElementById('ghOwner').value.trim(),r=document.getElementById('ghRepo').value.trim(),t=document.getElementById('ghTok').value.trim();
