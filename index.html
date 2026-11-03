@@ -142,7 +142,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <div class="bar eo fl" style="margin-top:20px;margin-bottom:6px"><button id="sToggle" aria-expanded="true">Сотрудники и цикл ▾</button></div>
 <div id="setBox" class="eo">
 <div class="set" id="set"></div>
-<div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла; для 5/2 дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс по календарю (праздничные дни Казахстана учитываются автоматически, если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную режимом «Выходной»). Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит (для 4/2 по умолчанию 1-й и 4-й, у 2/2 и 5/2 дежурств нет, они работают 9–18). При смене типа графика дежурные дни сбрасываются к значениям по умолчанию. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой (например, первая начинает в понедельник, вторая в четверг), тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой, и новому сотруднику автоматически назначается свободный дежурный день смены. Если два дежурства приходятся на один день, в таблице в строке «На работе» число дежурных покраснеет.</div>
+<div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла; для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс по календарю (праздничные дни Казахстана учитываются автоматически, если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную режимом «Выходной»). Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит (для 4/2 по умолчанию 1-й и 4-й, у 2/2 и 5/2 дежурств нет, они работают 9–18). При смене типа графика дежурные дни сбрасываются к значениям по умолчанию. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой (например, первая начинает в понедельник, вторая в четверг), тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой, и новому сотруднику автоматически назначается свободный дежурный день смены. Если два дежурства приходятся на один день, в таблице в строке «На работе» число дежурных покраснеет. Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, дежурные дни выбираются так же, как у 4/2, праздничные дни РК при этом не учитываются.</div>
 </div>
 <div class="bar eo eg fl" style="margin-top:12px;margin-bottom:6px"><button id="gToggle" aria-expanded="true">Синхронизация GitHub ▾</button></div>
 <div id="ghBox" class="eo eg">
@@ -192,7 +192,8 @@ function kzYear(y){
   KZH.cache[y]=set;return set;
 }
 function isHol(n){return !!kzYear(dateOf(n).getUTCFullYear())[n]}
-function base(i,day){var w=state.w[i],t=TY[w.type]||TY['4/2'],c=t[0]+t[1],n=((day-sd(w))%c+c)%c;if(w.type==='5/2'){var wd=dateOf(day).getUTCDay();return wd>0&&wd<6&&!isHol(day)?1:0}return n<t[0]?((w.duty||[]).indexOf(n+1)>=0&&w.type!=='2/2'?2:1):0}
+function isCal(w){return w.type==='5/2'&&w.cal!==false}
+function base(i,day){var w=state.w[i],t=TY[w.type]||TY['4/2'],c=t[0]+t[1],n=((day-sd(w))%c+c)%c;if(isCal(w)){var wd=dateOf(day).getUTCDay();return wd>0&&wd<6&&!isHol(day)?1:0}return n<t[0]?((w.duty||[]).indexOf(n+1)>=0&&w.type!=='2/2'?2:1):0}
 function ok(i,d){return state.w[i].id+'|'+d}
 var DEPTS=[{k:'sc',n:'Сервисные консультанты'},{k:'el',n:'Электрики'},{k:'me',n:'Механики'},{k:'of',n:'Офис'},{k:'wh',n:'Склад'},{k:'cw',n:'Мойка'}];
 var dFil='all',dCol={},sumHide=false,covHide=false;
@@ -229,7 +230,7 @@ function render(){
       var tot=0,tof=0,cnt=[0,0,0,0,0,0,0,0];
       h+='<tr><td class="nm">'+esc(state.w[i].name)+'</td>';
       days.forEach(function(d){var v=val(i,d),xo=(v===3||v===5)&&base(i,d)===0;if(!(xo&&v===3))tot+=H[v];cnt[v]++;if(xo&&v===5)tof++;
-        h+='<td><button class="cell '+(mo?'c ':'')+C[v]+(xo?' xo':'')+(v===0&&state.w[i].type==='5/2'&&isHol(d)?' hd':'')+(state.ov[ok(i,d)]!==undefined?' ov':'')+'" data-i="'+i+'" data-d="'+d+'">'+(v===0&&state.w[i].type==='5/2'&&isHol(d)?'П':L[v])+(mo?'':'<small>'+(xo?(v===3?'вых. 0 ч':'в вых.'):(v===0&&state.w[i].type==='5/2'&&isHol(d)?'празд.':T[v]))+'</small>')+'</button></td>'});
+        h+='<td><button class="cell '+(mo?'c ':'')+C[v]+(xo?' xo':'')+(v===0&&isCal(state.w[i])&&isHol(d)?' hd':'')+(state.ov[ok(i,d)]!==undefined?' ov':'')+'" data-i="'+i+'" data-d="'+d+'">'+(v===0&&isCal(state.w[i])&&isHol(d)?'П':L[v])+(mo?'':'<small>'+(xo?(v===3?'вых. 0 ч':'в вых.'):(v===0&&isCal(state.w[i])&&isHol(d)?'празд.':T[v]))+'</small>')+'</button></td>'});
       if(!sumHide)h+='<td class="h">'+tot+(tof?'<small>в вых. '+tof+'</small>':'')+'</td>'+(mo?'<td class="h">'+cnt[2]+'</td><td class="h">'+cnt[3]+'</td><td class="h">'+cnt[5]+'</td><td class="h">'+cnt[4]+'</td><td class="h">'+cnt[6]+'</td><td class="h">'+cnt[7]+'</td>':'');
       if(sumHide)h+='<td></td>';
       h+='</tr>';
@@ -285,12 +286,12 @@ function defDuty(t,s,ex,dp){
   if(t==='3/3'){var u=[],n;state.w.forEach(function(w,i){if(i!==ex&&w.dept===dp&&w.type==='3/3'&&ph(w.start)===ph(s))u=u.concat(w.duty)});for(n=1;n<=3;n++)if(u.indexOf(n)<0)return[n]}
   return[];
 }
-function nTog(){document.getElementById('nStartW').style.display=document.getElementById('nType').value==='5/2'?'none':''}
+function nTog(){var f=document.getElementById('nType').value==='5/2';document.getElementById('nCalW').style.display=f?'':'none';document.getElementById('nStartW').style.display=(f&&document.getElementById('nCal').value==='1')?'none':''}
 function opts(c){return ['2/2','3/3','4/2','5/2'].map(function(t){return '<option'+(t===c?' selected':'')+'>'+t+'</option>'}).join('')}
 function addEmp(){
   var nm=document.getElementById('nName').value.trim(),t=document.getElementById('nType').value,s=document.getElementById('nStart').value||iso(mon(new Date()));
   if(!nm)return;
-  var dp=document.getElementById('nDept').value;state.w.push({id:state.nid++,name:nm,type:t,dept:dp,start:s,duty:defDuty(t,s,-1,dp)});
+  var dp=document.getElementById('nDept').value;var nw={id:state.nid++,name:nm,type:t,dept:dp,start:s,duty:defDuty(t,s,-1,dp)};if(t==='5/2'&&document.getElementById('nCal').value==='0')nw.cal=false;state.w.push(nw);
   delArm=-1;save();render();renderSet();
 }
 function renderSet(){
@@ -299,9 +300,9 @@ function renderSet(){
     var nd=(TY[w.type]||TY['4/2'])[0],ch='',n,warn='';
     if(w.type==='3/3')w.duty.forEach(function(dd){var cl=[];state.w.forEach(function(o,k){if(k!==i&&o.type==='3/3'&&o.dept===w.dept&&ph(o.start)===ph(w.start)&&o.duty.indexOf(dd)>=0)cl.push(esc(o.name))});if(cl.length)warn+='<div class="row" style="color:var(--danger);font-size:13px">Дежурство в день '+dd+' пересекается: '+cl.join(', ')+'</div>'});
     for(n=1;n<=nd;n++)ch+='<button class="sm'+(w.duty.indexOf(n)>=0?' on':'')+'" data-duty="'+i+':'+n+'">'+n+'</button>';
-    h+='<div class="emp"><div class="row"><input type="text" maxlength="30" data-n="'+i+'" value="'+esc(w.name)+'" aria-label="Имя"><select data-t="'+i+'">'+opts(w.type)+'</select><select data-dp="'+i+'">'+dOpts(w.dept)+'</select><button class="sm'+(delArm===i?' arm':'')+'" data-del="'+i+'">'+(delArm===i?'Удалить?':'✕')+'</button></div>'+(w.type==='5/2'?'<div class="row"><label>Пн–Пт рабочие, Сб–Вс выходные (по календарю)</label></div>':'<div class="row"><label>Первый рабочий день цикла</label><input type="date" data-s="'+i+'" value="'+w.start+'"></div>'+(w.type==='2/2'?'':''+(w.type==='2/2'?'':'<div class="row"><label>Дежурные дни:</label>'+ch+'</div>'+warn)))+'</div>';
+    h+='<div class="emp"><div class="row"><input type="text" maxlength="30" data-n="'+i+'" value="'+esc(w.name)+'" aria-label="Имя"><select data-t="'+i+'">'+opts(w.type)+'</select><select data-dp="'+i+'">'+dOpts(w.dept)+'</select><button class="sm'+(delArm===i?' arm':'')+'" data-del="'+i+'">'+(delArm===i?'Удалить?':'✕')+'</button></div>'+(w.type==='5/2'?'<div class="row"><label>Привязка</label><select data-cal="'+i+'"><option value="1"'+(w.cal!==false?' selected':'')+'>По календарю (Пн–Пт)</option><option value="0"'+(w.cal===false?' selected':'')+'>Со сдвигом выходных</option></select></div>':'')+(isCal(w)?'<div class="row"><label>Пн–Пт рабочие, Сб–Вс выходные (по календарю)</label></div>':'<div class="row"><label>Первый рабочий день цикла'+(w.type==='5/2'?' (5 рабочих, потом 2 выходных)':'')+'</label><input type="date" data-s="'+i+'" value="'+w.start+'"></div>'+(w.type==='2/2'?'':''+(w.type==='2/2'?'':'<div class="row"><label>Дежурные дни:</label>'+ch+'</div>'+warn)))+'</div>';
   });
-  h+='<div class="emp"><div class="row"><b>Новый сотрудник</b></div><div class="row"><input type="text" id="nName" maxlength="30" placeholder="Имя"><select id="nType">'+opts('4/2')+'</select><select id="nDept">'+dOpts('sc')+'</select></div><div class="row" id="nStartW"><label>Первый рабочий день цикла</label><input type="date" id="nStart" value="'+iso(mon(new Date()))+'"></div><div class="row"><button class="on" id="nAdd">Добавить</button></div></div>';
+  h+='<div class="emp"><div class="row"><b>Новый сотрудник</b></div><div class="row"><input type="text" id="nName" maxlength="30" placeholder="Имя"><select id="nType">'+opts('4/2')+'</select><select id="nDept">'+dOpts('sc')+'</select></div><div class="row" id="nCalW" style="display:none"><label>Привязка 5/2</label><select id="nCal"><option value="1">По календарю (Пн–Пт)</option><option value="0">Со сдвигом выходных</option></select></div><div class="row" id="nStartW"><label>Первый рабочий день цикла</label><input type="date" id="nStart" value="'+iso(mon(new Date()))+'"></div><div class="row"><button class="on" id="nAdd">Добавить</button></div></div>';
   
   h+='<div class="row"><b>Минимум на работе в день по отделам</b><label>(0 — не важно)</label></div>';
   DEPTS.forEach(function(D){h+='<div class="row"><label style="min-width:170px">'+D.n+'</label><input type="number" min="0" max="20" data-dm="'+D.k+'" value="'+((state.dmin&&state.dmin[D.k])||0)+'" style="width:70px"></div>'});
@@ -341,7 +342,8 @@ document.getElementById('set').addEventListener('input',function(ev){
   else if(t.dataset.tm!==undefined){var w2=state.w[+t.dataset.tm];w2.team=+t.value;w2.duty=defDuty('3/3',w2.team,+t.dataset.tm);save();render();renderSet();return}
   else if(t.dataset.dp!==undefined){var w3=state.w[+t.dataset.dp];w3.dept=t.value;if(w3.type==='3/3')w3.duty=defDuty('3/3',w3.start,+t.dataset.dp,w3.dept);save();render();renderSet();return}
   else if(t.dataset.dm!==undefined){state.dmin[t.dataset.dm]=Math.max(0,parseInt(t.value,10)||0)}
-  else if(t.id==='nType'){nTog();return}
+  else if(t.id==='nType'||t.id==='nCal'){nTog();return}
+  else if(t.dataset.cal!==undefined){var wc=state.w[+t.dataset.cal];if(t.value==='0')wc.cal=false;else{delete wc.cal;wc.duty=[]}save();render();renderSet();return}
   else if(t.dataset.m!==undefined){state.min=Math.max(0,parseInt(t.value,10)||0)}
   else return;
   save();render();
