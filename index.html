@@ -96,7 +96,7 @@ th .tg{margin-left:2px}
 .dayh th{padding-top:14px}
 th.sumh{position:relative}
 .tgs{position:absolute;top:0;left:50%;transform:translateX(-50%);margin:0!important;padding:0 6px;font-size:10px;line-height:12px;border:none;background:none}
-th.mh{font-size:16px;color:var(--tx);font-weight:700;line-height:1.2;text-align:center;padding-left:2px;padding-right:2px}
+th.mh{font-size:16px;color:var(--tx);font-weight:600;line-height:1.2;text-align:center;padding-left:2px;padding-right:2px}
 .bar select{font:inherit;padding:8px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
 .arm{color:var(--danger);border-color:var(--danger)}
 .soon{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:12px}
@@ -222,7 +222,7 @@ function isHol(n){return !!kzYear(dateOf(n).getUTCFullYear())[n]}
 function isCal(w){return w.type==='5/2'&&w.cal!==false}
 function base(i,day){var w=state.w[i],t=TY[w.type]||TY['4/2'],c=t[0]+t[1],n=((day-sd(w))%c+c)%c;if(isCal(w)){var wd=dateOf(day).getUTCDay();return wd>0&&wd<6&&!isHol(day)?1:0}return n<t[0]?((w.duty||[]).indexOf(n+1)>=0&&w.type!=='2/2'?2:1):0}
 function ok(i,d){return state.w[i].id+'|'+d}
-var DEPTS=[{k:'sc',n:'Сервисные консультанты'},{k:'el',n:'Электрики'},{k:'me',n:'Механики'},{k:'of',n:'Офис'},{k:'wh',n:'Склад'},{k:'cw',n:'Мойка'}];
+var DEPTS=[{k:'sc',n:'Сервисные консультанты'},{k:'el',n:'Электрики'},{k:'me',n:'Механики'},{k:'wh',n:'Склад'},{k:'cw',n:'Мойка'},{k:'of',n:'Офис'}];
 var dFil='all',dCol={},sumHide=false,covHide=false;
 try{sumHide=localStorage.getItem('shift-app-sum')==='1';covHide=localStorage.getItem('shift-app-cov')==='1'}catch(e){}
 try{var _f=localStorage.getItem('shift-app-dfil');if(_f==='all'||DEPTS.some(function(x){return x.k===_f}))dFil=_f;dCol=JSON.parse(localStorage.getItem('shift-app-dcol')||'{}')||{}}catch(e){}
