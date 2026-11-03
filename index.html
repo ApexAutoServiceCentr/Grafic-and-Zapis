@@ -11,7 +11,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:960px;margin:0 auto;padding:16px 12px 32px}
+main{max-width:960px;margin:0 auto;padding:0 12px 32px}
 body.mo main{max-width:1560px}
 h1{font-size:20px;margin:0}
 .ttl{display:flex;align-items:center;gap:8px 10px;margin:0 0 10px;flex-wrap:wrap}
@@ -21,7 +21,7 @@ h1{font-size:20px;margin:0}
 #m-toggle{background:#134e4a;border-color:#2dd4bf;color:#fff}
 #today{background:var(--ac);border-color:var(--ac);color:#fff}
 #bCur:empty{display:none}
-#top{position:sticky;top:0;z-index:30;background:var(--bg);padding-top:2px}
+#top{position:sticky;top:0;z-index:30;background:var(--bg);padding-top:14px}
 @media (max-width:760px),(max-height:620px){#top{position:static}}
 .ttlw{position:relative}
 .menu{position:absolute;left:0;top:100%;z-index:40;width:min(660px,100%);max-height:calc(100vh - 72px);overflow-y:auto;overscroll-behavior:contain;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.28)}
@@ -32,6 +32,8 @@ h1{font-size:20px;margin:0}
 .pwb input{font:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
 .menu .bar{margin:6px 0}
 .mi{margin:6px 0}
+.bm{padding:8px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+.bm.on{background:var(--ac);border-color:var(--ac);color:#fff}
 .mrow{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--mu);flex:none;cursor:help}
 .dot.g{background:#22c55e}.dot.n{background:var(--mu)}.dot.w{background:#f59e0b}.dot.r{background:var(--danger)}
@@ -136,16 +138,16 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <div class="set" id="set"></div>
 <div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла; для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс по календарю (праздничные дни Казахстана учитываются автоматически, если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную режимом «Выходной»). Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит (для 4/2 по умолчанию 1-й и 4-й, у 2/2 и 5/2 дежурств нет, они работают 9–18). При смене типа графика дежурные дни сбрасываются к значениям по умолчанию. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой (например, первая начинает в понедельник, вторая в четверг), тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой, и новому сотруднику автоматически назначается свободный дежурный день смены. Если два дежурства приходятся на один день, в таблице в строке «На работе» число дежурных покраснеет. Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, дежурные дни выбираются так же, как у 4/2, праздничные дни РК при этом не учитываются.</div>
 </div>
-<div class="brush eo fl" id="brush">
-<span>Нажатие на клетку:</span>
-<button data-b="cyc" class="on">Смена</button>
-<button data-b="3">Обучение на месте / вебинар</button>
-<button data-b="5">Командировка / обучение с выездом</button>
-<button data-b="4">Отпуск</button>
-<button data-b="6">Больничный</button>
-<button data-b="7">Без содержания</button>
-<button data-b="0">Выходной</button>
-<button data-b="auto">По циклу</button>
+<div class="set eo" id="brush">
+<div class="row"><label>Режим клика по клетке: выберите режим и нажимайте на клетки таблицы</label></div>
+<div class="row">
+<button data-b="cyc" class="bm on">Смена</button>
+<button data-b="3" class="bm">Обучение на месте / вебинар</button>
+<button data-b="5" class="bm">Командировка / обучение с выездом</button>
+<button data-b="4" class="bm">Отпуск</button>
+<button data-b="6" class="bm">Больничный</button>
+<button data-b="7" class="bm">Без содержания</button>
+</div>
 </div>
 <div id="ghBox" class="eo eg">
 <div class="set">
@@ -175,7 +177,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <span><b style="padding:0 2px;color:var(--danger)">●</b>Ручная правка</span>
 <span><b style="padding:0 2px;color:var(--ac)">■</b>Обучение или командировка в выходной</span>
 </div>
-<div class="sub eo" style="margin-top:8px">Выберите режим и нажимайте на клетки. «Смена» переключает выходной → рабочий → дежурство. Повторное нажатие тем же режимом снимает отметку, «По циклу» возвращает клетку к графику 4/2. Часы без обеда: рабочий, обучение и командировка 8 ч, дежурство 9 ч, отпуск, больничный и отпуск без содержания 0 ч. Обучение и командировку можно ставить и на выходной день, такие дни помечены синим квадратиком, но обучение на месте / вебинар в выходной часов не даёт (0 ч) и присутствием на работе не считается, а командировка в выходной считается как 8 ч. К — любые выезды в другие города и страны: рабочие визиты, командировки и обучение с выездом. В строке «На работе» считаются рабочие, дежурные и обучающиеся на месте в рабочие дни; командировки и отпуск не считаются, красным подсвечивается день, когда в отделе на месте меньше минимума (он задаётся в настройках по отделам).</div>
+<div class="sub eo" id="hint" style="margin-top:8px">Выберите режим и нажимайте на клетки. «Смена» переключает выходной → рабочий → дежурство. Повторное нажатие тем же режимом снимает отметку. Часы без обеда: рабочий, обучение и командировка 8 ч, дежурство 9 ч, отпуск, больничный и отпуск без содержания 0 ч. Обучение и командировку можно ставить и на выходной день, такие дни помечены синим квадратиком, но обучение на месте / вебинар в выходной часов не даёт (0 ч) и присутствием на работе не считается, а командировка в выходной считается как 8 ч. К — любые выезды в другие города и страны: рабочие визиты, командировки и обучение с выездом. В строке «На работе» считаются рабочие, дежурные и обучающиеся на месте в рабочие дни; командировки и отпуск не считаются, красным подсвечивается день, когда в отделе на месте меньше минимума (он задаётся в настройках по отделам).</div>
 </main>
 <div id="pwM" class="pwm" hidden><div class="pwb"><div id="pwT" style="font-weight:600;margin-bottom:8px"></div><input type="password" id="pwI0" autocomplete="off" placeholder="Старый пароль" style="display:none"><input type="password" id="pwI" autocomplete="new-password" placeholder="Пароль"><input type="password" id="pwI2" autocomplete="new-password" placeholder="Повторите пароль"><div id="pwE" style="color:var(--danger);font-size:13px;min-height:18px"></div><div style="display:flex;gap:8px"><button id="pwOk" class="on">OK</button><button id="pwNo">Отмена</button></div></div></div>
 <script>
@@ -416,7 +418,7 @@ document.getElementById('today').onclick=function(){
 document.getElementById('m-toggle').onclick=function(){setMode(mode==='week'?'month':'week')};
 
 var collapsed=false;try{collapsed=localStorage.getItem('shift-app-ui')==='1'}catch(e){}
-function setBrush(v){brush=v;Array.prototype.forEach.call(document.querySelectorAll('#brush button'),function(x){x.className=(v!==null&&x.dataset.b===String(v))?'on':''})}
+function setBrush(v){brush=v;Array.prototype.forEach.call(document.querySelectorAll('#brush button'),function(x){x.classList.toggle('on',v!==null&&x.dataset.b===String(v))})}
 function updCur(){
   var b=document.querySelector('#brush button.on'),t='';
   if(locked())t='Правки закрыты паролем: откройте «Режимы корректировки»';
@@ -425,7 +427,7 @@ function updCur(){
   document.getElementById('bCur').textContent=t;
 }
 document.getElementById('bToggle').onclick=async function(){var open=collapsed||locked();if(open){if(!(await gate()))return;collapsed=false}else collapsed=true;try{localStorage.setItem('shift-app-ui',collapsed?'1':'0')}catch(e){}applyUI()};
-function applyUI(){if(state.pw){if(locked()&&brush!==null)setBrush(null)}else if(brush===null)setBrush('cyc');var t=document.getElementById('bToggle'),h=collapsed||locked();document.getElementById('brush').style.display=h?'none':'';t.textContent='Режимы корректировки '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');updCur()}
+function applyUI(){var hn=document.getElementById('hint');if(hn)hn.style.display=locked()?'none':'';if(state.pw){if(locked()&&brush!==null)setBrush(null)}else if(brush===null)setBrush('cyc');var t=document.getElementById('bToggle'),h=collapsed||locked();document.getElementById('brush').style.display=h?'none':'';t.textContent='Режимы корректировки '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');updCur()}
 /* ---------- пароль на настройки ---------- */
 var UNL=null;
 function unlocked(){return !!state.pw&&UNL===state.pw.h}
