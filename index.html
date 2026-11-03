@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>График смен</title>
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--bd:#e2e5ea;--ac:#2563eb;--wk:#bfdbfe;--dt:#fcd34d;--tr:#bbf7d0;--vc:#fbcfe8;--tk:#fed7aa;--sk:#ddd6fe;--stx:#1b1f24;--danger:#dc2626;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--wk:#1e4274;--dt:#8a6a10;--tr:#1d5a3a;--vc:#7a2a55;--tk:#7c3a12;--sk:#4b3a8a;--stx:#f3f4f6;--danger:#f87171;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--wk:#1e4274;--dt:#8a6a10;--tr:#1d5a3a;--vc:#7a2a55;--tk:#7c3a12;--sk:#4b3a8a;--stx:#f3f4f6;--danger:#f87171;color-scheme:dark}
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--bd:#e2e5ea;--ac:#2563eb;--wk:#bfdbfe;--dt:#fcd34d;--tr:#bbf7d0;--vc:#fbcfe8;--tk:#fed7aa;--sk:#ddd6fe;--ns:#99f6e4;--stx:#1b1f24;--danger:#dc2626;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--wk:#1e4274;--dt:#8a6a10;--tr:#1d5a3a;--vc:#7a2a55;--tk:#7c3a12;--sk:#4b3a8a;--ns:#115e59;--stx:#f3f4f6;--danger:#f87171;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--wk:#1e4274;--dt:#8a6a10;--tr:#1d5a3a;--vc:#7a2a55;--tk:#7c3a12;--sk:#4b3a8a;--ns:#115e59;--stx:#f3f4f6;--danger:#f87171;color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -38,16 +38,17 @@ th small{display:block;font-size:14px;color:var(--tx)}
 td.nm,th.nm{text-align:left;position:sticky;left:0;background:var(--card);padding-left:8px;min-width:84px;z-index:1;font-weight:600}
 .cell{position:relative;width:100%;min-width:46px;height:46px;border-radius:8px;border:1px dashed var(--bd);background:transparent;font-weight:700;color:var(--mu);padding:0;line-height:1.15}
 .cell small{display:block;font-weight:400;font-size:10px}
-.cell.c{min-width:26px;height:40px;font-size:13px;border-radius:6px}
+.cell.c{min-width:24px;height:40px;font-size:13px;border-radius:6px}
 .cell.w{background:var(--wk);border:1px solid transparent;color:var(--stx)}
 .cell.d{background:var(--dt);border:1px solid transparent;color:var(--stx)}
 .cell.t{background:var(--tr);border:1px solid transparent;color:var(--stx)}
 .cell.v{background:var(--vc);border:1px solid transparent;color:var(--stx)}
 .cell.k{background:var(--tk);border:1px solid transparent;color:var(--stx)}
 .cell.s{background:var(--sk);border:1px solid transparent;color:var(--stx)}
+.cell.n{background:var(--ns);border:1px solid transparent;color:var(--stx);font-size:11px}
 .cell.xo::before{content:"";position:absolute;top:3px;left:3px;width:6px;height:6px;border-radius:2px;background:var(--ac)}
 .cell.ov::after{content:"";position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--danger)}
-td.h{font-weight:600;min-width:38px;font-size:13px}
+td.h{font-weight:600;min-width:34px;font-size:13px}
 td.h small{display:block;font-weight:400;color:var(--mu);font-size:10px;white-space:nowrap}
 tr.cov td{font-size:12px;color:var(--mu);border-bottom:none}
 tr.cov td.bad{color:var(--danger);font-weight:700}
@@ -80,12 +81,13 @@ th.mh{font-size:12px;color:var(--tx);font-weight:700;line-height:1.2}
 .arm{color:var(--danger);border-color:var(--danger)}
 .soon{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:12px}
 .soon h3{font-size:14px;margin:0 0 6px}
-.ev{display:flex;gap:4px 10px;align-items:baseline;padding:4px 0 4px 10px;border-left:5px solid var(--bd);margin:6px 0;flex-wrap:wrap;font-size:14px}
+.ev{display:flex;gap:4px 14px;align-items:baseline;padding:4px 0 4px 10px;border-left:5px solid var(--bd);margin:6px 0;flex-wrap:wrap;font-size:14px}
 .ev.k3{border-color:var(--tr)}
 .ev.k4{border-color:var(--vc)}
 .ev.k5{border-color:var(--tk)}
 .ev.k6{border-color:var(--sk)}
-.ev .wh{margin-left:auto;color:var(--mu);font-size:13px}
+.ev.k7{border-color:var(--ns)}
+.ev .wh{color:var(--tx);font-size:14px;font-weight:600}
 .ev .wh b{color:var(--ac)}
 #today{transition:background .25s,color .25s,border-color .25s}
 @keyframes blinkc{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 4px var(--ac)}}
@@ -116,6 +118,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <button data-b="5">Командировка / обучение с выездом</button>
 <button data-b="4">Отпуск</button>
 <button data-b="6">Больничный</button>
+<button data-b="7">Без содержания</button>
 <button data-b="0">Выходной</button>
 <button data-b="auto">По циклу</button>
 </div>
@@ -130,10 +133,11 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <span><b style="background:var(--vc)">О</b>Отпуск</span>
 <span><b style="padding:0 2px;color:var(--danger)">П</b>Праздничный день РК (для 5/2)</span>
 <span><b style="background:var(--sk)">Б</b>Больничный</span>
+<span><b style="background:var(--ns)">БС</b>Без содержания</span>
 <span><b style="padding:0 2px;color:var(--danger)">●</b>Ручная правка</span>
 <span><b style="padding:0 2px;color:var(--ac)">■</b>Обучение или командировка в выходной</span>
 </div>
-<div class="sub eo" style="margin-top:8px">Выберите режим и нажимайте на клетки. «Смена» переключает выходной → рабочий → дежурство. Повторное нажатие тем же режимом снимает отметку, «По циклу» возвращает клетку к графику 4/2. Часы без обеда: рабочий, обучение и командировка 8 ч, дежурство 9 ч, отпуск и больничный 0 ч. Обучение и командировку можно ставить и на выходной день, такие дни помечены синим квадратиком, но обучение на месте / вебинар в выходной часов не даёт (0 ч) и присутствием на работе не считается, а командировка в выходной считается как 8 ч. К — любые выезды в другие города и страны: рабочие визиты, командировки и обучение с выездом. В строке «На работе» считаются рабочие, дежурные и обучающиеся на месте в рабочие дни; командировки и отпуск не считаются, красным подсвечивается день, когда в отделе на месте меньше минимума (он задаётся в настройках по отделам).</div>
+<div class="sub eo" style="margin-top:8px">Выберите режим и нажимайте на клетки. «Смена» переключает выходной → рабочий → дежурство. Повторное нажатие тем же режимом снимает отметку, «По циклу» возвращает клетку к графику 4/2. Часы без обеда: рабочий, обучение и командировка 8 ч, дежурство 9 ч, отпуск, больничный и отпуск без содержания 0 ч. Обучение и командировку можно ставить и на выходной день, такие дни помечены синим квадратиком, но обучение на месте / вебинар в выходной часов не даёт (0 ч) и присутствием на работе не считается, а командировка в выходной считается как 8 ч. К — любые выезды в другие города и страны: рабочие визиты, командировки и обучение с выездом. В строке «На работе» считаются рабочие, дежурные и обучающиеся на месте в рабочие дни; командировки и отпуск не считаются, красным подсвечивается день, когда в отделе на месте меньше минимума (он задаётся в настройках по отделам).</div>
 <div class="bar eo fl" style="margin-top:8px"><button id="reset">Сбросить правки периода</button></div>
 <div class="bar eo fl" style="margin-top:20px;margin-bottom:6px"><button id="sToggle" aria-expanded="true">Сотрудники и цикл ▾</button></div>
 <div id="setBox" class="eo">
@@ -165,7 +169,7 @@ function fresh(){var m=mon(new Date());var names=['Анна','Игорь','Ма�
   return{w:[0,2,4].map(function(o,i){var d=new Date(m);d.setDate(m.getDate()+o);return{name:names[i],start:iso(d)}}),ov:{}}}
 var state=fresh();
 try{var raw=localStorage.getItem('shift-app-2');if(raw){var p=JSON.parse(raw);if(p&&p.w)state=p}}catch(e){}
-function normState(){var mx=-1;state.w.forEach(function(w,i){if(w.id===undefined)w.id=i;if(!w.type)w.type='4/2';if(!w.dept)w.dept='of';if(w.type==='2/3')w.type='2/2';if(w.type==='2/2')w.duty=[];if(!w.duty)w.duty=w.type==='4/2'?[1,4]:[];if(w.id>mx)mx=w.id});if(state.nid===undefined||state.nid<=mx)state.nid=mx+1;if(state.min===undefined)state.min=2;if(!state.dmin)state.dmin={sc:1,me:2,el:0,of:0};if(!state.a33)state.a33=iso(mon(new Date()));state.w.forEach(function(w){if(w.team!==undefined){if(w.type==='3/3'&&state.a33)w.start=(function(n){var x=dateOf(n);return x.getUTCFullYear()+'-'+pad(x.getUTCMonth()+1)+'-'+pad(x.getUTCDate())})(dnum(state.a33)+(w.team===2?3:0));delete w.team}})}
+function normState(){var mx=-1;state.w.forEach(function(w,i){if(w.id===undefined)w.id=i;if(!w.type)w.type='4/2';if(!w.dept)w.dept='of';if(w.type==='2/3')w.type='2/2';if(w.type==='2/2')w.duty=[];if(!w.duty)w.duty=w.type==='4/2'?[1,4]:[];if(w.id>mx)mx=w.id});if(state.nid===undefined||state.nid<=mx)state.nid=mx+1;if(state.min===undefined)state.min=2;if(!state.dmin)state.dmin={sc:1,me:2,el:0,of:0,wh:0,cw:0};if(!state.a33)state.a33=iso(mon(new Date()));state.w.forEach(function(w){if(w.team!==undefined){if(w.type==='3/3'&&state.a33)w.start=(function(n){var x=dateOf(n);return x.getUTCFullYear()+'-'+pad(x.getUTCMonth()+1)+'-'+pad(x.getUTCDate())})(dnum(state.a33)+(w.team===2?3:0));delete w.team}})}
 normState();
 function cacheLocal(){try{localStorage.setItem('shift-app-2',JSON.stringify(state))}catch(e){}}
 function save(){cacheLocal();if(typeof schedSync==='function')schedSync()}
@@ -190,13 +194,13 @@ function kzYear(y){
 function isHol(n){return !!kzYear(dateOf(n).getUTCFullYear())[n]}
 function base(i,day){var w=state.w[i],t=TY[w.type]||TY['4/2'],c=t[0]+t[1],n=((day-sd(w))%c+c)%c;if(w.type==='5/2'){var wd=dateOf(day).getUTCDay();return wd>0&&wd<6&&!isHol(day)?1:0}return n<t[0]?((w.duty||[]).indexOf(n+1)>=0&&w.type!=='2/2'?2:1):0}
 function ok(i,d){return state.w[i].id+'|'+d}
-var DEPTS=[{k:'sc',n:'Сервисные консультанты'},{k:'el',n:'Электрики'},{k:'me',n:'Механики'},{k:'of',n:'Офис'}];
+var DEPTS=[{k:'sc',n:'Сервисные консультанты'},{k:'el',n:'Электрики'},{k:'me',n:'Механики'},{k:'of',n:'Офис'},{k:'wh',n:'Склад'},{k:'cw',n:'Мойка'}];
 var dFil='all',dCol={},sumHide=false,covHide=false;
 try{sumHide=localStorage.getItem('shift-app-sum')==='1';covHide=localStorage.getItem('shift-app-cov')==='1'}catch(e){}
 try{var _f=localStorage.getItem('shift-app-dfil');if(_f==='all'||DEPTS.some(function(x){return x.k===_f}))dFil=_f;dCol=JSON.parse(localStorage.getItem('shift-app-dcol')||'{}')||{}}catch(e){}
 function dOpts(c){return DEPTS.map(function(x){return '<option value="'+x.k+'"'+(x.k===c?' selected':'')+'>'+x.n+'</option>'}).join('')}
 function val(i,day){var o=state.ov[ok(i,day)];return o!==undefined?o:base(i,day)}
-var L=['В','Р','Д','У','О','К','Б'],T=['','9–18','9–19','9–18','','команд.','больн.'],C=['','w','d','t','v','k','s'],H=[0,8,9,8,0,8,0];
+var L=['В','Р','Д','У','О','К','Б','БС'],T=['','9–18','9–19','9–18','','команд.','больн.','без сод.'],C=['','w','d','t','v','k','s','n'],H=[0,8,9,8,0,8,0,0];
 function render(){
   var P=period(),mo=mode==='month',days=[],i,j;document.body.classList.toggle('mo',mo);
   for(i=0;i<P.n;i++)days.push(P.s+i);
@@ -210,9 +214,9 @@ function render(){
   var hd='<tr class="dayh"><th class="nm mh">'+ml+'</th>';
   days.forEach(function(d){var dt=dateOf(d),wd=(dt.getUTCDay()+6)%7;
     hd+='<th class="'+(d===tn?'today ':'')+(wd>4?'we ':'')+(isHol(d)?'hol':'')+'"'+(isHol(d)?' title="Праздничный день РК"':'')+'>'+DN[wd]+'<small>'+dt.getUTCDate()+'</small></th>'});
-  if(sumHide)hd+='<th><button class="tg" data-tg="sum" title="Показать итоги" aria-label="Показать итоги">▸</button></th>';else hd+='<th class="sumh"><button class="tg tgs" data-tg="sum" title="Свернуть итоги" aria-label="Свернуть итоги">◂</button>Часы</th>'+(mo?'<th>Деж.</th><th>Об.</th><th>Ком.</th><th>Отп.</th><th>Бол.</th>':'');hd+='</tr>';
+  if(sumHide)hd+='<th><button class="tg" data-tg="sum" title="Показать итоги" aria-label="Показать итоги">▸</button></th>';else hd+='<th class="sumh"><button class="tg tgs" data-tg="sum" title="Свернуть итоги" aria-label="Свернуть итоги">◂</button>Часы</th>'+(mo?'<th>Деж.</th><th>Об.</th><th>Ком.</th><th>Отп.</th><th>Бол.</th><th>БС</th>':'');hd+='</tr>';
   var h='';
-  var ncol=days.length+1+(sumHide?1:(mo?6:1)),shown=0;
+  var ncol=days.length+1+(sumHide?1:(mo?7:1)),shown=0;
   DEPTS.forEach(function(D){
     if(dFil!=='all'&&dFil!==D.k)return;
     var idx=[];state.w.forEach(function(w,q){if(w.dept===D.k)idx.push(q)});
@@ -222,11 +226,11 @@ function render(){
     h+='<tr class="dh"><td colspan="'+ncol+'"><div class="dhi"><button class="dbtn" data-dc="'+D.k+'">'+(cl?'▸':'▾')+' '+D.n+' · '+idx.length+'</button></div></td></tr>';
     if(!cl)h+=hd;
     if(!cl)idx.forEach(function(i){
-      var tot=0,tof=0,cnt=[0,0,0,0,0,0,0];
+      var tot=0,tof=0,cnt=[0,0,0,0,0,0,0,0];
       h+='<tr><td class="nm">'+esc(state.w[i].name)+'</td>';
       days.forEach(function(d){var v=val(i,d),xo=(v===3||v===5)&&base(i,d)===0;if(!(xo&&v===3))tot+=H[v];cnt[v]++;if(xo&&v===5)tof++;
         h+='<td><button class="cell '+(mo?'c ':'')+C[v]+(xo?' xo':'')+(v===0&&state.w[i].type==='5/2'&&isHol(d)?' hd':'')+(state.ov[ok(i,d)]!==undefined?' ov':'')+'" data-i="'+i+'" data-d="'+d+'">'+(v===0&&state.w[i].type==='5/2'&&isHol(d)?'П':L[v])+(mo?'':'<small>'+(xo?(v===3?'вых. 0 ч':'в вых.'):(v===0&&state.w[i].type==='5/2'&&isHol(d)?'празд.':T[v]))+'</small>')+'</button></td>'});
-      if(!sumHide)h+='<td class="h">'+tot+(tof?'<small>в вых. '+tof+'</small>':'')+'</td>'+(mo?'<td class="h">'+cnt[2]+'</td><td class="h">'+cnt[3]+'</td><td class="h">'+cnt[5]+'</td><td class="h">'+cnt[4]+'</td><td class="h">'+cnt[6]+'</td>':'');
+      if(!sumHide)h+='<td class="h">'+tot+(tof?'<small>в вых. '+tof+'</small>':'')+'</td>'+(mo?'<td class="h">'+cnt[2]+'</td><td class="h">'+cnt[3]+'</td><td class="h">'+cnt[5]+'</td><td class="h">'+cnt[4]+'</td><td class="h">'+cnt[6]+'</td><td class="h">'+cnt[7]+'</td>':'');
       if(sumHide)h+='<td></td>';
       h+='</tr>';
     });
@@ -236,23 +240,23 @@ function render(){
     else{
     days.forEach(function(d){var n=0,dt=0;idx.forEach(function(j){var v=val(j,d);if(v===1||v===2||(v===3&&base(j,d)!==0))n++;if(v===2)dt++});
       h+='<td class="'+(n<mn?'bad':'')+'">'+n+'<br><span class="'+(dt>1?'bad2':'')+'">д'+dt+'</span></td>'});
-    h+='<td colspan="'+(sumHide?1:(mo?6:1))+'"></td>';
+    h+='<td colspan="'+(sumHide?1:(mo?7:1))+'"></td>';
     }
     h+='</tr>';
     }
   });
   if(!shown)h+='<tr><td colspan="'+ncol+'" style="padding:16px;color:var(--mu)">В этом отделе пока нет сотрудников</td></tr>';
   var t=document.getElementById('tbl');
-  t.style.minWidth=mo?(96+P.n*29+(sumHide?0:235))+'px':(sumHide?'500px':'560px');
+  t.style.minWidth=mo?(96+P.n*27+(sumHide?0:240))+'px':(sumHide?'500px':'560px');
   t.innerHTML=h;renderSoon();
 }
-var EVN={3:'Обучение на месте / вебинар',4:'Отпуск',5:'Командировка / обучение с выездом',6:'Больничный'};
+var EVN={3:'Обучение на месте / вебинар',4:'Отпуск',5:'Командировка / обучение с выездом',6:'Больничный',7:'Без содержания'};
 function fd(n){var x=dateOf(n);return x.getUTCDate()+' '+MN[x.getUTCMonth()]}
 function renderSoon(){
   var tn=dn(new Date()),ev=[],i,d,v,r,k;
   for(i=0;i<state.w.length;i++){r=null;
     for(d=tn;d<tn+7;d++){v=val(i,d);
-      if(v>=3){if(r&&r.v===v&&r.e===d-1){r.e=d}else{r={i:i,v:v,s:d,e:d};ev.push(r)}}
+      if(v>=3&&v!==7){if(r&&r.v===v&&r.e===d-1){r.e=d}else{r={i:i,v:v,s:d,e:d};ev.push(r)}}
     }
   }
   ev.forEach(function(r){
@@ -316,7 +320,7 @@ document.getElementById('tbl').addEventListener('click',function(ev){
   var i=+b.dataset.i,d=+b.dataset.d,k=ok(i,d),bs=base(i,d),n;
   if(brush==='auto')delete state.ov[k];
   else{
-    n=brush==='cyc'?(state.w[i].type==='2/2'&&val(i,d)===1?0:[1,2,0,0,0,0,0][val(i,d)]):brush;
+    n=brush==='cyc'?(state.w[i].type==='2/2'&&val(i,d)===1?0:[1,2,0,0,0,0,0,0][val(i,d)]):brush;
     if(brush!=='cyc'&&state.ov[k]===n)delete state.ov[k];
     else if(n===bs)delete state.ov[k];
     else state.ov[k]=n;
