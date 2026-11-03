@@ -128,6 +128,11 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .seg button.on.eq{background:var(--eq);border-color:var(--eq);color:var(--stx)}
 .seg button.on.sh{background:var(--sh);border-color:var(--sh);color:var(--stx)}
 .seg button.on.ml{background:var(--ml);border-color:var(--ml);color:var(--stx)}
+/* телефон с постоянным +7 */
+.ph{display:flex;align-items:stretch}.ph .pre{display:flex;align-items:center;padding:0 10px;border:1px solid var(--bd);border-right:none;border-radius:10px 0 0 10px;background:var(--card);color:var(--tx);font-weight:600}.ph input{flex:1;min-width:0;border-radius:0 10px 10px 0}
+.pulse .seg.ton{animation:tp .7s ease}@keyframes tp{0%{transform:scale(.97);opacity:.4}100%{transform:none;opacity:1}}
+.seg.ton button{min-width:58px;padding:5px 8px;font-size:13px}
+.seg.ton button.on{background:var(--to);border-color:var(--ac);color:var(--stx)}
 #fHint{background:var(--bg);border:1px solid var(--ac);border-radius:10px;padding:8px 10px;font-size:13px;flex-direction:row!important;flex-wrap:wrap;align-items:center;gap:6px 10px}
 #fHint .sp{flex:1}
 #fHint button{padding:5px 10px}
@@ -206,15 +211,15 @@ body.ro .eo{display:none!important}
 <div class="f"><label for="fPost">Пост</label><select id="fPost"></select></div>
 <div class="f"><label for="fStart">Время приезда</label><select id="fStart"></select></div>
 <div class="f"><label for="fLen">Длительность работ</label><select id="fLen"></select></div>
-<div class="f w2"><label>Вид работ</label><div class="seg" id="fType"></div><div id="fTonW" style="display:none;margin-top:6px"><select id="fTon" aria-label="Номер ТО" style="max-width:180px"></select></div></div>
+<div class="f w2"><label>Вид работ</label><div class="seg" id="fType"></div><div id="fTonW" style="display:none;margin-top:8px"><label style="display:block;margin-bottom:4px">Номер ТО</label><div class="seg ton" id="fTon" role="group" aria-label="Номер ТО"></div></div></div>
 <div class="f"><label for="fClient">Клиент</label><input type="text" id="fClient" maxlength="60" placeholder="Иван Петров"></div>
-<div class="f"><label for="fPhone">Телефон</label><input type="tel" id="fPhone" maxlength="20" placeholder="+7 701 123 45 67"></div>
-<div class="f"><label for="fPlate">Госномер</label><input type="text" id="fPlate" maxlength="15" placeholder="123ABC14"></div>
+<div class="f"><label for="fPhone">Телефон</label><div class="ph"><span class="pre">+7</span><input type="tel" id="fPhone" inputmode="numeric" maxlength="18" placeholder="701 123 45 67"></div></div>
 <div class="f w2" id="fHint" style="display:none"></div>
 <div class="f"><label for="fBrand">Марка</label><input type="text" id="fBrand" maxlength="30" list="brandList" placeholder="Hyundai"></div>
 <div class="f"><label for="fModel">Модель</label><input type="text" id="fModel" maxlength="40" list="modelList" placeholder="Tucson"></div>
 <datalist id="brandList"></datalist><datalist id="modelList"></datalist>
 <div class="f"><label for="fYear">Год выпуска</label><input type="text" id="fYear" inputmode="numeric" maxlength="4" placeholder="2021"></div>
+<div class="f"><label for="fPlate">Госномер</label><input type="text" id="fPlate" maxlength="15" placeholder="123ABC14"></div>
 <div class="f"><label for="fKm">Пробег, км</label><input type="text" id="fKm" inputmode="numeric" maxlength="9" placeholder="85 000"></div>
 <div class="f w2"><label for="fDesc">Комментарий: что нужно сделать, жалоба клиента</label><textarea id="fDesc" maxlength="1000"></textarea></div>
 <div class="f"><label for="fStatus">Статус</label><select id="fStatus"></select></div>
@@ -672,7 +677,7 @@ function fillSelects(start,len){
   for(m=c.step;m<=c.close-c.open;m+=c.step)o+='<option value="'+m+'"'+(m===len?' selected':'')+'>'+fdur(m)+'</option>';
   document.getElementById('fLen').innerHTML=o;
 }
-function setType(t){fType=t;[].forEach.call(document.querySelectorAll('#fType button'),function(b){b.classList.toggle('on',b.dataset.ty===t)});document.getElementById('fTonW').style.display=t==='to'?'':'none'}
+function setType(t){fType=t;[].forEach.call(document.querySelectorAll('#fType button'),function(b){b.classList.toggle('on',b.dataset.ty===t)});var w=document.getElementById('fTonW');w.style.display=t==='to'?'':'none'}
 function fv(id){return document.getElementById(id).value}
 function sv(id,v){document.getElementById(id).value=v==null?'':v}
 function openForm(b,pre){
@@ -684,23 +689,32 @@ function openForm(b,pre){
   document.getElementById('fPost').innerHTML=c.posts.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+' · '+(KINDS[p.kind]||'')+'</option>'}).join('')+(postIdx(d.post)<0&&b?'<option value="'+esc(d.post)+'">Пост удалён</option>':'');
   sv('fPost',d.post);
   fillSelects(d.start,d.len);setType(d.type);
-  var bm=splitCar(d);sv('fClient',d.client);sv('fPhone',d.phone);sv('fBrand',bm.brand);sv('fModel',bm.model);fillModels();sv('fTon',d.ton||'');sv('fPlate',d.plate);hideHint();document.getElementById('fKm').placeholder='85 000';sv('fYear',d.year);sv('fKm',d.km?fkm(d.km).replace(' км',''):'');sv('fDesc',d.desc);sv('fStatus',b?st(b):'zap');
+  var bm=splitCar(d);sv('fClient',d.client);setPhone(d.phone);sv('fBrand',bm.brand);sv('fModel',bm.model);fillModels();setTon(d.ton||'');sv('fPlate',d.plate);hideHint();document.getElementById('fKm').placeholder='85 000';sv('fYear',d.year);sv('fKm',d.km?fkm(d.km).replace(' км',''):'');sv('fDesc',d.desc);sv('fStatus',b?st(b):'zap');
   var by=d.by;if(!b){try{by=localStorage.getItem('zap-by')||''}catch(e){}}sv('fBy',by);
   document.getElementById('fErr').textContent='';
   var del=document.getElementById('fDel');del.textContent='Удалить (отмена)';del.className='eo';del.style.display=b?'':'none';
   document.getElementById('fMeta').textContent=b&&b.u?'Последнее изменение: '+new Date(b.u).toLocaleString('ru-RU')+(b.ub?' · '+b.ub:''):'';
-  [].forEach.call(document.querySelectorAll('#frm input,#frm select,#frm textarea,#fType button'),function(x){x.disabled=ro});
+  [].forEach.call(document.querySelectorAll('#frm input,#frm select,#frm textarea,#fType button,#fTon button'),function(x){x.disabled=ro});
   dlg.showModal();
   if(!ro&&!b)setTimeout(function(){document.getElementById('fClient').focus()},50);
 }
 function firstFree(date){var S=slots(),i;for(i=0;i<S.length;i++)if(recvCount(date,S[i])<state.cfg.cap)return S[i];return S[0]}
-document.getElementById('fType').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||t.disabled)return;setType(t.dataset.ty);liveCheck()});
+document.getElementById('fType').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||t.disabled)return;setType(t.dataset.ty);if(t.dataset.ty==='to'){var w=document.getElementById('fTonW');w.classList.add('pulse');setTimeout(function(){w.classList.remove('pulse')},700);var f=w.querySelector('button.on')||w.querySelector('button');if(f)f.focus({preventScroll:true})}liveCheck()});
 document.getElementById('fLen').addEventListener('change',liveCheck);
 ['fDate','fPost','fStart','fStatus'].forEach(function(id){document.getElementById(id).addEventListener('change',liveCheck)});
 (function(){
-  var o='<option value="">номер ТО</option>';for(var i=0;i<=10;i++)o+='<option value="'+i+'">ТО-'+i+'</option>';document.getElementById('fTon').innerHTML=o;
+  var o='';for(var i=0;i<=10;i++)o+='<button type="button" data-ton="'+i+'">ТО-'+i+'</button>';document.getElementById('fTon').innerHTML=o;
   document.getElementById('brandList').innerHTML=Object.keys(BRANDS).map(function(k){return '<option value="'+k+'">'}).join('');
 })();
+var tonVal='';
+function setTon(v){tonVal=v==null?'':String(v);[].forEach.call(document.querySelectorAll('#fTon button'),function(b){b.classList.toggle('on',b.dataset.ton===tonVal)})}
+document.getElementById('fTon').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||t.disabled)return;setTon(tonVal===t.dataset.ton?'':t.dataset.ton)});
+/* телефон: «+7» стоит отдельно, в поле только 10 цифр, форматируем «701 123 45 67» */
+function phLocal(v){var d=digits(v);if(d.length===11&&(d[0]==='7'||d[0]==='8'))d=d.slice(1);return d.slice(0,10)}
+function phFmt(d){return [d.slice(0,3),d.slice(3,6),d.slice(6,8),d.slice(8,10)].filter(Boolean).join(' ')}
+function setPhone(v){sv('fPhone',phFmt(phLocal(v)))}
+function getPhone(){var d=phLocal(fv('fPhone'));return d?'+7 '+phFmt(d):''}
+document.getElementById('fPhone').addEventListener('input',function(){var el=this,d=digits(el.value);if(d.length>10&&(d[0]==='7'||d[0]==='8'))d=d.slice(1);d=d.slice(0,10);var f=phFmt(d);if(el.value!==f){el.value=f}});
 function fixBrand(v){v=String(v||'').trim();return brandKey(v)||v}
 function fillModels(){var k=brandKey(fv('fBrand')),l=k?BRANDS[k]:[].concat.apply([],Object.keys(BRANDS).map(function(x){return BRANDS[x]}));document.getElementById('modelList').innerHTML=l.map(function(m){return '<option value="'+esc(m)+'">'}).join('')}
 document.getElementById('fBrand').addEventListener('input',fillModels);
@@ -723,7 +737,7 @@ function showHint(){
   h.style.display='flex';
   document.getElementById('hUse').onclick=function(){
     function put(id,v){if(v&&!fv(id).trim())sv(id,v)}
-    put('fClient',b.client);put('fPhone',b.phone);put('fPlate',b.plate);put('fBrand',bm.brand);put('fModel',bm.model);put('fYear',b.year);
+    put('fClient',b.client);if(b.phone&&!fv('fPhone').trim())setPhone(b.phone);put('fPlate',b.plate);put('fBrand',bm.brand);put('fModel',bm.model);put('fYear',b.year);
     fillModels();if(b.km)document.getElementById('fKm').placeholder='в прошлый раз '+fkm(b.km);
     h.style.display='none';
   };
@@ -731,7 +745,7 @@ function showHint(){
 }
 var hintT=null;['fPlate','fPhone'].forEach(function(id){document.getElementById(id).addEventListener('input',function(){clearTimeout(hintT);hintT=setTimeout(showHint,250)})});
 function collect(){
-  return{date:fv('fDate'),post:fv('fPost'),start:+fv('fStart'),len:+fv('fLen'),type:fType,client:fv('fClient').trim(),phone:fv('fPhone').trim(),brand:fixBrand(fv('fBrand')),model:fv('fModel').trim(),ton:fType==='to'?fv('fTon'):'',year:digits(fv('fYear')),km:digits(fv('fKm')).replace(/^0+(?=\d)/,''),plate:fv('fPlate').trim().toUpperCase().replace(/\s+/g,''),desc:fv('fDesc').trim(),status:fv('fStatus'),by:fv('fBy').trim()};
+  return{date:fv('fDate'),post:fv('fPost'),start:+fv('fStart'),len:+fv('fLen'),type:fType,client:fv('fClient').trim(),phone:getPhone(),brand:fixBrand(fv('fBrand')),model:fv('fModel').trim(),ton:fType==='to'?tonVal:'',year:digits(fv('fYear')),km:digits(fv('fKm')).replace(/^0+(?=\d)/,''),plate:fv('fPlate').trim().toUpperCase().replace(/\s+/g,''),desc:fv('fDesc').trim(),status:fv('fStatus'),by:fv('fBy').trim()};
 }
 function liveCheck(){if(!(canWrite&&KEY))return;document.getElementById('fErr').textContent=check(collect(),edId)}
 document.getElementById('fSave').onclick=function(){
@@ -739,6 +753,7 @@ document.getElementById('fSave').onclick=function(){
   var yNow=new Date().getFullYear();
   if(!err&&d.year&&(d.year.length!==4||+d.year<1950||+d.year>yNow+1))err='Год выпуска укажите четырьмя цифрами, от 1950 до '+(yNow+1);
   if(!err&&d.km&&+d.km>3000000)err='Проверьте пробег — слишком большое число';
+  var pd=phLocal(fv('fPhone'));if(!err&&pd&&pd.length!==10)err='В номере телефона после +7 должно быть 10 цифр';
   if(!err&&!d.client&&!d.phone&&!d.plate)err='Укажите хотя бы имя клиента, телефон или госномер';
   if(err){e.textContent=err;return}
   var id=edId||uid(),old=state.b[id]||{};
