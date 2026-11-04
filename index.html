@@ -175,9 +175,9 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <span><b style="background:var(--wk)">Р</b>Рабочий 9–18</span>
 <span><b style="background:var(--dt)">Д</b>Дежурство 9–19</span>
 <span><b style="border:1px dashed var(--bd)">В</b>Выходной</span>
-<span><b style="background:var(--tr)">У</b>Обучение на месте / вебинар</span>
+<span><b style="background:var(--tr)">ОБ</b>Обучение на месте / вебинар</span>
 <span><b style="background:var(--tk)">К</b>Командировка / обучение с выездом</span>
-<span><b style="background:var(--vc)">О</b>Отпуск</span>
+<span><b style="background:var(--vc)">ОТ</b>Отпуск</span>
 <span><b style="padding:0 2px;color:var(--danger)">П</b>Праздничный день РК (для 5/2)</span>
 <span><b style="background:var(--sk)">Б</b>Больничный</span>
 <span><b style="background:var(--ns)">БС</b>Без содержания</span>
@@ -233,7 +233,7 @@ try{sumHide=localStorage.getItem('shift-app-sum')==='1';covHide=localStorage.get
 try{var _f=localStorage.getItem('shift-app-dfil');if(_f==='all'||DEPTS.some(function(x){return x.k===_f}))dFil=_f;dCol=JSON.parse(localStorage.getItem('shift-app-dcol')||'{}')||{}}catch(e){}
 function dOpts(c){return DEPTS.map(function(x){return '<option value="'+x.k+'"'+(x.k===c?' selected':'')+'>'+x.n+'</option>'}).join('')}
 function val(i,day){var o=state.ov[ok(i,day)];return o!==undefined?o:base(i,day)}
-var L=['В','Р','Д','У','О','К','Б','БС'],T=['','9–18','9–19','9–18','','команд.','больн.','без сод.'],C=['','w','d','t','v','k','s','n'],H=[0,8,9,8,0,8,0,0];
+var L=['В','Р','Д','ОБ','ОТ','К','Б','БС'],T=['','9–18','9–19','9–18','','команд.','больн.','без сод.'],C=['','w','d','t','v','k','s','n'],H=[0,8,9,8,0,8,0,0];
 function render(){
   var P=period(),mo=mode==='month',days=[],i,j;document.body.classList.toggle('mo',mo);
   for(i=0;i<P.n;i++)days.push(P.s+i);
@@ -622,7 +622,7 @@ function exportXlsx(){
         var txt=null,fill=null,fc='FF000000',bold=false;
         if(v===0){txt=isH?'П':'В';fill='FF767171';fc='FFFFFFFF'}
         else if(v===2){txt='Д';fill='FFBFBFBF';fc='FFFFFFFF';dutyDep[D.k]=1}
-        else if(v!==1){txt=(v===4&&b0===0)?'В/О':L[v];bold=true;used[v]=1}
+        else if(v!==1){txt=(v===4&&b0===0)?'В/ОТ':L[v];bold=true;used[v]=1}
         var x=ws.getCell(r,C0+k);if(txt!==null)x.value=txt;x.font={name:'Calibri',size:11,bold:bold,color:{argb:fc}};x.alignment={horizontal:'center',vertical:'middle'};
         if(fill)x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill}};
         x.border={left:TH,right:TH,top:TH,bottom:bot};
