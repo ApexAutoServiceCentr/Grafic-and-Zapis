@@ -7,9 +7,9 @@
 <title>Запись на сервис</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--bd:#e2e5ea;--ac:#2563eb;--danger:#dc2626;--ok:#16a34a;--warn:#d97706;
---to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a5f3fc;--sh:#fde68a;--ml:#e2e8f0;--ak:#e9d5b7;--okbg:#86efac;--nobg:#fca5a5;--hd:#e9eef6;--hatch:rgba(220,38,38,.16);--col:#aab3c0;--tdb:#ccfbf1;--tdl:#14b8a6;--tdt:#0f5c55;--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--ak:#5c4527;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--tdb:#134e4a;--tdl:#2dd4bf;--tdt:#ccfbf1;--stx:#f3f4f6;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--ak:#5c4527;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--tdb:#134e4a;--tdl:#2dd4bf;--tdt:#ccfbf1;--stx:#f3f4f6;color-scheme:dark}
+--to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a5f3fc;--sh:#fde68a;--ml:#e2e8f0;--ak:#e9d5b7;--okbg:#86efac;--nobg:#fca5a5;--hd:#e9eef6;--hatch:rgba(220,38,38,.16);--col:#aab3c0;--rowh:rgba(37,99,235,.08);--tdb:#ccfbf1;--tdl:#14b8a6;--tdt:#0f5c55;--stx:#1b1f24;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--ak:#5c4527;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--rowh:rgba(110,160,255,.09);--tdb:#134e4a;--tdl:#2dd4bf;--tdt:#ccfbf1;--stx:#f3f4f6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--ak:#5c4527;--okbg:#166534;--nobg:#7f1d1d;--hd:#2c333f;--hatch:rgba(150,30,40,.42);--col:#4b5563;--rowh:rgba(110,160,255,.09);--tdb:#134e4a;--tdl:#2dd4bf;--tdt:#ccfbf1;--stx:#f3f4f6;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:none;margin:0;padding:16px max(12px,env(safe-area-inset-right,0px)) 32px max(12px,env(safe-area-inset-left,0px))}
@@ -63,7 +63,7 @@ html,body{overflow-anchor:none}
 .grid{display:grid;position:relative}
 .gh{position:sticky;top:0;background:var(--hd);z-index:3;padding:8px 6px;font-size:15px;font-weight:600;text-align:center;border-bottom:1px solid var(--col);border-left:2px solid var(--col)}
 .gh small{display:inline;margin-left:6px;font-weight:400;color:var(--mu);font-size:12px}
-.gh.tm{position:sticky;left:0;z-index:4;border-left:none;text-align:left}
+.gh.tm{position:sticky;left:0;z-index:4;border-left:none;text-align:center}
 .tc{position:sticky;left:0;background:var(--card);z-index:2;font-size:14px;padding:2px 6px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:4px}
 .tc.hr{font-weight:600}
 .tc .rc{font-size:12px;color:var(--mu)}
@@ -72,6 +72,8 @@ html,body{overflow-anchor:none}
 .sl{touch-action:manipulation;border:none;border-bottom:1px solid var(--bd);border-left:2px solid var(--col);border-radius:0;background:transparent;padding:0;min-height:0;cursor:pointer}
 .sl:hover{background:var(--bg)}
 .sl.full{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--bg) 6px 12px)}
+.sl.brk{cursor:not-allowed}
+.rh{background-image:linear-gradient(var(--rowh),var(--rowh))!important}
 body.ro .sl{cursor:default}
 body.ro .sl:hover{background:transparent}
 .bk{z-index:1;margin:2px 3px;border-radius:8px;padding:4px 8px;font-size:14px;line-height:1.3;overflow:hidden;cursor:pointer;color:var(--stx);border:1px solid transparent;text-align:left;display:block}
@@ -120,6 +122,9 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .fg .f.w2{grid-column:span 2}
 .fg label{font-size:12px;color:var(--mu)}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
+.tyw{position:relative}
+.cbl.tonl{right:auto;width:190px}
+#fType button[data-ty="to"]::after{content:' ▾';font-size:11px;opacity:.7}
 .seg button{padding:6px 10px;font-size:14px}
 .seg button.on.to{background:var(--to);border-color:var(--to);color:var(--stx)}
 .seg button.on.rm{background:var(--rm);border-color:var(--rm);color:var(--stx)}
@@ -226,7 +231,7 @@ body.ro .eo{display:none!important}
 <div class="f"><label for="fPost">Пост</label><select id="fPost"></select></div>
 <div class="f"><label for="fStart">Время приезда</label><select id="fStart"></select></div>
 <div class="f"><label for="fLen">Длительность работ</label><select id="fLen"></select></div>
-<div class="f w2"><label>Вид работ</label><div class="seg" id="fType"></div><div id="fTonW" style="display:none;margin-top:8px;max-width:260px"><label for="fTon" style="display:block;margin-bottom:4px">Номер ТО</label><select id="fTon"></select></div></div>
+<div class="f w2"><label>Вид работ</label><div class="tyw"><div class="seg" id="fType"></div><div class="cbl tonl" id="tonList" role="listbox" aria-label="Номер ТО" hidden></div></div><div id="fTonW" hidden><select id="fTon" aria-label="Номер ТО"></select></div></div>
 <div class="f"><label for="fClient">Клиент</label><input type="text" id="fClient" maxlength="60" placeholder="Иван Петров"></div>
 <div class="f"><label for="fPhone">Телефон</label><div class="ph"><span class="pre">+7</span><input type="tel" id="fPhone" inputmode="numeric" maxlength="18" placeholder="701 123 45 67"></div></div>
 <div class="f w2" id="fHint" style="display:none"></div>
@@ -543,7 +548,7 @@ function showLock(){
   };
   if(document.getElementById('ghLock'))renderGh(document.getElementById('ghLock'));
 }
-function openApp(){var was=appVisible();document.getElementById('lockBox').style.display='none';document.getElementById('app').style.display='';document.getElementById('top').style.display='';document.getElementById('menuB').style.display='';applyMenu();if(!was)needScroll=true}
+function openApp(){var was=appVisible();setTimeout(setSt,0);document.getElementById('lockBox').style.display='none';document.getElementById('app').style.display='';document.getElementById('top').style.display='';document.getElementById('menuB').style.display='';applyMenu();if(!was)needScroll=true}
 
 /* ---------- таблица дня ---------- */
 var cur=iso(new Date()),RS=null,RE=null,needScroll=true,nar=false,RH=36;
@@ -569,8 +574,8 @@ function dayHtml(D){
   S.forEach(function(m,r){
     var n=recvCount(D,m),full=n>=c.cap;
     var brk=isBrk(m);
-    h+='<div class="tc'+(m%60===0?' hr':'')+'" data-m="'+m+'" style="grid-row:'+(r+2)+';grid-column:1"><span>'+fm(m)+'</span>'+(brk?'<span class="rc lb" title="Обед: запись на это время закрыта">обед</span>':'<span class="rc'+(full?' full':'')+'" title="Приезжает клиентов / можно принять">'+n+'/'+c.cap+'</span>')+'</div>';
-    P.forEach(function(p,j){var a=AV[j],off=!a.free&&(!a.open||m>=a.end);h+='<button class="sl'+(off?' off':(full?' full':''))+(brk?' brk':'')+'" style="grid-row:'+(r+2)+';grid-column:'+(j+2)+'" data-p="'+p.id+'" data-t="'+m+'" aria-label="'+esc(p.name)+', '+fm(m)+'"></button>'});
+    h+='<div class="tc'+(m%60===0?' hr':'')+'" data-m="'+m+'" data-r="'+r+'" style="grid-row:'+(r+2)+';grid-column:1"><span>'+fm(m)+'</span>'+(brk?'<span class="rc lb" title="Обед: запись на это время закрыта">обед</span>':'<span class="rc'+(full?' full':'')+'" title="Приезжает клиентов / можно принять">'+n+'/'+c.cap+'</span>')+'</div>';
+    P.forEach(function(p,j){var a=AV[j],off=!a.free&&(!a.open||m>=a.end);h+='<button class="sl'+(off?' off':(full?' full':''))+(brk?' brk':'')+'" style="grid-row:'+(r+2)+';grid-column:'+(j+2)+'" data-p="'+p.id+'" data-t="'+m+'" data-r="'+r+'" aria-label="'+esc(p.name)+', '+fm(m)+'"></button>'});
   });
   var nOcc=0,nOff=0,nNw=0,tot=0;
   l.forEach(function(b){
@@ -649,7 +654,13 @@ function tipHtml(b){var r='<b>'+esc(tName(b))+' · '+fm(b.start)+'–'+fm(b.star
   if(b.by)r+='<div class="r" style="margin-top:4px">Записал: '+esc(b.by)+'</div>';
   return r}
 function tipMove(e){var w=tip.offsetWidth,h=tip.offsetHeight,x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-8)x=e.clientX-w-14;if(y+h>innerHeight-8)y=e.clientY-h-14;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px'}
-var gridEl=document.getElementById('days');
+var gridEl=document.getElementById('days'),rowHl=[];
+/* подсветка всей строки времени под курсором */
+function rowClear(){rowHl.forEach(function(x){x.classList.remove('rh')});rowHl=[]}
+gridEl.addEventListener('mouseover',function(e){var c=e.target.closest('.sl,.tc');if(!c||c.dataset.r===undefined){if(!e.target.closest('.bk'))rowClear();return}
+  var g=c.closest('.grid');if(rowHl.length&&rowHl[0].dataset.r===c.dataset.r&&rowHl[0].closest('.grid')===g)return;rowClear();
+  rowHl=[].slice.call(g.querySelectorAll('[data-r="'+c.dataset.r+'"]'));rowHl.forEach(function(x){x.classList.add('rh')})});
+gridEl.addEventListener('mouseleave',rowClear);
 gridEl.addEventListener('mouseover',function(e){var t=e.target.closest('.bk');if(!t||!state.b[t.dataset.id]){tip.style.display='none';return}tip.innerHTML=tipHtml(state.b[t.dataset.id]);tip.style.display='block';tipMove(e)});
 gridEl.addEventListener('mousemove',function(e){if(tip.style.display==='block')tipMove(e)});
 gridEl.addEventListener('mouseleave',function(){tip.style.display='none'});
@@ -658,11 +669,12 @@ function itemHtml(b){return '<div class="it" data-id="'+b.id+'"><b>'+esc(b.plate
 document.getElementById('days').addEventListener('click',function(e){
   var it=e.target.closest('.it');if(it){listClick(e);return}
   var t=e.target.closest('button');if(!t)return;
-  if(t.dataset.id){openForm(state.b[t.dataset.id]);return}
+  if(t.dataset.id)return;
   if(t.dataset.p){var o=document.querySelector('#days .sl.sel');if(o)o.classList.remove('sel');if(!t.classList.contains('off'))t.classList.add('sel')}
 });
 /* пустая клетка открывает новую запись двойным кликом (на телефоне — двойным касанием) */
 document.getElementById('days').addEventListener('dblclick',function(e){
+  var bk=e.target.closest('.bk');if(bk&&state.b[bk.dataset.id]){var sl0=window.getSelection&&getSelection();if(sl0&&sl0.removeAllRanges)sl0.removeAllRanges();openForm(state.b[bk.dataset.id]);return}
   var t=e.target.closest('button.sl');if(!t||t.classList.contains('off')||t.classList.contains('brk'))return;
   if(canWrite&&KEY){var sel=window.getSelection&&getSelection();if(sel&&sel.removeAllRanges)sel.removeAllRanges();openForm(null,{post:t.dataset.p,start:+t.dataset.t,date:t.closest('.day').dataset.d})}
 });
@@ -704,7 +716,7 @@ function fillSelects(start,len){
   document.getElementById('fLen').innerHTML=o;
   if(typeof syncSelects==='function')syncSelects();
 }
-function setType(t){fType=t;[].forEach.call(document.querySelectorAll('#fType button'),function(b){b.classList.toggle('on',b.dataset.ty===t)});var w=document.getElementById('fTonW');w.style.display=t==='to'?'':'none'}
+function setType(t){fType=t;[].forEach.call(document.querySelectorAll('#fType button'),function(b){b.classList.toggle('on',b.dataset.ty===t)});if(t!=='to'){tonClose()}tonLabel()}
 function fv(id){return document.getElementById(id).value}
 function sv(id,v){document.getElementById(id).value=v==null?'':v}
 function openForm(b,pre){
@@ -722,19 +734,33 @@ function openForm(b,pre){
   var del=document.getElementById('fDel');del.textContent='Удалить (отмена)';del.className='eo';del.style.display=b?'':'none';
   document.getElementById('fMeta').textContent=b&&b.u?'Последнее изменение: '+new Date(b.u).toLocaleString('ru-RU')+(b.ub?' · '+b.ub:''):'';
   [].forEach.call(document.querySelectorAll('#frm input,#frm select,#frm textarea,#fType button,#frm .cbb'),function(x){x.disabled=ro});
-  syncSelects();
+  syncSelects();tonClose();
   dlg.showModal();
   if(!ro&&!b)setTimeout(function(){document.getElementById('fClient').focus()},50);
 }
 function firstFree(date){var S=slots(),i;for(i=0;i<S.length;i++)if(!isBrk(S[i])&&recvCount(date,S[i])<state.cfg.cap)return S[i];return S[0]}
-document.getElementById('fType').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||t.disabled)return;setType(t.dataset.ty);if(t.dataset.ty==='to'&&!fv('fTon'))setTimeout(function(){openSel('fTon')},0);liveCheck()});
+document.getElementById('fType').addEventListener('click',function(e){var t=e.target.closest('button');if(!t||t.disabled)return;var wasTo=fType==='to';setType(t.dataset.ty);if(t.dataset.ty==='to'){var l=document.getElementById('tonList');if(wasTo&&!l.hidden)tonClose();else tonOpen()}liveCheck()});
 document.getElementById('fLen').addEventListener('change',liveCheck);
 ['fDate','fPost','fStart','fStatus'].forEach(function(id){document.getElementById(id).addEventListener('change',liveCheck)});
 (function(){
   var o='<option value="">Выберите номер ТО</option>';for(var i=0;i<=10;i++)o+='<option value="'+i+'">ТО-'+i+'</option>';document.getElementById('fTon').innerHTML=o;
   document.getElementById('brandList').innerHTML=Object.keys(BRANDS).map(function(k){return '<option value="'+k+'">'}).join('');
 })();
-function setTon(v){sv('fTon',v==null?'':String(v));syncSelects()}
+function setTon(v){sv('fTon',v==null?'':String(v));tonLabel()}
+function tonLabel(){var b=document.querySelector('#fType button[data-ty="to"]');if(b)b.textContent=fType==='to'&&fv('fTon')!==''?'ТО-'+fv('fTon'):'ТО'}
+/* список номеров ТО открывается поверх кнопок работ, под кнопкой «ТО» */
+var tonAct=-1;
+function tonOpen(){var b=document.querySelector('#fType button[data-ty="to"]'),l=document.getElementById('tonList'),cur=fv('fTon'),h='';
+  for(var i=0;i<=10;i++)h+='<div role="option" data-v="'+i+'" class="'+(String(i)===cur?'cur':'')+'">ТО-'+i+'</div>';
+  h+='<div role="option" data-v="" class="'+(cur===''?'cur':'')+'" style="color:var(--mu)">Без номера</div>';
+  l.innerHTML=h;l.style.left=b.offsetLeft+'px';l.style.top=(b.offsetTop+b.offsetHeight+3)+'px';l.hidden=false;tonAct=-1;l.scrollTop=0;var c=cur!==''&&l.querySelector('.cur');if(c)c.scrollIntoView({block:'nearest'})}
+function tonClose(){document.getElementById('tonList').hidden=true}
+document.getElementById('tonList').addEventListener('mousedown',function(e){var d=e.target.closest('div[data-v]');if(!d)return;e.preventDefault();setTon(d.dataset.v);tonClose();liveCheck()});
+document.addEventListener('mousedown',function(e){if(!e.target.closest('#tonList')&&!e.target.closest('#fType button[data-ty="to"]'))tonClose()});
+document.getElementById('fType').addEventListener('keydown',function(e){var l=document.getElementById('tonList');if(l.hidden)return;var n=l.children.length;
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();tonAct=(tonAct+(e.key==='ArrowDown'?1:-1)+n)%n;[].forEach.call(l.children,function(c,i){c.classList.toggle('act',i===tonAct)});l.children[tonAct].scrollIntoView({block:'nearest'})}
+  else if(e.key==='Enter'&&tonAct>=0){e.preventDefault();setTon(l.children[tonAct].dataset.v);tonClose()}
+  else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();tonClose()}});
 /* телефон: «+7» стоит отдельно, в поле только 10 цифр, форматируем «701 123 45 67» */
 function phLocal(v){var d=digits(v);if(d.length===11&&(d[0]==='7'||d[0]==='8'))d=d.slice(1);return d.slice(0,10)}
 function phFmt(d){return [d.slice(0,3),d.slice(3,6),d.slice(6,8),d.slice(8,10)].filter(Boolean).join(' ')}
@@ -774,7 +800,7 @@ function enhanceSelect(id){
 }
 function syncSelects(){for(var k in SELS)SELS[k].sync()}
 function openSel(id){if(SELS[id])SELS[id].open()}
-['fPost','fStart','fLen','fTon','fStatus'].forEach(enhanceSelect);
+['fPost','fStart','fLen','fStatus'].forEach(enhanceSelect);
 function fixBrand(v){v=String(v||'').trim();return brandKey(v)||v}
 function fillModels(){var k=brandKey(fv('fBrand')),l=k?BRANDS[k]:[].concat.apply([],Object.keys(BRANDS).map(function(x){return BRANDS[x]}));document.getElementById('modelList').innerHTML=l.map(function(m){return '<option value="'+esc(m)+'">'}).join('')}
 /* выпадающий список: стрелка или клик по пустому полю показывает все варианты, ввод текста — фильтрует */
