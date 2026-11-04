@@ -632,9 +632,9 @@ function exportXlsx(){
   });
   r++;
   /* ознакомлен */
-  r+=1;var slots=n>=28?[4,12,18,24]:[4,10],c0=r;
+  r+=1;var slots=n>=28?[4,11,18,25]:[4],span=n>=28?6:7,stp=n>=28?4:2,c0=r;
   var lb=ws.getCell(r,3);lb.value='Ознакомлен:';lb.font={name:'Calibri',size:14,bold:true};lb.alignment={horizontal:'right',vertical:'middle'};
-  state.w.forEach(function(w,k){var rr=c0+Math.floor(k/slots.length)*4,x=ws.getCell(rr,slots[k%slots.length]);x.value=w.name;x.font={name:'Calibri',size:12}});
+  state.w.forEach(function(w,k){var rr=c0+Math.floor(k/slots.length)*stp,sc=slots[k%slots.length],x=ws.getCell(rr,sc),j,nc=Math.max(1,Math.ceil((w.name.length*0.95+0.5)/5.7));x.value=w.name;x.font={name:'Calibri',size:12};x.alignment={vertical:'bottom'};for(j=nc;j<span;j++)ws.getCell(rr,sc+j).border={bottom:{style:'thin'}};ws.getRow(rr).height=20});
   var nm='grafik_'+a0.getUTCFullYear()+'-'+('0'+(a0.getUTCMonth()+1)).slice(-2)+(mo?'':'-'+('0'+a0.getUTCDate()).slice(-2)+'_week')+'.xlsx';
   return wb.xlsx.writeBuffer().then(function(bl){
     var u=URL.createObjectURL(bl),el=document.createElement('a');
