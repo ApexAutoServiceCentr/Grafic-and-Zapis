@@ -25,7 +25,7 @@ h1{font-size:20px;margin:0}
 #top .soon{margin-bottom:8px}
 @media (max-width:760px),(max-height:620px){#top{position:static}}
 .ttlw{position:relative}
-.menu{overflow-y:auto;overscroll-behavior:contain;padding:4px 0 10px;border-top:1px solid var(--bd)}
+.menu{position:absolute;left:0;right:0;top:100%;z-index:40;overflow-y:auto;overscroll-behavior:contain;background:var(--bg);padding:8px 0 10px;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
 .menu[hidden]{display:none}
 .pwm{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
 .pwm[hidden]{display:none}
@@ -126,7 +126,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <body>
 <main>
 <div id="top">
-<div class="ttlw"><div class="ttl"><h1>График смен</h1><button id="menuB" class="eo eg" aria-expanded="false" aria-haspopup="true">☰ Меню ▸</button><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span>
+<div class="ttlw"><div class="ttl"><h1>График смен</h1><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span><button id="menuB" class="eo eg" aria-expanded="false" aria-haspopup="true">☰ Меню ▸</button>
 <button id="m-toggle">Вид: неделя ⇄</button>
 <button id="prev" aria-label="Назад">‹</button>
 <div class="rng" id="rng"></div>
@@ -646,7 +646,7 @@ function keepTbl(fn){
 function showOnly(k){keepTbl(function(){setCol=k!=='s';collapsed=k!=='b';ghCol=k!=='g';sdOpen={};applyUI();applySet();applyGh();renderSet();fitMenu()})}
 function collapseAll(){showOnly('')}
 var menuB=document.getElementById('menuB'),menuP=document.getElementById('menuPanel');
-function fitMenu(){var h=document.getElementById('top');if(menuP.hidden)return;menuP.style.maxHeight='none';menuP.style.maxHeight=Math.max(160,innerHeight-(h.offsetHeight-menuP.offsetHeight)-24)+'px'}
+function fitMenu(){if(menuP.hidden)return;menuP.style.maxHeight='none';menuP.style.maxHeight=Math.max(160,innerHeight-menuP.getBoundingClientRect().top-12)+'px'}
 addEventListener('resize',fitMenu);
 menuP.addEventListener('click',function(e){var t=e.target;if(t===menuP||t.classList.contains('mrow')||t.classList.contains('mi'))collapseAll()});
 menuP.addEventListener('change',function(){fitMenu()});
