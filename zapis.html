@@ -63,7 +63,10 @@ html,body{overflow-anchor:none}
 .grid{display:grid;position:relative}
 .gh{position:sticky;top:0;background:var(--hd);z-index:3;padding:8px 6px;font-size:15px;font-weight:600;text-align:center;border-bottom:1px solid var(--col);border-left:2px solid var(--col)}
 .gh small{display:inline;margin-left:6px;font-weight:400;color:var(--mu);font-size:12px}
-.gh.tm{position:sticky;left:0;z-index:4;border-left:none;text-align:center}
+.gh.tm{position:sticky;left:0;z-index:4;border-left:none;text-align:center;display:flex;align-items:center;justify-content:center}
+.req{color:var(--danger);font-weight:700;margin-left:3px}
+.miss,.miss.ph,.cb.miss input{border-color:var(--danger)!important;box-shadow:0 0 0 1px var(--danger)}
+.reqn{font-size:12px;color:var(--mu);margin-top:6px}
 .tc{position:sticky;left:0;background:var(--card);z-index:2;font-size:14px;padding:2px 6px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:4px}
 .tc.hr{font-weight:600}
 .tc .rc{font-size:12px;color:var(--mu)}
@@ -231,21 +234,22 @@ body.ro .eo{display:none!important}
 <div class="f"><label for="fDate">Дата</label><input type="date" id="fDate" required></div>
 <div class="f"><label for="fPost">Пост</label><select id="fPost"></select></div>
 <div class="f"><label for="fStart">Время приезда</label><select id="fStart"></select></div>
-<div class="f"><label for="fLen">Длительность работ</label><select id="fLen"></select></div>
-<div class="f w2"><label>Вид работ</label><div class="tyw"><div class="seg" id="fType"></div><div class="cbl tonl" id="tonList" role="listbox" aria-label="Номер ТО" hidden></div></div><div id="fTonW" hidden><select id="fTon" aria-label="Номер ТО"></select></div></div>
-<div class="f"><label for="fClient">Клиент</label><input type="text" id="fClient" maxlength="60" placeholder="Иван Петров"></div>
-<div class="f"><label for="fPhone">Телефон</label><div class="ph"><span class="pre">+7</span><input type="tel" id="fPhone" inputmode="numeric" maxlength="18" placeholder="701 123 45 67"></div></div>
+<div class="f"><label for="fLen">Длительность работ<span class="req" aria-hidden="true">*</span></label><select id="fLen"></select></div>
+<div class="f w2"><label>Вид работ<span class="req" aria-hidden="true">*</span></label><div class="tyw"><div class="seg" id="fType"></div><div class="cbl tonl" id="tonList" role="listbox" aria-label="Номер ТО" hidden></div></div><div id="fTonW" hidden><select id="fTon" aria-label="Номер ТО"></select></div></div>
+<div class="f"><label for="fClient">Клиент<span class="req" aria-hidden="true">*</span></label><input type="text" id="fClient" maxlength="60" placeholder="Иван Петров"></div>
+<div class="f"><label for="fPhone">Телефон<span class="req" aria-hidden="true">*</span></label><div class="ph"><span class="pre">+7</span><input type="tel" id="fPhone" inputmode="numeric" maxlength="18" placeholder="701 123 45 67"></div></div>
 <div class="f w2" id="fHint" style="display:none"></div>
-<div class="f"><label for="fBrand">Марка</label><div class="cb"><input type="text" id="fBrand" maxlength="30" placeholder="Hyundai" autocomplete="off" role="combobox" aria-expanded="false"><button type="button" class="cbb" tabindex="-1" aria-label="Показать список марок">▾</button><div class="cbl" role="listbox" hidden></div></div></div>
-<div class="f"><label for="fModel">Модель</label><div class="cb"><input type="text" id="fModel" maxlength="40" placeholder="Tucson" autocomplete="off" role="combobox" aria-expanded="false"><button type="button" class="cbb" tabindex="-1" aria-label="Показать список моделей">▾</button><div class="cbl" role="listbox" hidden></div></div></div>
+<div class="f"><label for="fBrand">Марка<span class="req" aria-hidden="true">*</span></label><div class="cb"><input type="text" id="fBrand" maxlength="30" placeholder="Hyundai" autocomplete="off" role="combobox" aria-expanded="false"><button type="button" class="cbb" tabindex="-1" aria-label="Показать список марок">▾</button><div class="cbl" role="listbox" hidden></div></div></div>
+<div class="f"><label for="fModel">Модель<span class="req" aria-hidden="true">*</span></label><div class="cb"><input type="text" id="fModel" maxlength="40" placeholder="Tucson" autocomplete="off" role="combobox" aria-expanded="false"><button type="button" class="cbb" tabindex="-1" aria-label="Показать список моделей">▾</button><div class="cbl" role="listbox" hidden></div></div></div>
 <datalist id="brandList"></datalist><datalist id="modelList"></datalist>
-<div class="f"><label for="fYear">Год выпуска</label><input type="text" id="fYear" inputmode="numeric" maxlength="4" placeholder="2021"></div>
-<div class="f"><label for="fPlate">Госномер</label><input type="text" id="fPlate" maxlength="15" placeholder="123ABC14"></div>
+<div class="f"><label for="fYear">Год выпуска<span class="req" aria-hidden="true">*</span></label><input type="text" id="fYear" inputmode="numeric" maxlength="4" placeholder="2021"></div>
+<div class="f"><label for="fPlate">Госномер<span class="req" aria-hidden="true">*</span></label><input type="text" id="fPlate" maxlength="15" placeholder="123ABC14"></div>
 <div class="f"><label for="fKm">Пробег, км</label><input type="text" id="fKm" inputmode="numeric" maxlength="11" placeholder="85 000"></div>
 <div class="f w2"><label for="fDesc">Комментарий: что нужно сделать, жалоба клиента</label><textarea id="fDesc" maxlength="1000"></textarea></div>
 <div class="f"><label for="fStatus">Статус</label><select id="fStatus"></select></div>
 <div class="f"><label for="fBy">Кто записал</label><input type="text" id="fBy" maxlength="40" placeholder="Имя сотрудника"></div>
 </div>
+<div class="reqn eo"><span class="req">*</span> обязательные поля. Госномер можно указать не полностью.</div>
 <div class="err" id="fErr" role="alert" style="margin-top:8px"></div>
 <div class="acts"><button type="button" id="fDel" class="eo">Удалить</button><span class="sp"></span><button type="button" id="fCancel">Закрыть</button><button type="button" id="fSave" class="pri eo">Сохранить</button></div>
 <div class="sub" id="fMeta" style="margin:8px 0 0"></div>
@@ -737,7 +741,7 @@ function openForm(b,pre){
   var del=document.getElementById('fDel');del.textContent='Удалить (отмена)';del.className='eo';del.style.display=b?'':'none';
   document.getElementById('fMeta').textContent=b&&b.u?'Последнее изменение: '+new Date(b.u).toLocaleString('ru-RU')+(b.ub?' · '+b.ub:''):'';
   [].forEach.call(document.querySelectorAll('#frm input,#frm select,#frm textarea,#fType button,#frm .cbb'),function(x){x.disabled=ro});
-  syncSelects();tonClose();
+  syncSelects();tonClose();clearMiss();
   dlg.showModal();
   if(!ro&&!b)setTimeout(function(){document.getElementById('fClient').focus()},50);
 }
@@ -814,7 +818,7 @@ function combo(id,opts,onPick){
     list.innerHTML=shown.map(function(o,i){return '<div role="option" data-i="'+i+'" class="'+(o.toLowerCase()===inp.value.trim().toLowerCase()?'cur':'')+'">'+esc(o)+'</div>'}).join('');
     list.hidden=false;inp.setAttribute('aria-expanded','true');act=-1;var c=list.querySelector('.cur');if(c)c.scrollIntoView({block:'nearest'})}
   function close(){list.hidden=true;inp.setAttribute('aria-expanded','false')}
-  function pick(i){inp.value=shown[i];close();if(onPick)onPick()}
+  function pick(i){inp.value=shown[i];close();if(onPick)onPick();inp.dispatchEvent(new Event('change'))}
   btn.addEventListener('mousedown',function(e){e.preventDefault();if(inp.disabled)return;if(list.hidden){inp.focus();open(false)}else close()});
   inp.addEventListener('click',function(){if(!inp.disabled&&list.hidden)open(false)});
   inp.addEventListener('input',function(){open(true)});
@@ -854,7 +858,7 @@ function showHint(){
     function put(id,v){if(v&&!fv(id).trim())sv(id,v)}
     put('fClient',b.client);if(b.phone&&!fv('fPhone').trim())setPhone(b.phone);put('fPlate',b.plate);put('fBrand',bm.brand);put('fModel',bm.model);put('fYear',b.year);
     fillModels();if(b.km)document.getElementById('fKm').placeholder='в прошлый раз '+fkm(b.km);
-    h.style.display='none';
+    h.style.display='none';clearMiss();
   };
   document.getElementById('hNo').onclick=function(){h.style.display='none'};
 }
@@ -863,13 +867,22 @@ function collect(){
   return{date:fv('fDate'),post:fv('fPost'),start:+fv('fStart'),len:+fv('fLen'),type:fType,client:fv('fClient').trim(),phone:getPhone(),brand:fixBrand(fv('fBrand')),model:fv('fModel').trim(),ton:fType==='to'?fv('fTon'):'',year:digits(fv('fYear')),km:digits(fv('fKm')).replace(/^0+(?=\d)/,''),plate:fv('fPlate').trim().toUpperCase().replace(/\s+/g,''),desc:fv('fDesc').trim(),status:fv('fStatus'),by:fv('fBy').trim()};
 }
 function liveCheck(){if(!(canWrite&&KEY))return;document.getElementById('fErr').textContent=check(collect(),edId)}
+/* подсветка незаполненных обязательных полей */
+function missEl(id){var el=document.getElementById(id);return id==='fPhone'?el.closest('.ph'):(el.closest('.cb')||el)}
+function markMiss(id){missEl(id).classList.add('miss')}
+function clearMiss(){[].forEach.call(document.querySelectorAll('#frm .miss'),function(x){x.classList.remove('miss')})}
+['fClient','fPhone','fBrand','fModel','fYear','fPlate'].forEach(function(id){['input','change'].forEach(function(ev){document.getElementById(id).addEventListener(ev,function(){if(document.getElementById(id).value.trim()){missEl(id).classList.remove('miss');missMsg()}})})});
+var MISSN={fClient:'клиент',fPhone:'телефон',fBrand:'марку',fModel:'модель',fYear:'год выпуска',fPlate:'госномер'};
+function missMsg(){var e=document.getElementById('fErr');if(e.textContent.indexOf('Заполните:')!==0)return;var left=Object.keys(MISSN).filter(function(id){return missEl(id).classList.contains('miss')});e.textContent=left.length?'Заполните: '+left.map(function(id){return MISSN[id]}).join(', '):''}
 document.getElementById('fSave').onclick=function(){
   var d=collect(),err=check(d,edId),e=document.getElementById('fErr');
   var yNow=new Date().getFullYear();
   if(!err&&d.year&&(d.year.length!==4||+d.year<1950||+d.year>yNow+1))err='Год выпуска укажите четырьмя цифрами, от 1950 до '+(yNow+1);
   if(!err&&d.km&&+d.km>3000000)err='Проверьте пробег — слишком большое число';
   var pd=phLocal(fv('fPhone'));if(!err&&pd&&pd.length!==10)err='В номере телефона после +7 должно быть 10 цифр';
-  if(!err&&!d.client&&!d.phone&&!d.plate)err='Укажите хотя бы имя клиента, телефон или госномер';
+  clearMiss();
+  if(!err){var need=[['fClient','клиент',d.client],['fPhone','телефон',d.phone],['fBrand','марку',d.brand],['fModel','модель',d.model],['fYear','год выпуска',d.year],['fPlate','госномер',d.plate]].filter(function(x){return !x[2]});
+    if(need.length){err='Заполните: '+need.map(function(x){return x[1]}).join(', ');need.forEach(function(x){markMiss(x[0])});var f=document.getElementById(need[0][0]);if(f)f.focus()}}
   if(err){e.textContent=err;return}
   var id=edId||uid(),old=state.b[id]||{};
   d.car=[d.brand,d.model].filter(Boolean).join(' ');
