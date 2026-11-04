@@ -592,10 +592,9 @@ function exportXlsx(){
   var a0=dateOf(days[0]),a1=dateOf(days[n-1]),mo=mode==='month';
   var WD=['пн','вт','ср','чт','пт','сб','вс'],XPAL=['5FC9C1','FF9E80','C5E1A5','B39DDB','F48FB1','80DEEA','E6EE9C','BCAAA4'];
   var wb=new MiniX(),ws=wb.addWorksheet('График');
-  var C0=4,CS=C0+n,LAST=CS+5,T0=3;
+  var C0=4,CS=C0+n,LAST=CS-1,T0=3;
   ws.getColumn(1).width=.5;ws.getColumn(2).width=4;ws.getColumn(3).width=22;
   for(i=0;i<n;i++)ws.getColumn(C0+i).width=5.7;
-  for(i=0;i<6;i++)ws.getColumn(CS+i).width=i===3||i===4||i===1?14:11;
   var TH={style:'thin'},TK={style:'thick'};
   function bd(c,o){c.border=o}
   var title=mo?'График на '+MF[a0.getUTCMonth()].toLowerCase()+' '+a0.getUTCFullYear()+' год':'График на '+a0.getUTCDate()+' '+MN[a0.getUTCMonth()]+' – '+a1.getUTCDate()+' '+MN[a1.getUTCMonth()]+' '+a1.getUTCFullYear()+' год';
@@ -606,7 +605,6 @@ function exportXlsx(){
   ws.mergeCells(r1,2,r2,2);ws.mergeCells(r1,3,r2,3);
   hdr(r1,2,'№',{horizontal:'center',vertical:'middle'});hdr(r2,2,null);hdr(r1,3,'ФИО',{horizontal:'center',vertical:'middle'});hdr(r2,3,null);
   days.forEach(function(d,k){var dt=dateOf(d);hdr(r1,C0+k,dt.getUTCDate(),{horizontal:'right'});hdr(r2,C0+k,WD[(dt.getUTCDay()+6)%7],{horizontal:'right',vertical:'middle'})});
-  ['Рабочие','Праздничные','Отпуск','Командировка','Без содержания','Больничный'].forEach(function(t,k){ws.mergeCells(r1,CS+k,r2,CS+k);hdr(r1,CS+k,t,{horizontal:'left',vertical:'middle',wrapText:true});hdr(r2,CS+k,null)});
   ws.getRow(r2).height=21.75;
   /* строки */
   var r=r2+1,num=0,dutyDep={},used={};
@@ -629,20 +627,10 @@ function exportXlsx(){
         if(fill)x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill}};
         x.border={left:TH,right:TH,top:TH,bottom:bot};
       });
-      [work,hol,cnt[4],cnt[5],cnt[7],cnt[6]].forEach(function(v,k){var x=ws.getCell(r,CS+k);x.value=v||null;x.font={name:'Calibri',size:11};x.alignment={horizontal:'center',vertical:'middle'};x.border={left:k===0?TK:TH,right:k===5?TK:TH,top:TH,bottom:bot}});
       ws.getRow(r).height=16.2;r++;
     });
   });
-  /* легенда */
   r++;
-  function leg(rr,t,fill,fc){var x=ws.getCell(rr,3);x.value=t;x.font={name:'Calibri',size:11,color:{argb:fc}};x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill}};x.alignment={horizontal:'left',vertical:'middle'}}
-  leg(r,'Выходной','FF767171','FFFFFFFF');r+=2;
-  leg(r,'Дежурный','FFD9D9D9','FFFFFFFF');
-  var dd=DEPTS.filter(function(D){return dutyDep[D.k]}).map(function(D){return '09:00 - 19:00 '+D.n});
-  ws.getCell(r,4).value='   -   '+dd.join(', ');ws.getCell(r,4).font={name:'Calibri',size:11};r+=1;
-  var NM={3:'У — обучение',4:'О — отпуск, В/О — отпуск в выходной',5:'К — командировка',6:'Б — больничный',7:'БС — без содержания'},ex=[];
-  Object.keys(NM).forEach(function(k){if(used[k])ex.push(NM[k])});
-  if(ex.length){r++;ws.getCell(r,4).value=ex.join(';  ');ws.getCell(r,4).font={name:'Calibri',size:11};r++}
   /* ознакомлен */
   r+=1;var slots=n>=28?[4,12,18,24]:[4,10],c0=r;
   var lb=ws.getCell(r,3);lb.value='Ознакомлен:';lb.font={name:'Calibri',size:14,bold:true};lb.alignment={horizontal:'right',vertical:'middle'};
