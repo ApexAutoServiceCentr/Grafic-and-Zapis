@@ -164,7 +164,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 </div>
 <div class="sub" style="margin-top:8px">Просмотр графика работает без токена. Чтобы править, создайте токен на GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens. Выберите доступ только к этому репозиторию и право Repository permissions → Contents: Read and write. Токен сохраняется только в этом браузере и отправляется только на api.github.com. Данные графика лежат в файле data.json в репозитории; страница и репозиторий публичны, поэтому имена сотрудников видны всем, у кого есть адрес.</div>
 </div>
-<div class="mi" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:8px"><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом для Excel (CSV) по всем отделам">Скачать график ⭳</button></div>
+<div class="mi" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:8px"><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом Excel (.xlsx) по всем отделам">Скачать график ⭳</button></div>
 </div>
 </div>
 <div id="bCur" class="sub eo" style="margin:-4px 0 8px"></div>
@@ -227,7 +227,7 @@ function isHol(n){return !!kzYear(dateOf(n).getUTCFullYear())[n]}
 function isCal(w){return w.type==='5/2'&&w.cal!==false}
 function base(i,day){var w=state.w[i],t=TY[w.type]||TY['4/2'],c=t[0]+t[1],n=((day-sd(w))%c+c)%c;if(isCal(w)){var wd=dateOf(day).getUTCDay();return wd>0&&wd<6&&!isHol(day)?1:0}return n<t[0]?((w.duty||[]).indexOf(n+1)>=0&&w.type!=='2/2'?2:1):0}
 function ok(i,d){return state.w[i].id+'|'+d}
-var DEPTS=[{k:'sc',n:'Сервисные консультанты'},{k:'el',n:'Электрики'},{k:'me',n:'Механики'},{k:'wh',n:'Склад'},{k:'cw',n:'Мойка'},{k:'of',n:'Офис'}];
+var DEPTS=[{k:'sc',n:'Сервисные консультанты',c:'92D050'},{k:'el',n:'Электрики',c:'FFC000'},{k:'me',n:'Механики',c:'FFFF00'},{k:'wh',n:'Склад',c:'9DC3E6'},{k:'cw',n:'Мойка',c:'D5B8EA'},{k:'of',n:'Офис',c:'F4B6C2'}];
 var dFil='all',dCol={},sumHide=false,covHide=false;
 try{sumHide=localStorage.getItem('shift-app-sum')==='1';covHide=localStorage.getItem('shift-app-cov')==='1'}catch(e){}
 try{var _f=localStorage.getItem('shift-app-dfil');if(_f==='all'||DEPTS.some(function(x){return x.k===_f}))dFil=_f;dCol=JSON.parse(localStorage.getItem('shift-app-dcol')||'{}')||{}}catch(e){}
@@ -530,7 +530,130 @@ function exportCsv(){
   var bl=new Blob([txt],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(bl),el=document.createElement('a');
   el.href=u;el.download=nm;document.body.appendChild(el);el.click();document.body.removeChild(el);setTimeout(function(){URL.revokeObjectURL(u)},2000);
 }
-document.getElementById('expB').onclick=exportCsv;
+
+
+/* Мини-генератор .xlsx без внешних библиотек */
+function MiniX(){
+  var self=this,sheet={cols:{},rows:{},cells:{},merges:[],name:'График'};
+  function addr(r,c){var s='',n=c;while(n>0){var m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26)}return s+r}
+  function esc2(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  this.addWorksheet=function(name){sheet.name=name;return{
+    getColumn:function(i){return sheet.cols[i]||(sheet.cols[i]={})},
+    getRow:function(i){return sheet.rows[i]||(sheet.rows[i]={})},
+    mergeCells:function(r1,c1,r2,c2){sheet.merges.push([r1,c1,r2,c2])},
+    getCell:function(r,c){var k=r+'_'+c;return sheet.cells[k]||(sheet.cells[k]={r:r,c:c})}}};
+  var crcT=(function(){var t=[],n,k,c;for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+  function crc(u){var c=0xFFFFFFFF,i;for(i=0;i<u.length;i++)c=crcT[(c^u[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
+  function zip(files){
+    var enc=new TextEncoder(),out=[],cen=[],off=0;
+    function u16(v){return[v&255,(v>>>8)&255]}function u32(v){return[v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255]}
+    files.forEach(function(f){var nb=enc.encode(f[0]),d=enc.encode(f[1]),cr=crc(d);
+      var h=[].concat(u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(cr),u32(d.length),u32(d.length),u16(nb.length),u16(0));
+      out.push(new Uint8Array(h),nb,d);
+      cen.push([].concat(u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(cr),u32(d.length),u32(d.length),u16(nb.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(off)),Array.prototype.slice.call(nb));
+      off+=h.length+nb.length+d.length});
+    var cl=0;cen.forEach(function(c){out.push(new Uint8Array(c));cl+=c.length});
+    out.push(new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cl),u32(off),u16(0))));
+    return new Blob(out,{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  }
+  this.xlsx={writeBuffer:function(){
+    var fonts=[],fills=['<fill><patternFill patternType="none"/></fill>','<fill><patternFill patternType="gray125"/></fill>'],borders=[],xfs=[],fk={},flk={},bk={},xk={};
+    function font(f){f=f||{};var x='<font>'+(f.bold?'<b/>':'')+'<sz val="'+(f.size||11)+'"/>'+(f.color?'<color rgb="'+f.color.argb+'"/>':'<color rgb="FF000000"/>')+'<name val="Calibri"/><family val="2"/></font>';if(fk[x]===undefined){fk[x]=fonts.length;fonts.push(x)}return fk[x]}
+    function fill(f){if(!f)return 0;var x='<fill><patternFill patternType="solid"><fgColor rgb="'+f.fgColor.argb+'"/><bgColor indexed="64"/></patternFill></fill>';if(flk[x]===undefined){flk[x]=fills.length;fills.push(x)}return flk[x]}
+    function bd(b){b=b||{};function e(n,v){return v?'<'+n+' style="'+v.style+'"><color auto="1"/></'+n+'>':'<'+n+'/>'}var x='<border>'+e('left',b.left)+e('right',b.right)+e('top',b.top)+e('bottom',b.bottom)+'<diagonal/></border>';if(bk[x]===undefined){bk[x]=borders.length;borders.push(x)}return bk[x]}
+    function xf(c){var a=c.alignment||{},fi=font(c.font),fl=fill(c.fill),bo=bd(c.border);
+      var x='<xf numFmtId="0" fontId="'+fi+'" fillId="'+fl+'" borderId="'+bo+'" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment'+(a.horizontal?' horizontal="'+a.horizontal+'"':'')+(a.vertical?' vertical="'+(a.vertical==='middle'?'center':a.vertical)+'"':'')+(a.wrapText?' wrapText="1"':'')+'/></xf>';
+      if(xk[x]===undefined){xk[x]=xfs.length;xfs.push(x)}return xk[x]}
+    font({});bd({});xf({});
+    var rows={},maxC=1,maxR=1;
+    Object.keys(sheet.cells).forEach(function(k){var c=sheet.cells[k];(rows[c.r]=rows[c.r]||[]).push(c);if(c.c>maxC)maxC=c.c;if(c.r>maxR)maxR=c.r});
+    var rx='';
+    Object.keys(rows).map(Number).sort(function(a,b){return a-b}).forEach(function(r){
+      var rr=sheet.rows[r]||{};rx+='<row r="'+r+'"'+(rr.height?' ht="'+rr.height+'" customHeight="1"':'')+'>';
+      rows[r].sort(function(a,b){return a.c-b.c}).forEach(function(c){var s=xf(c),v=c.value,ad=addr(r,c.c);
+        if(v===null||v===undefined)rx+='<c r="'+ad+'" s="'+s+'"/>';
+        else if(typeof v==='number')rx+='<c r="'+ad+'" s="'+s+'"><v>'+v+'</v></c>';
+        else rx+='<c r="'+ad+'" s="'+s+'" t="inlineStr"><is><t xml:space="preserve">'+esc2(v)+'</t></is></c>'});
+      rx+='</row>'});
+    var cx='<cols>';Object.keys(sheet.cols).map(Number).sort(function(a,b){return a-b}).forEach(function(i){var w=sheet.cols[i].width;if(w)cx+='<col min="'+i+'" max="'+i+'" width="'+w+'" customWidth="1"/>'});cx+='</cols>';
+    var mx=sheet.merges.length?'<mergeCells count="'+sheet.merges.length+'">'+sheet.merges.map(function(m){return'<mergeCell ref="'+addr(m[0],m[1])+':'+addr(m[2],m[3])+'"/>'}).join('')+'</mergeCells>':'';
+    var X='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+    var sh=X+'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="A1:'+addr(maxR,maxC)+'"/><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/>'+cx+'<sheetData>'+rx+'</sheetData>'+mx+'<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="1"/></worksheet>';
+    var st=X+'<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="'+fonts.length+'">'+fonts.join('')+'</fonts><fills count="'+fills.length+'">'+fills.join('')+'</fills><borders count="'+borders.length+'">'+borders.join('')+'</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="'+xfs.length+'">'+xfs.join('')+'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    var wbx=X+'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+esc2(sheet.name)+'" sheetId="1" r:id="rId1"/></sheets></workbook>';
+    var wr=X+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+    var rr2=X+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+    var ct=X+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+    return Promise.resolve(zip([['[Content_Types].xml',ct],['_rels/.rels',rr2],['xl/workbook.xml',wbx],['xl/_rels/workbook.xml.rels',wr],['xl/styles.xml',st],['xl/worksheets/sheet1.xml',sh]]));
+  }};
+}
+function exportXlsx(){
+  var P=period(),days=[],i,n=P.n;for(i=0;i<n;i++)days.push(P.s+i);
+  var a0=dateOf(days[0]),a1=dateOf(days[n-1]),mo=mode==='month';
+  var WD=['пн','вт','ср','чт','пт','сб','вс'],XPAL=['5FC9C1','FF9E80','C5E1A5','B39DDB','F48FB1','80DEEA','E6EE9C','BCAAA4'];
+  var wb=new MiniX(),ws=wb.addWorksheet('График');
+  var C0=4,CS=C0+n,LAST=CS+5,T0=3;
+  ws.getColumn(1).width=.5;ws.getColumn(2).width=4;ws.getColumn(3).width=22;
+  for(i=0;i<n;i++)ws.getColumn(C0+i).width=5.7;
+  for(i=0;i<6;i++)ws.getColumn(CS+i).width=i===3||i===4||i===1?14:11;
+  var TH={style:'thin'},TK={style:'thick'};
+  function bd(c,o){c.border=o}
+  var title=mo?'График на '+MF[a0.getUTCMonth()].toLowerCase()+' '+a0.getUTCFullYear()+' год':'График на '+a0.getUTCDate()+' '+MN[a0.getUTCMonth()]+' – '+a1.getUTCDate()+' '+MN[a1.getUTCMonth()]+' '+a1.getUTCFullYear()+' год';
+  ws.mergeCells(1,2,1,LAST);var tc=ws.getCell(1,2);tc.value=title;tc.font={name:'Calibri',size:20,bold:true};tc.alignment={horizontal:'center',vertical:'middle'};ws.getRow(1).height=30;
+  /* шапка */
+  var r1=T0,r2=T0+1;
+  function hdr(r,c,v,o){var x=ws.getCell(r,c);x.value=v;x.font={name:'Calibri',size:11};x.alignment=o||{};x.border={left:TH,right:TH,top:r===r1?TK:TH,bottom:r===r2?TK:TH};return x}
+  ws.mergeCells(r1,2,r2,2);ws.mergeCells(r1,3,r2,3);
+  hdr(r1,2,'№',{horizontal:'center',vertical:'middle'});hdr(r2,2,null);hdr(r1,3,'ФИО',{horizontal:'center',vertical:'middle'});hdr(r2,3,null);
+  days.forEach(function(d,k){var dt=dateOf(d);hdr(r1,C0+k,dt.getUTCDate(),{horizontal:'right'});hdr(r2,C0+k,WD[(dt.getUTCDay()+6)%7],{horizontal:'right',vertical:'middle'})});
+  ['Рабочие','Праздничные','Отпуск','Командировка','Без содержания','Больничный'].forEach(function(t,k){ws.mergeCells(r1,CS+k,r2,CS+k);hdr(r1,CS+k,t,{horizontal:'left',vertical:'middle',wrapText:true});hdr(r2,CS+k,null)});
+  ws.getRow(r2).height=21.75;
+  /* строки */
+  var r=r2+1,num=0,dutyDep={},used={};
+  DEPTS.forEach(function(D,di){
+    var idx=[],dcol='FF'+(D.c||XPAL[di%XPAL.length]);state.w.forEach(function(w,q){if(w.dept===D.k)idx.push(q)});
+    idx.forEach(function(q,pos){
+      var w=state.w[q],last=pos===idx.length-1,cnt=[0,0,0,0,0,0,0,0],hol=0,work=0;num++;
+      var top=pos===0&&D.k!==DEPTS[0].k?TK:TH,bot=last?TK:TH;
+      var c=ws.getCell(r,2);c.value=num;c.font={name:'Calibri',size:11};c.alignment={horizontal:'center',vertical:'middle'};c.border={left:TK,right:TH,top:TH,bottom:bot};
+      c=ws.getCell(r,3);c.value=w.name;c.font={name:'Calibri',size:11};c.alignment={horizontal:'left',vertical:'middle'};c.border={left:TK,right:TK,top:TH,bottom:bot};
+      c.fill={type:'pattern',pattern:'solid',fgColor:{argb:dcol}};
+      days.forEach(function(d,k){
+        var v=val(q,d),b0=base(q,d),xo=(v===3||v===5)&&b0===0,isH=v===0&&isCal(w)&&isHol(d);
+        cnt[v]++;if(isH)hol++;if(v===1||v===2||((v===3||v===5)&&!xo))work++;
+        var txt=null,fill=null,fc='FF000000',bold=false;
+        if(v===0){txt=isH?'П':'В';fill='FF767171';fc='FFFFFFFF'}
+        else if(v===2){txt='Д';fill='FFBFBFBF';fc='FFFFFFFF';dutyDep[D.k]=1}
+        else if(v!==1){txt=(v===4&&b0===0)?'В/О':L[v];bold=true;used[v]=1}
+        var x=ws.getCell(r,C0+k);if(txt!==null)x.value=txt;x.font={name:'Calibri',size:11,bold:bold,color:{argb:fc}};x.alignment={horizontal:'center',vertical:'middle'};
+        if(fill)x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill}};
+        x.border={left:TH,right:TH,top:TH,bottom:bot};
+      });
+      [work,hol,cnt[4],cnt[5],cnt[7],cnt[6]].forEach(function(v,k){var x=ws.getCell(r,CS+k);x.value=v||null;x.font={name:'Calibri',size:11};x.alignment={horizontal:'center',vertical:'middle'};x.border={left:k===0?TK:TH,right:k===5?TK:TH,top:TH,bottom:bot}});
+      ws.getRow(r).height=16.2;r++;
+    });
+  });
+  /* легенда */
+  r++;
+  function leg(rr,t,fill,fc){var x=ws.getCell(rr,3);x.value=t;x.font={name:'Calibri',size:11,color:{argb:fc}};x.fill={type:'pattern',pattern:'solid',fgColor:{argb:fill}};x.alignment={horizontal:'left',vertical:'middle'}}
+  leg(r,'Выходной','FF767171','FFFFFFFF');r+=2;
+  leg(r,'Дежурный','FFD9D9D9','FFFFFFFF');
+  var dd=DEPTS.filter(function(D){return dutyDep[D.k]}).map(function(D){return '09:00 - 19:00 '+D.n});
+  ws.getCell(r,4).value='   -   '+dd.join(', ');ws.getCell(r,4).font={name:'Calibri',size:11};r+=1;
+  var NM={3:'У — обучение',4:'О — отпуск, В/О — отпуск в выходной',5:'К — командировка',6:'Б — больничный',7:'БС — без содержания'},ex=[];
+  Object.keys(NM).forEach(function(k){if(used[k])ex.push(NM[k])});
+  if(ex.length){r++;ws.getCell(r,4).value=ex.join(';  ');ws.getCell(r,4).font={name:'Calibri',size:11};r++}
+  /* ознакомлен */
+  r+=1;var slots=n>=28?[4,12,18,24]:[4,10],c0=r;
+  var lb=ws.getCell(r,3);lb.value='Ознакомлен:';lb.font={name:'Calibri',size:14,bold:true};lb.alignment={horizontal:'right',vertical:'middle'};
+  state.w.forEach(function(w,k){var rr=c0+Math.floor(k/slots.length)*4,x=ws.getCell(rr,slots[k%slots.length]);x.value=w.name;x.font={name:'Calibri',size:12}});
+  var nm='grafik_'+a0.getUTCFullYear()+'-'+('0'+(a0.getUTCMonth()+1)).slice(-2)+(mo?'':'-'+('0'+a0.getUTCDate()).slice(-2)+'_week')+'.xlsx';
+  return wb.xlsx.writeBuffer().then(function(bl){
+    var u=URL.createObjectURL(bl),el=document.createElement('a');
+    el.href=u;el.download=nm;document.body.appendChild(el);el.click();document.body.removeChild(el);setTimeout(function(){URL.revokeObjectURL(u)},2000);
+  });
+}
+document.getElementById('expB').onclick=function(){exportXlsx().catch(function(e){exportCsv();alert('Не удалось собрать Excel-файл, скачан упрощённый CSV.')})};
 document.getElementById('set').addEventListener('click',function(ev){
   var b=ev.target.closest('button');if(!b)return;
   if(b.dataset.duty!==undefined){
