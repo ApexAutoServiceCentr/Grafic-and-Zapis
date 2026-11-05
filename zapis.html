@@ -977,7 +977,7 @@ async function sGate(){if(!sLocked())return true;
   var p=await pwDialog('Пароль на настройки',{check:async function(v){var h=await hashPw(v,state.cfg.spw.s);if(h!==state.cfg.spw.h)return 'Неверный пароль';SUNL=h;return ''}});
   return p!==null}
 var setOpen=false;
-function applySetBox(){var pb=document.getElementById('spB');if(pb)pb.textContent=state.cfg.spw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки';var t=document.getElementById('sToggle');document.getElementById('setBox').style.display=setOpen?'':'none';t.textContent='Настройки '+(sLocked()?'🔒 ':'')+(setOpen?'▾':'▸');t.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()}
+function applySetBox(){var pb=document.getElementById('spB');if(pb)pb.textContent=state.cfg.spw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки';var t=document.getElementById('sToggle');document.getElementById('setBox').style.display=setOpen?'':'none';t.textContent='Настройки '+(setOpen?'▾':'▸');t.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()}
 document.getElementById('sToggle').onclick=async function(){if(!setOpen&&!(await sGate()))return;setOpen=!setOpen;if(setOpen&&ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}applySetBox()};
 document.getElementById('spB').addEventListener('click',async function(){
   var had=!!state.cfg.spw;
