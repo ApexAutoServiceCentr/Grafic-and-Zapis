@@ -289,7 +289,7 @@ function renderSoon(){
   var tn=dn(new Date()),ev=[],i,d,v,r,k;
   for(i=0;i<state.w.length;i++){r=null;
     for(d=tn;d<tn+7;d++){v=val(i,d);
-      if(v>=3&&v!==7){if(r&&r.v===v&&r.e===d-1){r.e=d}else{r={i:i,v:v,s:d,e:d};ev.push(r)}}
+      if(v>=3){if(r&&r.v===v&&r.e===d-1){r.e=d}else{r={i:i,v:v,s:d,e:d};ev.push(r)}}
     }
   }
   ev.forEach(function(r){
@@ -298,7 +298,7 @@ function renderSoon(){
   });
   ev.sort(function(a,b){return a.s-b.s||a.i-b.i});
   var h='<h3>Ближайшие события · 7 дней</h3>';
-  if(!ev.length)h+='<div class="sub" style="margin:0">Обучений, командировок и отпусков в ближайшие 7 дней нет.</div>';
+  if(!ev.length)h+='<div class="sub" style="margin:0">Событий на ближайшие 7 дней нет.</div>';
   ev.forEach(function(r){
     var on=r.st<tn,diff=r.s-tn,when;
     if(on)when='<b>идёт</b>';
