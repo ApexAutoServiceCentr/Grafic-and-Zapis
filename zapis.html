@@ -1006,6 +1006,11 @@ function renderGh(box){
 }
 var ghOpen=false;
 document.getElementById('gToggle').onclick=function(){ghOpen=!ghOpen;var b=document.getElementById('ghBox');b.style.display=ghOpen?'':'none';this.textContent='Синхронизация GitHub '+(ghOpen?'▾':'▸');this.setAttribute('aria-expanded',ghOpen);if(ghOpen)renderGh(b)};
+/* клик по свободному месту в меню сворачивает «Настройки» и «Синхронизацию GitHub» */
+function collapseMenuSections(){if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
+document.getElementById('menu').addEventListener('mousedown',function(e){var t=e.target;
+  if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('button,input,select,textarea,a,label'))return;
+  if(setOpen||ghOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
 
 /* ---------- скрываемое меню в закреплённом заголовке ---------- */
 var menuOpen=false;try{localStorage.removeItem('zap-menu')}catch(e){}
