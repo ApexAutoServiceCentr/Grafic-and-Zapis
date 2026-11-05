@@ -17,7 +17,6 @@ body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-appl
 main{max-width:none;margin:0;padding:16px max(12px,env(safe-area-inset-right,0px)) 32px max(12px,env(safe-area-inset-left,0px))}
 @media (min-width:1000px){main{padding-left:20px;padding-right:20px}}
 #setBox .set,#ghBox .set{max-width:900px}
-#stBox .set{max-width:none}
 h1{font-size:20px;margin:0;white-space:nowrap}
 h2{font-size:16px;margin:22px 0 8px}
 .ttl{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;flex:0 0 auto}
@@ -224,7 +223,7 @@ body.ro .eo{display:none!important}
 <div class="tools"><button id="sToggle" class="eo" aria-expanded="false">Настройки ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button><button id="stToggle" aria-expanded="false">Статистика ▸</button><button id="spB" class="eo" title="Пароль спрашивается при открытии «Настроек». Пароль общий для всех устройств.">🔓 Задать пароль на настройки</button></div>
 <div id="setBox" class="eo" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
-<div id="stBox" style="display:none;margin-bottom:12px"><div class="set" id="stat"></div></div>
+<div id="stBox" style="display:none;margin-bottom:12px"><div class="set" id="stat" style="max-width:640px"></div></div>
 <div class="leg">
 <span><b style="background:var(--to)"></b>ТО</span>
 <span><b style="background:var(--rm)"></b>Ремонт</span>
