@@ -205,7 +205,7 @@ body.ro .eo{display:none!important}
 </div>
 <div id="qRes"></div>
 <div id="menu" class="menu" style="display:none">
-<div class="tools"><button id="sToggle" class="eo" aria-expanded="false">Настройки ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button></div>
+<div class="tools"><button id="sToggle" class="eo" aria-expanded="false">Настройки ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button><button id="spB" class="eo" title="Пароль спрашивается при открытии «Настроек». Пароль общий для всех устройств.">🔓 Задать пароль на настройки</button></div>
 <div id="setBox" class="eo" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
 <div class="leg">
@@ -921,7 +921,6 @@ function renderSet(){
   h+='<div class="row" style="margin-top:6px"><b>Приём клиентов</b></div><div class="row"><label style="min-width:240px">Не больше клиентов на одни полчаса</label><input type="number" id="capI" min="1" max="10" value="'+c.cap+'" style="width:70px"></div><div class="sub" style="margin:0">Обычно равно числу сервисных консультантов на приёмке.</div>';
   var hh='';for(var m=360;m<=1320;m+=30)hh+='<option value="'+m+'">'+fm(m)+'</option>';
   h+='<div class="row" style="margin-top:6px"><b>Часы записи</b></div><div class="row"><label>с</label><select id="openI">'+hh+'</select><label>до</label><select id="closeI">'+hh+'</select></div>';
-  h+='<div class="row" style="margin-top:6px"><b>Пароль на настройки</b></div><div class="row"><button id="spB">'+(c.spw?'Сменить или убрать пароль':'Задать пароль')+'</button><label>'+(c.spw?'Настройки открываются только по паролю.':'Сейчас настройки может открыть любой, у кого есть доступ к записи.')+'</label></div>';
   h+='<div class="row" style="margin-top:6px"><b>Пароль на данные клиентов</b></div><div class="row"><input type="password" id="np1" placeholder="Новый пароль" autocomplete="new-password"><input type="password" id="np2" placeholder="Повторите" autocomplete="new-password"><button id="npGo">Сменить пароль</button></div><div class="err" id="npErr"></div><div class="sub" style="margin:0">После смены на других устройствах попросит ввести новый пароль.</div>';
   var s=document.getElementById('set');s.innerHTML=h;
   sv('openI',c.open);sv('closeI',c.close);
@@ -978,9 +977,9 @@ async function sGate(){if(!sLocked())return true;
   var p=await pwDialog('Пароль на настройки',{check:async function(v){var h=await hashPw(v,state.cfg.spw.s);if(h!==state.cfg.spw.h)return 'Неверный пароль';SUNL=h;return ''}});
   return p!==null}
 var setOpen=false;
-function applySetBox(){var t=document.getElementById('sToggle');document.getElementById('setBox').style.display=setOpen?'':'none';t.textContent='Настройки '+(sLocked()?'🔒 ':'')+(setOpen?'▾':'▸');t.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()}
-document.getElementById('sToggle').onclick=async function(){if(!setOpen&&!(await sGate()))return;setOpen=!setOpen;applySetBox()};
-document.getElementById('set').addEventListener('click',async function(e){var t=e.target.closest('#spB');if(!t)return;
+function applySetBox(){var pb=document.getElementById('spB');if(pb)pb.textContent=state.cfg.spw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки';var t=document.getElementById('sToggle');document.getElementById('setBox').style.display=setOpen?'':'none';t.textContent='Настройки '+(sLocked()?'🔒 ':'')+(setOpen?'▾':'▸');t.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()}
+document.getElementById('sToggle').onclick=async function(){if(!setOpen&&!(await sGate()))return;setOpen=!setOpen;if(setOpen&&ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}applySetBox()};
+document.getElementById('spB').addEventListener('click',async function(){
   var had=!!state.cfg.spw;
   var p=await pwDialog(had?'Смена пароля на настройки':'Придумайте пароль на настройки',{old:had,two:true,check:async function(v,o){
     if(had){var h=await hashPw(o,state.cfg.spw.s);if(h!==state.cfg.spw.h)return 'Старый пароль неверный'}
@@ -1005,7 +1004,7 @@ function renderGh(box){
   document.getElementById('ghDel').onclick=function(){token='';canWrite=false;try{localStorage.removeItem('shift-gh-token')}catch(e){}conn='ro';setSt();renderGh(box)};
 }
 var ghOpen=false;
-document.getElementById('gToggle').onclick=function(){ghOpen=!ghOpen;var b=document.getElementById('ghBox');b.style.display=ghOpen?'':'none';this.textContent='Синхронизация GitHub '+(ghOpen?'▾':'▸');this.setAttribute('aria-expanded',ghOpen);if(ghOpen)renderGh(b)};
+document.getElementById('gToggle').onclick=function(){ghOpen=!ghOpen;if(ghOpen&&setOpen){setOpen=false;applySetBox()}var b=document.getElementById('ghBox');b.style.display=ghOpen?'':'none';this.textContent='Синхронизация GitHub '+(ghOpen?'▾':'▸');this.setAttribute('aria-expanded',ghOpen);if(ghOpen)renderGh(b)};
 /* клик по свободному месту в меню сворачивает «Настройки» и «Синхронизацию GitHub» */
 function collapseMenuSections(){if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
 document.getElementById('menu').addEventListener('mousedown',function(e){var t=e.target;
