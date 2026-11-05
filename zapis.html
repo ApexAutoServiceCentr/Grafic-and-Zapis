@@ -154,6 +154,10 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .cbl div.cur{font-weight:700;color:var(--ac)}
 .cbs input{cursor:pointer;caret-color:transparent}
 .cbs input:disabled{cursor:default}
+.pwm{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.pwm[hidden]{display:none}
+.pwb{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;width:min(340px,100%);display:flex;flex-direction:column;gap:8px}
+.pwb input{width:100%}
 #fHint{background:var(--bg);border:1px solid var(--ac);border-radius:10px;padding:8px 10px;font-size:13px;flex-direction:row!important;flex-wrap:wrap;align-items:center;gap:6px 10px}
 #fHint .sp{flex:1}
 #fHint button{padding:5px 10px}
@@ -230,6 +234,7 @@ body.ro .eo{display:none!important}
 </div>
 </main>
 
+<div id="pwM" class="pwm" hidden><div class="pwb" role="dialog" aria-modal="true" aria-labelledby="pwT"><div id="pwT" style="font-weight:600;margin-bottom:6px"></div><input type="password" id="pwI0" autocomplete="off" placeholder="Старый пароль" style="display:none"><input type="password" id="pwI" autocomplete="new-password" placeholder="Пароль"><input type="password" id="pwI2" autocomplete="new-password" placeholder="Повторите пароль"><div id="pwE" class="err"></div><div style="display:flex;gap:8px"><button id="pwOk" class="pri">OK</button><button id="pwNo">Отмена</button></div></div></div>
 <dialog id="dlg"><form method="dialog" class="dlg" id="frm" autocomplete="off">
 <h3 id="fTitle">Новая запись</h3>
 <div class="fg">
@@ -916,7 +921,8 @@ function renderSet(){
   h+='<div class="row" style="margin-top:6px"><b>Приём клиентов</b></div><div class="row"><label style="min-width:240px">Не больше клиентов на одни полчаса</label><input type="number" id="capI" min="1" max="10" value="'+c.cap+'" style="width:70px"></div><div class="sub" style="margin:0">Обычно равно числу сервисных консультантов на приёмке.</div>';
   var hh='';for(var m=360;m<=1320;m+=30)hh+='<option value="'+m+'">'+fm(m)+'</option>';
   h+='<div class="row" style="margin-top:6px"><b>Часы записи</b></div><div class="row"><label>с</label><select id="openI">'+hh+'</select><label>до</label><select id="closeI">'+hh+'</select></div>';
-  h+='<div class="row" style="margin-top:6px"><b>Пароль</b></div><div class="row"><input type="password" id="np1" placeholder="Новый пароль" autocomplete="new-password"><input type="password" id="np2" placeholder="Повторите" autocomplete="new-password"><button id="npGo">Сменить пароль</button></div><div class="err" id="npErr"></div><div class="sub" style="margin:0">После смены на других устройствах попросит ввести новый пароль.</div>';
+  h+='<div class="row" style="margin-top:6px"><b>Пароль на настройки</b></div><div class="row"><button id="spB">'+(c.spw?'Сменить или убрать пароль':'Задать пароль')+'</button><label>'+(c.spw?'Настройки открываются только по паролю.':'Сейчас настройки может открыть любой, у кого есть доступ к записи.')+'</label></div>';
+  h+='<div class="row" style="margin-top:6px"><b>Пароль на данные клиентов</b></div><div class="row"><input type="password" id="np1" placeholder="Новый пароль" autocomplete="new-password"><input type="password" id="np2" placeholder="Повторите" autocomplete="new-password"><button id="npGo">Сменить пароль</button></div><div class="err" id="npErr"></div><div class="sub" style="margin:0">После смены на других устройствах попросит ввести новый пароль.</div>';
   var s=document.getElementById('set');s.innerHTML=h;
   sv('openI',c.open);sv('closeI',c.close);
 }
@@ -948,8 +954,43 @@ document.getElementById('set').addEventListener('click',async function(e){
     ne.style.color='var(--ok)';ne.textContent=dirty?'Пароль сменён на этом устройстве, сохранение в GitHub повторится автоматически':'Пароль сменён';sv('np1','');sv('np2','');t.disabled=false;
   }
 });
+/* ---------- пароль на настройки (как в графике смен) ---------- */
+var SUNL=null;
+function sLocked(){var p=state.cfg.spw;return !!p&&SUNL!==p.h}
+function hexb(h){var a=new Uint8Array(h.length/2),i;for(i=0;i<a.length;i++)a[i]=parseInt(h.substr(i*2,2),16);return a}
+function bhex(a){return Array.prototype.map.call(a,function(x){return (x<16?'0':'')+x.toString(16)}).join('')}
+async function hashPw(pw,saltHex){var k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);var b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:hexb(saltHex),iterations:150000,hash:'SHA-256'},k,256);return bhex(new Uint8Array(b))}
+function pwDialog(title,o){o=o||{};return new Promise(function(res){
+  var m=document.getElementById('pwM'),i0=document.getElementById('pwI0'),i1=document.getElementById('pwI'),i2=document.getElementById('pwI2'),er=document.getElementById('pwE'),ok=document.getElementById('pwOk'),no=document.getElementById('pwNo');
+  document.getElementById('pwT').textContent=title;i0.value='';i1.value='';i2.value='';er.textContent='';
+  i0.style.display=o.old?'':'none';i2.style.display=o.two?'':'none';i1.placeholder=o.old?'Новый пароль (пусто — убрать пароль)':'Пароль';
+  m.hidden=false;setTimeout(function(){(o.old?i0:i1).focus()},30);
+  function done(v){m.hidden=true;ok.onclick=no.onclick=m.onkeydown=null;res(v)}
+  async function submit(){var v=i1.value;er.textContent='';
+    if(o.old&&!i0.value){er.textContent='Введите старый пароль';return}
+    if(o.two&&v!==i2.value){er.textContent='Пароли не совпадают';return}
+    ok.disabled=true;try{var e=o.check?await o.check(v,i0.value):'';if(e){er.textContent=e;ok.disabled=false;return}}catch(x){er.textContent='Не получилось проверить пароль';ok.disabled=false;return}
+    ok.disabled=false;done(v)}
+  ok.onclick=submit;no.onclick=function(){done(null)};
+  m.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();submit()}else if(e.key==='Escape'){e.preventDefault();done(null)}};
+})}
+async function sGate(){if(!sLocked())return true;
+  var p=await pwDialog('Пароль на настройки',{check:async function(v){var h=await hashPw(v,state.cfg.spw.s);if(h!==state.cfg.spw.h)return 'Неверный пароль';SUNL=h;return ''}});
+  return p!==null}
 var setOpen=false;
-document.getElementById('sToggle').onclick=function(){setOpen=!setOpen;document.getElementById('setBox').style.display=setOpen?'':'none';this.textContent='Настройки '+(setOpen?'▾':'▸');this.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()};
+function applySetBox(){var t=document.getElementById('sToggle');document.getElementById('setBox').style.display=setOpen?'':'none';t.textContent='Настройки '+(sLocked()?'🔒 ':'')+(setOpen?'▾':'▸');t.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()}
+document.getElementById('sToggle').onclick=async function(){if(!setOpen&&!(await sGate()))return;setOpen=!setOpen;applySetBox()};
+document.getElementById('set').addEventListener('click',async function(e){var t=e.target.closest('#spB');if(!t)return;
+  var had=!!state.cfg.spw;
+  var p=await pwDialog(had?'Смена пароля на настройки':'Придумайте пароль на настройки',{old:had,two:true,check:async function(v,o){
+    if(had){var h=await hashPw(o,state.cfg.spw.s);if(h!==state.cfg.spw.h)return 'Старый пароль неверный'}
+    if(!had&&v.length<4)return 'Пароль не короче 4 символов';
+    if(had&&v&&v.length<4)return 'Пароль не короче 4 символов';
+    return ''}});
+  if(p===null)return;
+  if(p===''){delete state.cfg.spw;SUNL=null}
+  else{var sl=bhex(crypto.getRandomValues(new Uint8Array(16)));state.cfg.spw={s:sl,h:await hashPw(p,sl)};SUNL=state.cfg.spw.h}
+  cfgTouch();applySetBox()});
 
 /* ---------- блок синхронизации ---------- */
 function renderGh(box){
@@ -970,11 +1011,11 @@ document.getElementById('gToggle').onclick=function(){ghOpen=!ghOpen;var b=docum
 var menuOpen=false;try{localStorage.removeItem('zap-menu')}catch(e){}
 function fitMenu(){var m=document.getElementById('menu'),h=document.getElementById('hdr');if(m.style.display==='none')return;m.style.maxHeight='none';m.style.maxHeight=Math.max(160,innerHeight-(h.offsetHeight-m.offsetHeight)-24)+'px'}
 addEventListener('resize',fitMenu);
-function applyMenu(){var b=document.getElementById('menuB');document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
-function setMenu(open){if(menuOpen===open)return;var a=anchor(),t0=a?a.getBoundingClientRect().top:0;menuOpen=open;applyMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}
+function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
+function setMenu(open){if(menuOpen===open)return;if(open)applySetBox();var a=anchor(),t0=a?a.getBoundingClientRect().top:0;menuOpen=open;applyMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}
 document.getElementById('menuB').onclick=function(){setMenu(!menuOpen)};
 /* клик по таблице, кнопкам сверху или любому месту вне меню закрывает его */
-document.addEventListener('mousedown',function(e){if(!menuOpen)return;var t=e.target;if(t.closest('#menu')||t.closest('#menuB')||t.closest('dialog'))return;setMenu(false)});
+document.addEventListener('mousedown',function(e){if(!menuOpen)return;var t=e.target;if(t.closest('#menu')||t.closest('#menuB')||t.closest('dialog')||t.closest('#pwM'))return;setMenu(false)});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menuOpen&&!dlg.open)setMenu(false)});
 /* ---------- запуск ---------- */
 var rzT=null,rzN=innerWidth<600;addEventListener('resize',function(){clearTimeout(rzT);rzT=setTimeout(function(){var n=innerWidth<600;if(n!==rzN||(appVisible()&&!n&&calcRH()!==RH)){rzN=n;if(appVisible())render()}},150)});
