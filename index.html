@@ -645,6 +645,16 @@ function exportXlsx(){
   });
 }
 document.getElementById('expB').onclick=function(){exportXlsx().catch(function(e){exportCsv();alert('Не удалось собрать Excel-файл, скачан упрощённый CSV.')})};
+
+/* Анимированная иконка вкладки: цвета клеток «бегут» по сетке */
+(function(){
+  try{if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){}
+  var B='#60a5fa',Y='#fbbf24',D='#374151',base=[B,D,D,D,B,Y,Y,D,B],links=[].slice.call(document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]')),f=0,fr=[],i,j;
+  if(!links.length)return;
+  for(j=0;j<9;j++){var g='';for(i=0;i<9;i++)g+='<rect x="'+(10+(i%3)*16)+'" y="'+(12+Math.floor(i/3)*14)+'" width="12" height="9" rx="2.5" fill="'+base[(i+j)%9]+'"/>';
+    fr.push('data:image/svg+xml;base64,'+btoa('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1f2937"/>'+g+'</svg>'))}
+  setInterval(function(){f=(f+1)%9;links[0].href=fr[f]},700);
+})();
 document.getElementById('set').addEventListener('click',function(ev){
   var b=ev.target.closest('button');if(!b)return;
   if(b.dataset.duty!==undefined){
