@@ -638,7 +638,7 @@ function render(){
   box.innerHTML=h;
   if(ad&&secOf(ad))scrollBy(0,secOf(ad).getBoundingClientRect().top-off);
   headRng();renderCnt();updNow();
-  if(needScroll&&appVisible()){needScroll=false;goto(cur)}
+  if(needScroll&&appVisible()){needScroll=false;if(SAVED){var sv=SAVED;SAVED=null;cur=sv.d;goto(cur);var ss0=secOf(sv.d);if(ss0&&sv.o)scrollBy(0,-sv.o)}else goto(cur)}
 }
 function goto(date,smooth){
   if(!RS||date<RS||date>RE){RS=addDays(date,-2);RE=addDays(date,12);cur=date;document.getElementById('days').innerHTML='';needScroll=false;render()}
@@ -646,7 +646,10 @@ function goto(date,smooth){
   var y=sec.getBoundingClientRect().top+scrollY-document.getElementById('hdr').offsetHeight+2;
   scrollTo({top:Math.max(0,y),behavior:smooth?'smooth':'auto'});
 }
-var MAXD=42;
+var MAXD=42,SAVED=null,svT=null;
+try{history.scrollRestoration='manual';var _sv=JSON.parse(sessionStorage.getItem('zapis-view')||'null');if(_sv&&_sv.d&&Date.now()-_sv.t<1800000)SAVED=_sv}catch(e){}
+function saveView(){try{var a=anchor();if(!a)return;var h=document.getElementById('hdr').offsetHeight;sessionStorage.setItem('zapis-view',JSON.stringify({d:a.dataset.d,o:Math.round(a.getBoundingClientRect().top-(h-2)),t:Date.now()}))}catch(e){}}
+addEventListener('pagehide',saveView);
 function appendDays(n){var e=addDays(RE,n),h='',d;for(d=addDays(RE,1);d<=e;d=addDays(d,1))h+=dayHtml(d);RE=e;document.getElementById('days').insertAdjacentHTML('beforeend',h);
   var box=document.getElementById('days');while(box.children.length>MAXD){var f=box.firstElementChild,nx=f.nextElementSibling,t0=nx.getBoundingClientRect().top;f.remove();RS=addDays(RS,1);scrollBy(0,nx.getBoundingClientRect().top-t0)}}
 function prependDays(n){var st0=addDays(RS,-n),h='',d,box=document.getElementById('days'),f=box.firstElementChild,t0=f.getBoundingClientRect().top;for(d=st0;d<RS;d=addDays(d,1))h+=dayHtml(d);box.insertAdjacentHTML('afterbegin',h);RS=st0;scrollBy(0,f.getBoundingClientRect().top-t0);
@@ -658,6 +661,7 @@ function onScroll(){
   if(scrollY+innerHeight>document.documentElement.scrollHeight-1600)appendDays(7);
   else if(box.firstElementChild.getBoundingClientRect().top>-900&&scrollY>0)prependDays(7);
   var a=anchor();if(a&&a.dataset.d!==cur){cur=a.dataset.d;headRng()}
+  clearTimeout(svT);svT=setTimeout(saveView,250);
 }
 addEventListener('scroll',function(){if(scT)return;scT=true;requestAnimationFrame(function(){scT=false;onScroll()})},{passive:true});
 /* всплывающая подсказка с полной информацией при наведении курсора */
