@@ -158,7 +158,10 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .pwm[hidden]{display:none}
 .pwb{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;width:min(340px,100%);display:flex;flex-direction:column;gap:8px}
 .pwb input{width:100%}
-.seg.src button.on{background:var(--to);border-color:var(--ac);color:var(--stx);font-weight:600}
+.seg.src{gap:8px}.seg.src button{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;font-size:15px;border-radius:10px;background:transparent}
+.seg.src button .si{width:18px;height:18px;flex:none}
+.seg.src button.on{background:var(--bg);border-color:var(--tx);color:var(--tx);font-weight:700;box-shadow:inset 0 0 0 1px var(--tx)}
+.si{width:1em;height:1em;vertical-align:-.15em}
 .seg.miss{outline:2px solid var(--danger);outline-offset:3px;border-radius:10px}
 .srt{display:inline-block;font-size:11px;font-weight:600;padding:0 5px;margin-left:5px;border-radius:5px;background:rgba(255,255,255,.5);color:var(--stx);vertical-align:1px}
 .stt{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}.stt td,.stt th{padding:7px 8px;border-bottom:1px solid var(--bd);text-align:left}.stt th{color:var(--mu);font-weight:600;font-size:12px}.stt td.n{text-align:right;font-variant-numeric:tabular-nums}.stt .bar{height:8px;border-radius:4px;background:var(--ac)}
@@ -248,7 +251,7 @@ body.ro .eo{display:none!important}
 <div class="f"><label for="fStart">Время приезда</label><select id="fStart"></select></div>
 <div class="f"><label for="fLen">Длительность работ<span class="req" aria-hidden="true">*</span></label><select id="fLen"></select></div>
 <div class="f w2"><label>Вид работ<span class="req" aria-hidden="true">*</span></label><div class="tyw"><div class="seg" id="fType"></div><div class="cbl tonl" id="tonList" role="listbox" aria-label="Номер ТО" hidden></div></div><div id="fTonW" hidden><select id="fTon" aria-label="Номер ТО"></select></div></div>
-<div class="f w2"><label>Откуда клиент<span class="req" aria-hidden="true">*</span></label><div class="seg src" id="fSrc" role="group" aria-label="Откуда клиент"><button type="button" data-src="call">📞 Звонок</button><button type="button" data-src="visit">🚗 Визит</button><button type="button" data-src="online">🌐 Онлайн</button></div></div>
+<div class="f w2"><label>Откуда клиент<span class="req" aria-hidden="true">*</span></label><div class="seg src" id="fSrc" role="group" aria-label="Откуда клиент"><button type="button" data-src="call"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"/></svg>Звонок</button><button type="button" data-src="visit"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M3 7v1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1h-18l2 -4h14l2 4"/><path d="M5 21v-10.15"/><path d="M19 21v-10.15"/><path d="M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4"/></svg>Визит</button><button type="button" data-src="online"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/></svg>Онлайн</button></div></div>
 <div class="f"><label for="fClient">Клиент<span class="req" aria-hidden="true">*</span></label><input type="text" id="fClient" maxlength="60" placeholder="Иван Петров"></div>
 <div class="f"><label for="fPhone">Телефон<span class="req" aria-hidden="true">*</span></label><div class="ph"><span class="pre">+7</span><input type="tel" id="fPhone" inputmode="numeric" maxlength="18" placeholder="701 123 45 67"></div></div>
 <div class="f w2" id="fHint" style="display:none"></div>
@@ -274,7 +277,7 @@ var DN=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],DNF=['воскресе
 var MN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 var TYPES=[{k:'to',n:'ТО'},{k:'rm',n:'Ремонт'},{k:'dg',n:'Диагностика'},{k:'gr',n:'Гарантия'},{k:'ak',n:'Акция'},{k:'eq',n:'Дополнительное оборудование'},{k:'sh',n:'Шиномонтаж'},{k:'ml',n:'Замена масла'}];
 var TN={};TYPES.forEach(function(t){TN[t.k]=t.n});
-var SRC={call:'Звонок',visit:'Визит',online:'Онлайн'},SRCI={call:'📞',visit:'🚗',online:'🌐'};
+var SRC={call:'Звонок',visit:'Визит',online:'Онлайн'},SRCI={"call": "<svg class=\"si\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2\"/></svg>", "visit": "<svg class=\"si\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 21h18\"/><path d=\"M3 7v1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1h-18l2 -4h14l2 4\"/><path d=\"M5 21v-10.15\"/><path d=\"M19 21v-10.15\"/><path d=\"M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4\"/></svg>", "online": "<svg class=\"si\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0\"/><path d=\"M3.6 9h16.8\"/><path d=\"M3.6 15h16.8\"/><path d=\"M11.5 3a17 17 0 0 0 0 18\"/><path d=\"M12.5 3a17 17 0 0 1 0 18\"/></svg>"};
 var TS={to:'ТО',rm:'Ремонт',dg:'Диагностика',gr:'Гарантия',eq:'Доп. оборуд.',sh:'Шиномонтаж',ml:'Замена масла',ak:'Акция'};
 var STS=[{k:'zap',n:'Записан'},{k:'done',n:'Готов'},{k:'nos',n:'Не приехал'}];
 var SN={};STS.forEach(function(s){SN[s.k]=s.n});
@@ -1023,7 +1026,7 @@ function renderStat(){
   var y=+stMon.slice(0,4),m=+stMon.slice(5,7),cnt={call:0,visit:0,online:0,none:0},tot=0,k,b;
   for(k in state.b){b=state.b[k];if(!live(b)||b.date.slice(0,7)!==stMon)continue;tot++;cnt[SRC[b.src]?b.src:'none']++}
   var MNF=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  var rows=[['call','📞 Звонок'],['visit','🚗 Визит'],['online','🌐 Онлайн']];if(cnt.none)rows.push(['none','Не указан']);
+  var rows=[['call',SRCI.call+' Звонок'],['visit',SRCI.visit+' Визит'],['online',SRCI.online+' Онлайн']];if(cnt.none)rows.push(['none','Не указан']);
   var h='<div class="row"><button id="stPrev" aria-label="Предыдущий месяц">‹</button><b style="min-width:150px;text-align:center">'+MNF[m-1]+' '+y+'</b><button id="stNext" aria-label="Следующий месяц">›</button></div>';
   h+='<table class="stt"><tr><th>Откуда клиент</th><th style="text-align:right">Записей</th><th style="text-align:right">Доля</th><th style="width:40%"></th></tr>';
   rows.forEach(function(r){var n=cnt[r[0]],pc=tot?Math.round(n/tot*100):0;h+='<tr><td>'+r[1]+'</td><td class="n">'+n+'</td><td class="n">'+pc+'%</td><td><div class="bar" style="width:'+pc+'%;'+(r[0]==='none'?'background:var(--mu)':'')+'"></div></td></tr>'});
