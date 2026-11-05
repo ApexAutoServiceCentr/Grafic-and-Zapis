@@ -207,10 +207,10 @@ body.ro .eo{display:none!important}
 <span><b style="background:var(--rm)"></b>Ремонт</span>
 <span><b style="background:var(--dg)"></b>Диагностика</span>
 <span><b style="background:var(--gr)"></b>Гарантия</span>
+<span><b style="background:var(--ak)"></b>Акция</span>
 <span><b style="background:var(--eq)"></b>Доп. оборудование</span>
 <span><b style="background:var(--sh)"></b>Шиномонтаж</span>
 <span><b style="background:var(--ml)"></b>Замена масла</span>
-<span><b style="background:var(--ak)"></b>Акция</span>
 <span><b style="background:var(--okbg)"></b>Готов</span>
 <span><b style="background:var(--nobg)"></b>Не приехал</span>
 <span><b style="border:2px solid var(--danger)"></b>Наложение (проверьте запись)</span>
@@ -259,7 +259,7 @@ body.ro .eo{display:none!important}
 <script>
 var DN=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],DNF=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
 var MN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-var TYPES=[{k:'to',n:'ТО'},{k:'rm',n:'Ремонт'},{k:'dg',n:'Диагностика'},{k:'gr',n:'Гарантия'},{k:'eq',n:'Дополнительное оборудование'},{k:'sh',n:'Шиномонтаж'},{k:'ml',n:'Замена масла'},{k:'ak',n:'Акция'}];
+var TYPES=[{k:'to',n:'ТО'},{k:'rm',n:'Ремонт'},{k:'dg',n:'Диагностика'},{k:'gr',n:'Гарантия'},{k:'ak',n:'Акция'},{k:'eq',n:'Дополнительное оборудование'},{k:'sh',n:'Шиномонтаж'},{k:'ml',n:'Замена масла'}];
 var TN={};TYPES.forEach(function(t){TN[t.k]=t.n});
 var TS={to:'ТО',rm:'Ремонт',dg:'Диагностика',gr:'Гарантия',eq:'Доп. оборуд.',sh:'Шиномонтаж',ml:'Замена масла',ak:'Акция'};
 var STS=[{k:'zap',n:'Записан'},{k:'done',n:'Готов'},{k:'nos',n:'Не приехал'}];
