@@ -16,7 +16,6 @@
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:none;margin:0;padding:16px max(12px,env(safe-area-inset-right,0px)) 32px max(12px,env(safe-area-inset-left,0px))}
 @media (min-width:1000px){main{padding-left:20px;padding-right:20px}}
-#setBox .set,#ghBox .set{max-width:900px}
 h1{font-size:20px;margin:0;white-space:nowrap}
 h2{font-size:16px;margin:22px 0 8px}
 .ttl{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;flex:0 0 auto}
@@ -31,7 +30,12 @@ h2{font-size:16px;margin:22px 0 8px}
 #qRes .list{margin:0 0 8px!important}
 #syncSt{margin:0}
 .hdr{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px 0 4px;padding-top:4px;border-bottom:1px solid var(--bd)}
-.menu{overflow:auto;padding:4px 0 10px;border-top:1px solid var(--bd)}
+.menu{overflow:auto;padding:4px 12px 10px 0;border-top:1px solid var(--bd)}
+*{scrollbar-width:thin;scrollbar-color:rgba(128,128,128,.4) transparent}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(128,128,128,.4);border-radius:8px;border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(128,128,128,.65);background-clip:content-box}
 .menu .leg{margin-top:4px}
 .ttl .sp{flex:1}
 .sub{color:var(--mu);font-size:13px;margin-bottom:12px}
@@ -223,7 +227,7 @@ body.ro .eo{display:none!important}
 <div class="tools"><button id="sToggle" class="eo" aria-expanded="false">Настройки ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button><button id="stToggle" aria-expanded="false">Статистика ▸</button><button id="spB" class="eo" title="Пароль спрашивается при открытии «Настроек». Пароль общий для всех устройств.">🔓 Задать пароль на настройки</button></div>
 <div id="setBox" class="eo" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
-<div id="stBox" style="display:none;margin-bottom:12px"><div class="set" id="stat" style="max-width:640px"></div></div>
+<div id="stBox" style="display:none;margin-bottom:12px"><div class="set" id="stat"></div></div>
 <div class="leg">
 <span><b style="background:var(--to)"></b>ТО</span>
 <span><b style="background:var(--rm)"></b>Ремонт</span>
@@ -651,7 +655,7 @@ function render(){
   box.innerHTML=h;
   if(ad&&secOf(ad))scrollBy(0,secOf(ad).getBoundingClientRect().top-off);
   headRng();renderCnt();updNow();
-  if(needScroll&&appVisible()){needScroll=false;goto(cur)}
+  if(needScroll&&appVisible()){needScroll=false;if(SAVED){var sv=SAVED;SAVED=null;cur=sv.d;goto(cur);var ss0=secOf(sv.d);if(ss0&&sv.o)scrollBy(0,-sv.o)}else goto(cur)}
 }
 function goto(date,smooth){
   if(!RS||date<RS||date>RE){RS=addDays(date,-2);RE=addDays(date,12);cur=date;document.getElementById('days').innerHTML='';needScroll=false;render()}
@@ -659,7 +663,10 @@ function goto(date,smooth){
   var y=sec.getBoundingClientRect().top+scrollY-document.getElementById('hdr').offsetHeight+2;
   scrollTo({top:Math.max(0,y),behavior:smooth?'smooth':'auto'});
 }
-var MAXD=42;
+var MAXD=42,SAVED=null,svT=null;
+try{history.scrollRestoration='manual';var _sv=JSON.parse(sessionStorage.getItem('zapis-view')||'null');if(_sv&&_sv.d&&Date.now()-_sv.t<1800000)SAVED=_sv}catch(e){}
+function saveView(){try{var a=anchor();if(!a)return;var h=document.getElementById('hdr').offsetHeight;sessionStorage.setItem('zapis-view',JSON.stringify({d:a.dataset.d,o:Math.round(a.getBoundingClientRect().top-(h-2)),t:Date.now()}))}catch(e){}}
+addEventListener('pagehide',saveView);
 function appendDays(n){var e=addDays(RE,n),h='',d;for(d=addDays(RE,1);d<=e;d=addDays(d,1))h+=dayHtml(d);RE=e;document.getElementById('days').insertAdjacentHTML('beforeend',h);
   var box=document.getElementById('days');while(box.children.length>MAXD){var f=box.firstElementChild,nx=f.nextElementSibling,t0=nx.getBoundingClientRect().top;f.remove();RS=addDays(RS,1);scrollBy(0,nx.getBoundingClientRect().top-t0)}}
 function prependDays(n){var st0=addDays(RS,-n),h='',d,box=document.getElementById('days'),f=box.firstElementChild,t0=f.getBoundingClientRect().top;for(d=st0;d<RS;d=addDays(d,1))h+=dayHtml(d);box.insertAdjacentHTML('afterbegin',h);RS=st0;scrollBy(0,f.getBoundingClientRect().top-t0);
@@ -671,6 +678,7 @@ function onScroll(){
   if(scrollY+innerHeight>document.documentElement.scrollHeight-1600)appendDays(7);
   else if(box.firstElementChild.getBoundingClientRect().top>-900&&scrollY>0)prependDays(7);
   var a=anchor();if(a&&a.dataset.d!==cur){cur=a.dataset.d;headRng()}
+  clearTimeout(svT);svT=setTimeout(saveView,250);
 }
 addEventListener('scroll',function(){if(scT)return;scT=true;requestAnimationFrame(function(){scT=false;onScroll()})},{passive:true});
 /* всплывающая подсказка с полной информацией при наведении курсора */
