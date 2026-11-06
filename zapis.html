@@ -30,7 +30,8 @@ h2{font-size:16px;margin:22px 0 8px}
 #qRes .list{margin:0 0 8px!important}
 #syncSt{margin:0}
 .hdr{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px 0 4px;padding-top:4px;border-bottom:1px solid var(--bd)}
-.menu{overflow:auto;padding:4px 12px 10px 0;border-top:1px solid var(--bd)}
+.menu{overflow:auto;padding:4px 0 10px;border-top:1px solid var(--bd)}
+.menu.ov{padding-right:8px}
 *{scrollbar-width:thin;scrollbar-color:rgba(128,128,128,.4) transparent}
 ::-webkit-scrollbar{width:12px;height:12px}
 ::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
@@ -1078,6 +1079,9 @@ document.getElementById('menu').addEventListener('mousedown',function(e){var t=e
 var menuOpen=false;try{localStorage.removeItem('zap-menu')}catch(e){}
 function fitMenu(){var m=document.getElementById('menu'),h=document.getElementById('hdr');if(m.style.display==='none')return;m.style.maxHeight='none';m.style.maxHeight=Math.max(160,innerHeight-(h.offsetHeight-m.offsetHeight)-24)+'px'}
 addEventListener('resize',fitMenu);
+/* отступ справа под ползунок меню — только когда меню прокручивается */
+(function(){var m=document.getElementById('menu');function ov(){var o=m.scrollHeight>m.clientHeight+1;if(m.classList.contains('ov')!==o)m.classList.toggle('ov',o)}
+if(window.ResizeObserver){var ro=new ResizeObserver(ov);ro.observe(m);for(var i=0;i<m.children.length;i++)ro.observe(m.children[i])}addEventListener('resize',ov)})();
 function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
 function setMenu(open){if(menuOpen===open)return;if(open)applySetBox();var a=anchor(),t0=a?a.getBoundingClientRect().top:0;menuOpen=open;applyMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}
 document.getElementById('menuB').onclick=function(){setMenu(!menuOpen)};
