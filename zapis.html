@@ -382,6 +382,8 @@ function purge(s){var lim=now()-90*864e5,k;for(k in s.b)if(s.b[k].del&&(s.b[k].u
 
 /* ---------- шифрование: PBKDF2 + AES-GCM, сжатие gzip ---------- */
 var enc=new TextEncoder(),dec=new TextDecoder();
+/* PLAIN=true — шифрование снято: zapis.json хранится открытым текстом. Чтобы вернуть шифрование, поставить false */
+var PLAIN=true;
 var ITER=250000;
 function b64(u8){var s='',i,ch=0x8000;for(i=0;i<u8.length;i+=ch)s+=String.fromCharCode.apply(null,u8.subarray(i,i+ch));return btoa(s)}
 function unb64(s){var bin=atob(s),u=new Uint8Array(bin.length),i;for(i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
@@ -396,11 +398,13 @@ async function gz(str){
 }
 async function gunz(u8){var s=new Blob([u8]).stream().pipeThrough(new DecompressionStream('gzip'));return await new Response(s).text()}
 async function encryptObj(obj,key,salt){
+  if(PLAIN)return{v:1,plain:1,data:JSON.parse(JSON.stringify(obj))};
   var p=await gz(JSON.stringify(obj)),iv=crypto.getRandomValues(new Uint8Array(12));
   var ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,p.b));
   return{v:1,alg:'PBKDF2-SHA256/AES-GCM-256',it:ITER,z:p.z,salt:salt,iv:b64(iv),ct:b64(ct)};
 }
 async function decryptObj(f,key){
+  if(f&&f.plain)return JSON.parse(JSON.stringify(f.data));
   var pt=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(f.iv)},key,unb64(f.ct)));
   return JSON.parse(f.z?await gunz(pt):dec.decode(pt));
 }
@@ -409,7 +413,7 @@ async function loadKey(){try{var o=JSON.parse(localStorage.getItem('zap-key')||'
 async function storeKey(k,salt){KEY=k;SALT=salt;try{var raw=new Uint8Array(await crypto.subtle.exportKey('raw',k));localStorage.setItem('zap-key',JSON.stringify({k:b64(raw),salt:salt}))}catch(e){}}
 function dropKey(){KEY=null;SALT=null;try{localStorage.removeItem('zap-key');localStorage.removeItem('zap-cache')}catch(e){}}
 async function cacheLocal(){if(!KEY)return;try{localStorage.setItem('zap-cache',JSON.stringify(await encryptObj(state,KEY,SALT)))}catch(e){}}
-async function loadCache(){if(!KEY)return false;try{var f=JSON.parse(localStorage.getItem('zap-cache')||'null');if(f&&f.salt===SALT){var s=await decryptObj(f,KEY);if(s&&s.b){s.cfg=normCfg(s.cfg);state=s;return true}}}catch(e){}return false}
+async function loadCache(){if(!KEY)return false;try{var f=JSON.parse(localStorage.getItem('zap-cache')||'null');if(f&&(f.plain||f.salt===SALT)){var s=await decryptObj(f,KEY);if(s&&s.b){s.cfg=normCfg(s.cfg);state=s;return true}}}catch(e){}return false}
 
 /* ---------- GitHub ---------- */
 var GH={owner:'Avomik',repo:'Grafic-smen',path:'zapis.json'};
@@ -495,12 +499,12 @@ async function loadGraph(){
 }
 function handleErr(e){var c=e&&e.code;stMsg='';if(c==='auth'){conn='bad';canWrite=false}else if(c==='rate')conn='rate';else conn=remoteReady?'err':'slow'}
 async function absorb(f){
-  if(!KEY||f.salt!==SALT){dropKey();showLock();return false}
+  if(!f.plain&&(!KEY||KEY.plain||f.salt!==SALT)){dropKey();showLock();return false}
   var rs;
   try{rs=await decryptObj(f,KEY)}catch(e){dropKey();showLock();return false}
   rs.cfg=normCfg(rs.cfg);
   var m=merge(state,rs);
-  dirty=canon(m)!==canon(rs);
+  dirty=canon(m)!==canon(rs)||(PLAIN&&!f.plain&&canWrite);
   state=m;cacheLocal();
   return true;
 }
@@ -509,7 +513,7 @@ async function pull(){
   if(syncing||syncTimer)return;
   try{
     var g=await ghGet();
-    if(!g.exists){remoteSha=null;remoteFile=null;remoteReady=true;if(!KEY)showLock();setSt();return}
+    if(!g.exists){remoteSha=null;remoteFile=null;remoteReady=true;if(!KEY)showLock();else if(PLAIN&&!appVisible()){openApp();rerender()}setSt();return}
     remoteReady=true;
     if(g.sha!==remoteSha||!KEY){
       remoteSha=g.sha;remoteFile=g.data;
@@ -556,7 +560,7 @@ function showLock(){
   var b=document.getElementById('lockBox'),h;b.style.display='';
   var gb=document.getElementById('ghBox');gb.innerHTML='';gb.style.display='none';ghOpen=false;document.getElementById('gToggle').textContent='Синхронизация GitHub ▸';
   if(remoteFile){
-    h='<h2 style="margin-top:0">Введите пароль</h2><div class="sub">Данные клиентов зашифрованы. Пароль выдаёт руководитель; на этом устройстве его нужно ввести один раз.</div><input type="password" id="pw1" placeholder="Пароль" autocomplete="current-password"><div class="err" id="pwErr"></div><button class="pri" id="pwGo">Открыть</button>';
+    h='<h2 style="margin-top:0">Введите пароль</h2><div class="sub">Данные клиентов в репозитории пока зашифрованы. Введите пароль один раз: после этого шифрование будет снято и пароль больше не понадобится.</div><input type="password" id="pw1" placeholder="Пароль" autocomplete="current-password"><div class="err" id="pwErr"></div><button class="pri" id="pwGo">Открыть</button>';
   }else if(!remoteReady){
     h='<div class="sub" style="margin:0">Загрузка…</div>';
   }else if(canWrite){
@@ -570,7 +574,7 @@ function showLock(){
   if(go)go.onclick=async function(){
     var pw=p1.value,err=document.getElementById('pwErr');if(!pw){err.textContent='Введите пароль';return}
     go.disabled=true;err.textContent='';
-    try{var k=await deriveKey(pw,remoteFile.salt);await decryptObj(remoteFile,k);await storeKey(k,remoteFile.salt);state=emptyState();await absorb(remoteFile);dirty=false;openApp();rerender();conn=canWrite?'ok':'ro';setSt()}
+    try{var k=await deriveKey(pw,remoteFile.salt);await decryptObj(remoteFile,k);await storeKey(k,remoteFile.salt);state=emptyState();await absorb(remoteFile);dirty=PLAIN&&canWrite;openApp();rerender();conn=canWrite?'ok':'ro';setSt();if(dirty)schedSync()}
     catch(e){err.textContent='Неверный пароль';go.disabled=false}
   };
   if(nw)nw.onclick=async function(){
@@ -951,7 +955,8 @@ function renderSet(){
   h+='<div class="row" style="margin-top:6px"><b>Приём клиентов</b></div><div class="row"><label style="min-width:240px">Не больше клиентов на одни полчаса</label><input type="number" id="capI" min="1" max="10" value="'+c.cap+'" style="width:70px"></div><div class="sub" style="margin:0">Обычно равно числу сервисных консультантов на приёмке.</div>';
   var hh='';for(var m=360;m<=1320;m+=30)hh+='<option value="'+m+'">'+fm(m)+'</option>';
   h+='<div class="row" style="margin-top:6px"><b>Часы записи</b></div><div class="row"><label>с</label><select id="openI">'+hh+'</select><label>до</label><select id="closeI">'+hh+'</select></div>';
-  h+='<div class="row" style="margin-top:6px"><b>Пароль на данные клиентов</b></div><div class="row"><input type="password" id="np1" placeholder="Новый пароль" autocomplete="new-password"><input type="password" id="np2" placeholder="Повторите" autocomplete="new-password"><button id="npGo">Сменить пароль</button></div><div class="err" id="npErr"></div><div class="sub" style="margin:0">После смены на других устройствах попросит ввести новый пароль.</div>';
+  if(PLAIN)h+='<div class="row" style="margin-top:6px"><b>Шифрование данных клиентов</b></div><div class="sub" style="margin:0">Выключено: записи хранятся в репозитории открытым текстом, пароль не нужен.</div>';
+  else h+='<div class="row" style="margin-top:6px"><b>Пароль на данные клиентов</b></div><div class="row"><input type="password" id="np1" placeholder="Новый пароль" autocomplete="new-password"><input type="password" id="np2" placeholder="Повторите" autocomplete="new-password"><button id="npGo">Сменить пароль</button></div><div class="err" id="npErr"></div><div class="sub" style="margin:0">После смены на других устройствах попросит ввести новый пароль.</div>';
   var s=document.getElementById('set');s.innerHTML=h;
   sv('openI',c.open);sv('closeI',c.close);
 }
@@ -1023,7 +1028,7 @@ document.getElementById('spB').addEventListener('click',async function(){
 
 /* ---------- блок синхронизации ---------- */
 function renderGh(box){
-  box.innerHTML='<div class="set"><div class="row"><label style="min-width:90px">Репозиторий</label><input type="text" id="ghOwner" style="max-width:160px" placeholder="владелец" autocomplete="off"><span>/</span><input type="text" id="ghRepo" style="max-width:190px" placeholder="репозиторий" autocomplete="off"></div><div class="row"><label style="min-width:90px">Токен</label><input type="password" id="ghTok" placeholder="'+(token?'токен сохранён на этом устройстве':'github_pat_…')+'" autocomplete="off"><button id="ghSave" class="pri">Сохранить</button><button id="ghDel">Удалить токен</button></div></div><div class="sub" style="margin-top:8px">Просмотр записей работает без токена, нужен только пароль. Чтобы записывать клиентов, нужен токен GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens, доступ только к этому репозиторию, право Contents: Read and write. Токен общий с графиком смен: если он уже введён там на этом устройстве, здесь вводить не нужно. Токен хранится только в этом браузере.</div>';
+  box.innerHTML='<div class="set"><div class="row"><label style="min-width:90px">Репозиторий</label><input type="text" id="ghOwner" style="max-width:160px" placeholder="владелец" autocomplete="off"><span>/</span><input type="text" id="ghRepo" style="max-width:190px" placeholder="репозиторий" autocomplete="off"></div><div class="row"><label style="min-width:90px">Токен</label><input type="password" id="ghTok" placeholder="'+(token?'токен сохранён на этом устройстве':'github_pat_…')+'" autocomplete="off"><button id="ghSave" class="pri">Сохранить</button><button id="ghDel">Удалить токен</button></div></div><div class="sub" style="margin-top:8px">'+(PLAIN?'Просмотр записей работает без токена.':'Просмотр записей работает без токена, нужен только пароль.')+' Чтобы записывать клиентов, нужен токен GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens, доступ только к этому репозиторию, право Contents: Read and write. Токен общий с графиком смен: если он уже введён там на этом устройстве, здесь вводить не нужно. Токен хранится только в этом браузере.</div>';
   sv('ghOwner',GH.owner);sv('ghRepo',GH.repo);
   document.getElementById('ghSave').onclick=function(){
     var o=fv('ghOwner').trim(),r=fv('ghRepo').trim(),t=fv('ghTok').trim();
@@ -1094,6 +1099,7 @@ var rzT=null,rzN=innerWidth<600;addEventListener('resize',function(){clearTimeou
   if(!window.crypto||!crypto.subtle){document.getElementById('syncSt').textContent='Этот браузер не поддерживает шифрование. Откройте страницу по адресу https:// в современном браузере.';return}
   loadGraphCache();
   await loadKey();
+  if(!KEY&&PLAIN)KEY={plain:1};
   if(KEY&&await loadCache()){openApp();render()}else showLock();
   setSt();
   await pull();
