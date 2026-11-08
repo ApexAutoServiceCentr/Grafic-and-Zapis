@@ -210,6 +210,23 @@ body.ro .eo{display:none!important}
 .tabs a:hover{color:var(--tx)}
 .tabs a.on{background:var(--tx);color:var(--bg);font-weight:700}
 @media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
+body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-users .pu{display:none!important}
+.me{display:inline-flex;align-items:center;gap:6px;color:var(--mu);font-size:13px;margin-right:4px}
+.me b{color:var(--tx);font-weight:600}
+#fBy[readonly]{background:transparent;color:var(--tx)}
+#fHist{margin-top:8px;font-size:13px}
+#fHist summary{cursor:pointer;color:var(--mu);user-select:none}
+#fHist summary:hover{color:var(--tx)}
+#fHist ol{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:auto}
+#fHist li{border-left:3px solid var(--bd);padding:2px 0 2px 8px;line-height:1.4}
+#fHist li .hw{color:var(--mu)}
+#fHist li .hc{display:block}
+#fHist li s{color:var(--mu)}
+.ul{display:flex;flex-direction:column;gap:4px}
+.ul .row{flex-wrap:wrap}
+.ul .un{min-width:180px;font-weight:600}
+.ul .un small{display:block;font-weight:400;color:var(--mu)}
+.lock label{display:block;font-size:13px;color:var(--mu);margin-top:6px}
 </style>
 </head>
 <body class="ro">
@@ -224,15 +241,16 @@ body.ro .eo{display:none!important}
 <button id="next" aria-label="Следующий день">›</button>
 <button id="today">Сегодня</button>
 <input type="date" id="dPick" aria-label="Перейти к дате">
-<button id="newB" class="pri eo" aria-label="Новая запись">+<span class="t"><span class="t2"> Новая</span> запись</span></button>
+<button id="newB" class="pri eo pe" aria-label="Новая запись">+<span class="t"><span class="t2"> Новая</span> запись</span></button>
 </div>
 <div class="bar" style="margin-bottom:0"><input type="text" id="q" placeholder="Поиск по всем записям: госномер, телефон, имя или слово из комментария" style="flex:1;min-width:200px" autocomplete="off"></div>
 </div>
 </div>
 <div id="qRes"></div>
 <div id="menu" class="menu" style="display:none">
-<div class="tools"><button id="sToggle" class="eo" aria-expanded="false">Настройки ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button><button id="stToggle" aria-expanded="false">Статистика ▸</button><button id="spB" class="eo" title="Пароль спрашивается при открытии «Настроек». Пароль общий для всех устройств.">🔓 Задать пароль на настройки</button></div>
-<div id="setBox" class="eo" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
+<div class="tools"><span class="me" id="meInfo"></span><button id="myPw">Сменить мой пароль</button><button id="outB">Выйти</button><button id="sToggle" class="pset" aria-expanded="false">Настройки ▸</button><button id="uToggle" class="pu" aria-expanded="false">Пользователи ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button><button id="stToggle" class="ps" aria-expanded="false">Статистика ▸</button></div>
+<div id="setBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
+<div id="uBox" class="pu" style="display:none;margin-bottom:12px"><div class="set" id="usr"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
 <div id="stBox" style="display:none;margin-bottom:12px"><div class="set" id="stat"></div></div>
 <div class="leg">
@@ -282,12 +300,13 @@ body.ro .eo{display:none!important}
 <div class="f"><label for="fKm">Пробег, км</label><input type="text" id="fKm" inputmode="numeric" maxlength="11" placeholder="85 000"></div>
 <div class="f w2"><label for="fDesc">Комментарий: что нужно сделать, жалоба клиента</label><textarea id="fDesc" maxlength="1000"></textarea></div>
 <div class="f"><label for="fStatus">Статус</label><select id="fStatus"></select></div>
-<div class="f"><label for="fBy">Кто записал</label><input type="text" id="fBy" maxlength="40" placeholder="Имя сотрудника"></div>
+<div class="f"><label for="fBy">Кто записал</label><input type="text" id="fBy" maxlength="40" readonly tabindex="-1" placeholder="заполнится автоматически"></div>
 </div>
 <div class="reqn eo"><span class="req">*</span> обязательные поля. Госномер можно указать не полностью.</div>
 <div class="err" id="fErr" role="alert" style="margin-top:8px"></div>
 <div class="acts"><button type="button" id="fDel" class="eo">Удалить</button><span class="sp"></span><button type="button" id="fCancel">Закрыть</button><button type="button" id="fSave" class="pri eo">Сохранить</button></div>
 <div class="sub" id="fMeta" style="margin:8px 0 0"></div>
+<details id="fHist" hidden><summary id="fHistS">История изменений</summary><ol id="fHistL"></ol></details>
 </form></dialog>
 <div id="tip" role="tooltip"></div>
 
@@ -300,6 +319,16 @@ var SRC={call:'Звонок',visit:'Визит',online:'Онлайн'},SRCI={"ca
 var TS={to:'ТО',rm:'Ремонт',dg:'Диагностика',gr:'Гарантия',eq:'Доп. оборуд.',sh:'Шиномонтаж',ml:'Замена масла',ak:'Акция'};
 var STS=[{k:'zap',n:'Записан'},{k:'done',n:'Готов'},{k:'nos',n:'Не приехал'}];
 var SN={};STS.forEach(function(s){SN[s.k]=s.n});
+/* ---------- роли и права ----------
+   edit — создавать и менять записи (и ставить статусы), del — удалять записи, stats — статистика,
+   set — настройки (посты, часы) и «Сотрудники и график» в графике, graf — менять график смен, users — пользователи и пароли */
+var ROLES={adm:{n:'Администратор сервиса',p:'edit del'},sc:{n:'Сервисный консультант',p:'edit del stats'},war:{n:'Гарантийный инженер',p:'edit stats'},mc:{n:'Мастер цеха',p:'edit del stats graf'},head:{n:'Руководитель сервиса',p:'edit del stats set graf'},dir:{n:'Директор',p:'stats set graf'},mech:{n:'Механики',p:''},owner:{n:'Владелец (управляет пользователями)',p:'edit del stats set graf users'}};
+var ROLE_ORDER=['adm','sc','war','mc','head','dir','mech','owner'];
+var UID=null;
+function me(){var u=UID&&state.users&&state.users[UID];return u&&!u.del?u:null}
+function can(p){var u=me(),r=u&&ROLES[u.role];return !!r&&(' '+r.p+' ').indexOf(' '+p+' ')>=0}
+/* для вкладки «График смен»: кто вошёл и что ему можно */
+window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,graf:can('graf'),set:can('set')}};
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
 var KINDS={me:'механик',el:'электрик'};
 function pad(n){return n<10?'0'+n:''+n}
@@ -336,7 +365,7 @@ function now(){return Date.now()}
 
 /* ---------- данные ---------- */
 function defCfg(){return{posts:[{id:'p1',name:'Пост 1',kind:'me',emp:[3,6]},{id:'p2',name:'Пост 2',kind:'me',emp:[4,7]},{id:'p3',name:'Пост 3',kind:'me',emp:[5,8]},{id:'p4',name:'Пост 4',kind:'el',emp:[9,10]}],open:540,close:1140,step:30,cap:3,brk:[780,810],cu:0}}
-function emptyState(){return{v:1,cfg:defCfg(),b:{}}}
+function emptyState(){return{v:1,cfg:defCfg(),b:{},users:{}}}
 var state=emptyState();
 function normCfg(c){var d=defCfg(),k;c=c||{};for(k in d)if(c[k]===undefined)c[k]=d[k];delete c.dur;
   c.posts.forEach(function(p){if(!p.emp){var dp=d.posts.filter(function(x){return x.id===p.id})[0];p.emp=dp?dp.emp.slice():[]}});return c}
@@ -377,19 +406,23 @@ function conflicts(date){var l=dayList(date).filter(occupies),cf={},i,j,a,b;
   return cf}
 
 /* Слияние двух версий: по каждой записи побеждает более свежая правка, удаления хранятся метками */
+function mergeH(x,y){if(!x||!x.length)return y;if(!y||!y.length)return x;var m={},r=[];x.concat(y).forEach(function(e){var q=e.t+'|'+e.u+'|'+e.a;if(!m[q]){m[q]=1;r.push(e)}});r.sort(function(p,q){return p.t-q.t});return r.slice(-60)}
 function merge(a,b){
-  var r={v:1,cfg:(b.cfg&&(b.cfg.cu||0)>(a.cfg.cu||0))?b.cfg:a.cfg,b:{}},k;
+  var r={v:1,cfg:(b.cfg&&(b.cfg.cu||0)>(a.cfg.cu||0))?b.cfg:a.cfg,b:{},users:{}},k,x,y;
   for(k in a.b)r.b[k]=a.b[k];
-  for(k in b.b)if(!r.b[k]||(b.b[k].u||0)>(r.b[k].u||0))r.b[k]=b.b[k];
+  for(k in b.b){x=r.b[k];y=b.b[k];if(!x||(y.u||0)>(x.u||0)){r.b[k]=y;x&&!x.del&&!y.del&&(x.h||y.h)&&(r.b[k]=Object.assign({},y,{h:mergeH(y.h,x.h)}))}else if(!x.del&&!y.del&&(x.h||y.h))r.b[k]=Object.assign({},x,{h:mergeH(x.h,y.h)})}
+  var ua=a.users||{},ub=b.users||{};
+  for(k in ua)r.users[k]=ua[k];
+  for(k in ub)if(!r.users[k]||(ub[k].u||0)>(r.users[k].u||0))r.users[k]=ub[k];
   r.cfg=normCfg(r.cfg);return r;
 }
-function canon(s){var ks=Object.keys(s.b).sort(),o={},i;for(i=0;i<ks.length;i++)o[ks[i]]=s.b[ks[i]];return JSON.stringify({cfg:s.cfg,b:o})}
+function canon(s){var ks=Object.keys(s.b).sort(),o={},i,us=s.users||{},uk=Object.keys(us).sort(),uo={};for(i=0;i<ks.length;i++)o[ks[i]]=s.b[ks[i]];for(i=0;i<uk.length;i++)uo[uk[i]]=us[uk[i]];return JSON.stringify({cfg:s.cfg,b:o,users:uo})}
 function purge(s){var lim=now()-90*864e5,k;for(k in s.b)if(s.b[k].del&&(s.b[k].u||0)<lim)delete s.b[k]}
 
 /* ---------- шифрование: PBKDF2 + AES-GCM, сжатие gzip ---------- */
 var enc=new TextEncoder(),dec=new TextDecoder();
 /* PLAIN=true — шифрование снято: zapis.json хранится открытым текстом. Чтобы вернуть шифрование, поставить false */
-var PLAIN=true;
+var PLAIN=false;
 var ITER=250000;
 function b64(u8){var s='',i,ch=0x8000;for(i=0;i<u8.length;i+=ch)s+=String.fromCharCode.apply(null,u8.subarray(i,i+ch));return btoa(s)}
 function unb64(s){var bin=atob(s),u=new Uint8Array(bin.length),i;for(i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
@@ -407,19 +440,29 @@ async function encryptObj(obj,key,salt){
   if(PLAIN)return{v:1,plain:1,data:JSON.parse(JSON.stringify(obj))};
   var p=await gz(JSON.stringify(obj)),iv=crypto.getRandomValues(new Uint8Array(12));
   var ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,p.b));
-  return{v:1,alg:'PBKDF2-SHA256/AES-GCM-256',it:ITER,z:p.z,salt:salt,iv:b64(iv),ct:b64(ct)};
+  var us=obj.users||{},ul=[],k;for(k in us)if(!us[k].del&&us[k].w)ul.push({id:k,iv:us[k].iv,w:us[k].w});
+  return{v:2,alg:'PBKDF2-SHA256/AES-GCM-256',it:ITER,z:p.z,salt:salt,u:ul,iv:b64(iv),ct:b64(ct)};
 }
 async function decryptObj(f,key){
   if(f&&f.plain)return JSON.parse(JSON.stringify(f.data));
   var pt=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(f.iv)},key,unb64(f.ct)));
   return JSON.parse(f.z?await gunz(pt):dec.decode(pt));
 }
+/* Ключ данных KEY — случайный. У каждого пользователя он лежит в файле, зашифрованный его личным паролем (u:[{id,iv,w}]).
+   Пароль → PBKDF2 с общей солью SALT → ключ, которым открывается своя копия KEY. */
 var KEY=null,SALT=null;
-async function loadKey(){try{var o=JSON.parse(localStorage.getItem('zap-key')||'null');if(o&&o.k&&o.salt){KEY=await crypto.subtle.importKey('raw',unb64(o.k),{name:'AES-GCM'},true,['encrypt','decrypt']);SALT=o.salt}}catch(e){KEY=null;SALT=null}}
-async function storeKey(k,salt){KEY=k;SALT=salt;try{var raw=new Uint8Array(await crypto.subtle.exportKey('raw',k));localStorage.setItem('zap-key',JSON.stringify({k:b64(raw),salt:salt}))}catch(e){}}
-function dropKey(){KEY=null;SALT=null;try{localStorage.removeItem('zap-key');localStorage.removeItem('zap-cache')}catch(e){}}
+async function loadKey(){try{var o=JSON.parse(localStorage.getItem('zap-key')||'null');if(o&&o.k&&o.salt&&o.uid){KEY=await crypto.subtle.importKey('raw',unb64(o.k),{name:'AES-GCM'},true,['encrypt','decrypt']);SALT=o.salt;UID=o.uid}else if(o)localStorage.removeItem('zap-key')}catch(e){KEY=null;SALT=null;UID=null}}
+async function storeKey(k,salt,id){KEY=k;SALT=salt;UID=id;try{var raw=new Uint8Array(await crypto.subtle.exportKey('raw',k));localStorage.setItem('zap-key',JSON.stringify({k:b64(raw),salt:salt,uid:id}))}catch(e){}}
+function dropKey(){KEY=null;SALT=null;UID=null;try{localStorage.removeItem('zap-key');localStorage.removeItem('zap-cache')}catch(e){}}
+async function wrapFor(pw,salt,dk){var K=await deriveKey(pw,salt),raw=new Uint8Array(await crypto.subtle.exportKey('raw',dk)),iv=crypto.getRandomValues(new Uint8Array(12));
+  var w=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},K,raw));return{iv:b64(iv),w:b64(w),K:K}}
+async function unwrapWith(K,list,skip){for(var i=0;i<(list||[]).length;i++){var e=list[i];if(!e||!e.w||e.id===skip)continue;
+  try{var raw=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(e.iv)},K,unb64(e.w));return{id:e.id,key:await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},true,['encrypt','decrypt'])}}catch(x){}}return null}
+function wrapList(){var r=[],k,us=state.users||{};for(k in us)if(!us[k].del&&us[k].w)r.push({id:k,iv:us[k].iv,w:us[k].w});return r}
+/* пароль свободен? (у двух людей не может быть одинакового пароля — иначе не понять, кто вошёл) */
+async function pwTaken(K,skip){return !!(await unwrapWith(K,wrapList(),skip))}
 async function cacheLocal(){if(!KEY)return;try{localStorage.setItem('zap-cache',JSON.stringify(await encryptObj(state,KEY,SALT)))}catch(e){}}
-async function loadCache(){if(!KEY)return false;try{var f=JSON.parse(localStorage.getItem('zap-cache')||'null');if(f&&(f.plain||f.salt===SALT)){var s=await decryptObj(f,KEY);if(s&&s.b){s.cfg=normCfg(s.cfg);state=s;return true}}}catch(e){}return false}
+async function loadCache(){if(!KEY)return false;try{var f=JSON.parse(localStorage.getItem('zap-cache')||'null');if(f&&!f.plain&&f.v===2&&f.salt===SALT&&UID){var s=await decryptObj(f,KEY);if(s&&s.b){s.cfg=normCfg(s.cfg);s.users=s.users||{};if(!s.users[UID]||s.users[UID].del)return false;state=s;return true}}}catch(e){}return false}
 
 /* ---------- GitHub ---------- */
 var GH={owner:'Avomik',repo:'Grafic-smen',path:'zapis.json'};
@@ -429,7 +472,7 @@ var canWrite=!!token,remoteSha=null,remoteFile=null,remoteReady=false,dirty=fals
 var conn='connecting',stMsg='';
 var ST={connecting:'Загрузка с GitHub…',ok:'GitHub · синхронизировано',saving:'Сохранение…',ro:'Только просмотр · для записи нужен токен',err:'Ошибка сохранения, повторяю…',slow:'Нет связи с GitHub, показаны сохранённые на устройстве данные',bad:'GitHub отклонил токен · проверьте токен и его права',rate:'GitHub ограничил число запросов · попробуйте позже',locked:''};
 var STC={ok:'g',ro:'n',saving:'w',connecting:'w',err:'r',slow:'w',bad:'r',rate:'w'};
-function setSt(){document.body.classList.toggle('ro',!(canWrite&&KEY));var t=stMsg||ST[conn]||'',c=stMsg?'r':(STC[conn]||'n'),d=document.getElementById('syncDot'),e=document.getElementById('syncSt');
+function setSt(){document.body.classList.toggle('ro',!(canWrite&&KEY&&can('edit')));applyPerm();var t=stMsg||ST[conn]||'',c=stMsg?'r':(STC[conn]||'n'),d=document.getElementById('syncDot'),e=document.getElementById('syncSt');
   d.className='dot '+c;d.title=t;d.setAttribute('aria-label',t);e.textContent=(c==='r'||(c==='w'&&conn!=='saving'&&conn!=='connecting')||!appVisible())?t:''}
 function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
 function b64d(s){return decodeURIComponent(escape(atob(String(s).replace(/\s/g,''))))}
@@ -510,13 +553,22 @@ async function loadGraph(){
 }
 function handleErr(e){var c=e&&e.code;stMsg='';if(c==='auth'){conn='bad';canWrite=false}else if(c==='rate')conn='rate';else conn=remoteReady?'err':'slow'}
 async function absorb(f){
-  if(!f.plain&&(!KEY||KEY.plain||f.salt!==SALT)){dropKey();showLock();return false}
+  if(f.plain||!f.u){
+    /* в репозитории ещё открытый файл: пока защита не включена — экран включения, иначе вливаем его записи в зашифрованные */
+    if(!KEY||!UID){showLock();return false}
+    var ps;try{ps=await decryptObj(f,null)}catch(e){ps=null}
+    if(ps&&ps.b){ps.cfg=normCfg(ps.cfg);ps.users={};state=merge(state,ps)}
+    dirty=true;cacheLocal();return true;
+  }
+  if(!KEY||!UID||f.salt!==SALT){dropKey();showLock();return false}
   var rs;
   try{rs=await decryptObj(f,KEY)}catch(e){dropKey();showLock();return false}
-  rs.cfg=normCfg(rs.cfg);
+  rs.cfg=normCfg(rs.cfg);rs.users=rs.users||{};
   var m=merge(state,rs);
-  dirty=canon(m)!==canon(rs)||(PLAIN&&!f.plain&&canWrite);
-  state=m;cacheLocal();
+  dirty=canon(m)!==canon(rs);
+  state=m;
+  if(!me()){var gone=state.users[UID];dropKey();state=emptyState();showLock(gone?'Ваш пользователь удалён. Обратитесь к владельцу.':'');return false}
+  cacheLocal();applyPerm();
   return true;
 }
 async function pull(){
@@ -524,11 +576,11 @@ async function pull(){
   if(syncing||syncTimer)return;
   try{
     var g=await ghGet();
-    if(!g.exists){remoteSha=null;remoteFile=null;remoteReady=true;if(!KEY)showLock();else if(PLAIN&&!appVisible()){openApp();rerender()}setSt();return}
+    if(!g.exists){remoteSha=null;remoteFile=null;remoteReady=true;if(!KEY||!UID)showLock();setSt();return}
     remoteReady=true;
     if(g.sha!==remoteSha||!KEY){
       remoteSha=g.sha;remoteFile=g.data;
-      if(!KEY){showLock();setSt();return}
+      if(!KEY||!UID){showLock();setSt();return}
       if(!(await absorb(g.data))){setSt();return}
       openApp();rerender();
       if(dirty)schedSync();
@@ -563,42 +615,61 @@ async function syncNow(){
   else if(syncAgain||dirty){syncAgain=false;schedSync()}
 }
 function commit(){dirty=true;cacheLocal();schedSync();rerender()}
+function applyPerm(){var B=document.body.classList,w=canWrite&&KEY;
+  B.toggle('no-edit',!(w&&can('edit')));B.toggle('no-del',!(w&&can('del')));B.toggle('no-stats',!can('stats'));B.toggle('no-set',!(w&&can('set')));B.toggle('no-users',!(w&&can('users')));
+  var u=me(),mi=document.getElementById('meInfo');if(mi)mi.innerHTML=u?'👤 <b>'+esc(u.name)+'</b> · '+esc((ROLES[u.role]||{}).n||''):'';
+  if(typeof stOpen!=='undefined'&&stOpen&&!can('stats')){stOpen=false;applyStBox()}
+  if(typeof setOpen!=='undefined'&&setOpen&&!(w&&can('set'))){setOpen=false;applySetBox()}
+  if(typeof uOpen!=='undefined'&&uOpen&&!(w&&can('users'))){uOpen=false;applyUBox()}}
 
 /* ---------- экран пароля ---------- */
-function showLock(){
+function showLock(msg){
   document.getElementById('app').style.display='none';document.getElementById('top').style.display='none';document.getElementById('menuB').style.display='none';document.getElementById('menu').style.display='none';document.getElementById('cnt').style.display='none';
-  document.getElementById('days').innerHTML='';RS=null;needScroll=true;
+  document.getElementById('days').innerHTML='';RS=null;needScroll=true;menuOpen=false;
   var b=document.getElementById('lockBox'),h;b.style.display='';
   var gb=document.getElementById('ghBox');gb.innerHTML='';gb.style.display='none';ghOpen=false;document.getElementById('gToggle').textContent='Синхронизация GitHub ▸';
-  if(remoteFile){
-    h='<h2 style="margin-top:0">Введите пароль</h2><div class="sub">Данные клиентов в репозитории пока зашифрованы. Введите пароль один раз: после этого шифрование будет снято и пароль больше не понадобится.</div><input type="password" id="pw1" placeholder="Пароль" autocomplete="current-password"><div class="err" id="pwErr"></div><button class="pri" id="pwGo">Открыть</button>';
+  var note=msg?'<div class="err" style="margin:0 0 8px">'+esc(msg)+'</div>':'';
+  if(remoteFile&&remoteFile.u&&!remoteFile.plain){
+    h='<h2 style="margin-top:0">Вход</h2>'+note+'<div class="sub">Введите ваш личный пароль. Его выдаёт тот, кто управляет пользователями. На этом устройстве пароль нужно ввести один раз, до выхода.</div><input type="password" id="pw1" placeholder="Личный пароль" autocomplete="current-password"><div class="err" id="pwErr"></div><button class="pri" id="pwGo">Войти</button>';
   }else if(!remoteReady){
     h='<div class="sub" style="margin:0">Загрузка…</div>';
   }else if(canWrite){
-    h='<h2 style="margin-top:0">Придумайте пароль</h2><div class="sub">Записей пока нет. Задайте пароль, которым будут зашифрованы данные клиентов в репозитории. Сообщите его сервисным консультантам и колл-центру. Если пароль потерять, данные восстановить нельзя.</div><input type="password" id="pw1" placeholder="Пароль, не короче 8 символов" autocomplete="new-password"><input type="password" id="pw2" placeholder="Повторите пароль" autocomplete="new-password"><div class="err" id="pwErr"></div><button class="pri" id="pwNew">Создать</button>';
+    h='<h2 style="margin-top:0">Включаем защиту данных</h2>'+note+'<div class="sub">'+(remoteFile?'Сейчас записи клиентов хранятся в репозитории открыто. ':'Записей пока нет. ')+'Укажите своё имя и придумайте пароль: вы станете владельцем — будете добавлять сотрудников, выдавать им роли и личные пароли. После этого записи будут зашифрованы. Если пароль владельца потерять, восстановить его нельзя.</div><label for="pwName">Ваше имя, как будет видно в записях</label><input type="text" id="pwName" maxlength="40" placeholder="Например, Иванов А." autocomplete="name"><input type="password" id="pw1" placeholder="Пароль владельца, не короче 8 символов" autocomplete="new-password"><input type="password" id="pw2" placeholder="Повторите пароль" autocomplete="new-password"><div class="err" id="pwErr"></div><button class="pri" id="pwNew">Включить защиту</button>';
   }else{
-    h='<h2 style="margin-top:0">Записей пока нет</h2><div class="sub">Чтобы начать, откройте страницу на устройстве, где введён токен GitHub, или введите токен ниже: появится шаг создания пароля.</div><div id="ghLock"></div>';
+    h='<h2 style="margin-top:0">Защита данных ещё не включена</h2>'+note+'<div class="sub">Откройте страницу на устройстве, где введён токен GitHub, или введите токен ниже: появится шаг включения защиты.</div><div id="ghLock"></div>';
   }
   b.innerHTML=h;
-  var go=document.getElementById('pwGo'),nw=document.getElementById('pwNew'),p1=document.getElementById('pw1');
-  if(p1){p1.focus();p1.addEventListener('keydown',function(e){if(e.key==='Enter')(go||nw).click()})}
+  var go=document.getElementById('pwGo'),nw=document.getElementById('pwNew'),p1=document.getElementById('pw1'),pn=document.getElementById('pwName');
+  if(p1){(pn||p1).focus();p1.addEventListener('keydown',function(e){if(e.key==='Enter')(go||nw).click()})}
   if(go)go.onclick=async function(){
     var pw=p1.value,err=document.getElementById('pwErr');if(!pw){err.textContent='Введите пароль';return}
-    go.disabled=true;err.textContent='';
-    try{var k=await deriveKey(pw,remoteFile.salt);await decryptObj(remoteFile,k);await storeKey(k,remoteFile.salt);state=emptyState();await absorb(remoteFile);dirty=PLAIN&&canWrite;openApp();rerender();conn=canWrite?'ok':'ro';setSt();if(dirty)schedSync()}
-    catch(e){err.textContent='Неверный пароль';go.disabled=false}
+    go.disabled=true;err.textContent='Проверяю…';
+    try{var K=await deriveKey(pw,remoteFile.salt),r=await unwrapWith(K,remoteFile.u);
+      if(!r){err.textContent='Неверный пароль';go.disabled=false;return}
+      await storeKey(r.key,remoteFile.salt,r.id);state=emptyState();
+      if(!(await absorb(remoteFile)))return;
+      dirty=false;openApp();rerender();conn=canWrite?'ok':'ro';setSt()}
+    catch(e){err.textContent='Не получилось войти: '+(e&&e.message||'ошибка');go.disabled=false}
   };
   if(nw)nw.onclick=async function(){
-    var a=p1.value,c=document.getElementById('pw2').value,err=document.getElementById('pwErr');
+    var name=(pn.value||'').trim(),a=p1.value,c=document.getElementById('pw2').value,err=document.getElementById('pwErr');
+    if(!name){err.textContent='Укажите имя';pn.focus();return}
     if(a.length<8){err.textContent='Пароль должен быть не короче 8 символов';return}
     if(a!==c){err.textContent='Пароли не совпадают';return}
-    nw.disabled=true;err.textContent='';
-    try{var salt=b64(crypto.getRandomValues(new Uint8Array(16))),k=await deriveKey(a,salt);await storeKey(k,salt);state=emptyState();state.cfg.cu=now();dirty=true;openApp();rerender();await syncNow()}
-    catch(e){err.textContent='Не получилось создать: '+(e&&e.message||'ошибка');nw.disabled=false}
+    nw.disabled=true;err.textContent='Включаю защиту…';
+    try{
+      var data=emptyState();
+      if(remoteFile&&remoteFile.plain){var ps=await decryptObj(remoteFile,null);if(ps&&ps.b){data=ps;data.cfg=normCfg(data.cfg)}}
+      data.users={};
+      var dk=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']),salt=b64(crypto.getRandomValues(new Uint8Array(16))),w=await wrapFor(a,salt,dk),id=uid();
+      data.users[id]={id:id,name:name,role:'owner',iv:w.iv,w:w.w,u:now()};
+      if(!data.cfg.cu)data.cfg.cu=now();
+      await storeKey(dk,salt,id);state=data;dirty=true;openApp();rerender();await syncNow()}
+    catch(e){err.textContent='Не получилось: '+(e&&e.message||'ошибка');nw.disabled=false}
   };
   if(document.getElementById('ghLock'))renderGh(document.getElementById('ghLock'));
 }
-function openApp(){var was=appVisible();setTimeout(setSt,0);document.getElementById('lockBox').style.display='none';document.getElementById('app').style.display='';document.getElementById('top').style.display='';document.getElementById('menuB').style.display='';applyMenu();if(!was)needScroll=true}
+function openApp(){var was=appVisible();applyPerm();setTimeout(setSt,0);document.getElementById('lockBox').style.display='none';document.getElementById('app').style.display='';document.getElementById('top').style.display='';document.getElementById('menuB').style.display='';applyMenu();if(!was)needScroll=true}
 
 /* ---------- таблица дня ---------- */
 var cur=iso(new Date()),RS=null,RE=null,needScroll=true,nar=false,RH=36;
@@ -732,7 +803,7 @@ document.getElementById('days').addEventListener('click',function(e){
 document.getElementById('days').addEventListener('dblclick',function(e){
   var bk=e.target.closest('.bk');if(bk&&state.b[bk.dataset.id]){var sl0=window.getSelection&&getSelection();if(sl0&&sl0.removeAllRanges)sl0.removeAllRanges();openForm(state.b[bk.dataset.id]);return}
   var t=e.target.closest('button.sl');if(!t||t.classList.contains('off')||t.classList.contains('brk'))return;
-  if(canWrite&&KEY){var sel=window.getSelection&&getSelection();if(sel&&sel.removeAllRanges)sel.removeAllRanges();openForm(null,{post:t.dataset.p,start:+t.dataset.t,date:t.closest('.day').dataset.d})}
+  if(canWrite&&KEY&&can('edit')){var sel=window.getSelection&&getSelection();if(sel&&sel.removeAllRanges)sel.removeAllRanges();openForm(null,{post:t.dataset.p,start:+t.dataset.t,date:t.closest('.day').dataset.d})}
 });
 function listClick(e){var t=e.target.closest('.it');if(t&&state.b[t.dataset.id]){var b=state.b[t.dataset.id];if(!secOf(b.date)||b.date!==cur)goto(b.date,false);openForm(b)}}
 document.getElementById('qRes').addEventListener('click',listClick);
@@ -776,7 +847,7 @@ function setType(t){fType=t;[].forEach.call(document.querySelectorAll('#fType bu
 function fv(id){return document.getElementById(id).value}
 function sv(id,v){document.getElementById(id).value=v==null?'':v}
 function openForm(b,pre){
-  var c=state.cfg,ro=!(canWrite&&KEY);
+  var c=state.cfg,ro=!(canWrite&&KEY&&can('edit'));
   edId=b?b.id:null;delArm=false;
   var d=b||{date:pre.date||cur,post:pre.post||c.posts[0]&&c.posts[0].id,start:pre.start!=null?pre.start:firstFree(pre.date||cur),type:'',len:0,status:'zap'};
   document.getElementById('fTitle').textContent=b?(ro?'Запись':'Изменить запись'):'Новая запись';
@@ -785,11 +856,12 @@ function openForm(b,pre){
   sv('fPost',d.post);
   fillSelects(d.start,d.len);setType(d.type);setSrc(d.src||'');
   var bm=splitCar(d);sv('fClient',d.client);setPhone(d.phone);sv('fBrand',bm.brand);sv('fModel',bm.model);fillModels();setTon(d.ton||'');sv('fPlate',d.plate);hideHint();document.getElementById('fKm').placeholder='85 000';sv('fYear',d.year);sv('fKm',d.km?fkm(d.km).replace(' км',''):'');sv('fDesc',d.desc);sv('fStatus',b?st(b):'zap');
-  sv('fBy',b?d.by:'');
+  sv('fBy',b?(d.by||''):(me()?me().name:''));
   document.getElementById('fErr').textContent='';
-  var del=document.getElementById('fDel');del.textContent='Удалить (отмена)';del.className='eo';del.style.display=b?'':'none';
+  var del=document.getElementById('fDel');del.textContent='Удалить (отмена)';del.className='eo pdl';del.style.display=b?'':'none';
   document.getElementById('fMeta').textContent=b&&b.u?'Последнее изменение: '+new Date(b.u).toLocaleString('ru-RU')+(b.ub?' · '+b.ub:''):'';
-  [].forEach.call(document.querySelectorAll('#frm input,#frm select,#frm textarea,#fType button,#fSrc button,#frm .cbb'),function(x){x.disabled=ro});
+  renderHist(b);
+  [].forEach.call(document.querySelectorAll('#frm input,#frm select,#frm textarea,#fType button,#fSrc button,#frm .cbb'),function(x){x.disabled=ro});document.getElementById('fBy').disabled=false;
   syncSelects();tonClose();clearMiss();
   dlg.showModal();
   if(!ro&&!b)setTimeout(function(){document.getElementById('fClient').focus()},50);
@@ -897,7 +969,7 @@ function findPrev(){var pl=normPlate(fv('fPlate')),ph=phoneKey(fv('fPhone')),bes
 var hintFor=null;
 function hideHint(){var h=document.getElementById('fHint');h.style.display='none';h.innerHTML='';hintFor=null}
 function showHint(){
-  if(edId||!(canWrite&&KEY))return;
+  if(edId||!(canWrite&&KEY&&can('edit')))return;
   var b=findPrev();if(!b){hideHint();return}
   if(hintFor===b.id)return;hintFor=b.id;
   var bm=splitCar(b),h=document.getElementById('fHint');
@@ -918,7 +990,7 @@ document.getElementById('fSrc').addEventListener('click',function(e){var t=e.tar
 function collect(){
   return{date:fv('fDate'),post:fv('fPost'),start:+fv('fStart'),len:+fv('fLen'),type:fType,client:fv('fClient').trim(),phone:getPhone(),brand:fixBrand(fv('fBrand')),model:fv('fModel').trim(),ton:fType==='to'?fv('fTon'):'',year:digits(fv('fYear')),km:digits(fv('fKm')).replace(/^0+(?=\d)/,''),plate:fv('fPlate').trim().toUpperCase().replace(/\s+/g,''),desc:fv('fDesc').trim(),src:fSrcV,status:fv('fStatus'),by:fv('fBy').trim()};
 }
-function liveCheck(){if(!(canWrite&&KEY))return;document.getElementById('fErr').textContent=check(collect(),edId)}
+function liveCheck(){if(!(canWrite&&KEY&&can('edit')))return;document.getElementById('fErr').textContent=check(collect(),edId)}
 /* подсветка незаполненных обязательных полей */
 function missEl(id){var el=document.getElementById(id);if(id==='fSrc')return el;return id==='fPhone'?el.closest('.ph'):(el.closest('.cb')||el)}
 function markMiss(id){missEl(id).classList.add('miss')}
@@ -936,9 +1008,14 @@ document.getElementById('fSave').onclick=function(){
   if(!err){var need=[['fSrc','откуда клиент',d.src],['fClient','клиент',d.client],['fPhone','телефон',d.phone],['fBrand','марку',d.brand],['fModel','модель',d.model],['fYear','год выпуска',d.year],['fPlate','госномер',d.plate]].filter(function(x){return !x[2]});
     if(need.length){err='Заполните: '+need.map(function(x){return x[1]}).join(', ');need.forEach(function(x){markMiss(x[0])});var f=document.getElementById(need[0][0]);if(f)f.focus()}}
   if(err){e.textContent=err;return}
-  var id=edId||uid(),old=state.b[id]||{};
+  if(!(canWrite&&KEY&&can('edit'))){e.textContent='Нет прав на изменение записей';return}
+  var id=edId||uid(),old=state.b[id]||{},u=me();
   d.car=[d.brand,d.model].filter(Boolean).join(' ');
-  d.id=id;d.u=now();d.ub=d.by;d.c=old.c||d.u;
+  d.by=edId?(old.by||''):u.name;
+  var ch=edId?hDiff(old,d):null;
+  if(edId&&!Object.keys(ch).length){dlg.close();return}
+  d.id=id;d.u=now();d.ub=u.name;d.ui=UID;d.c=old.c||d.u;
+  d.h=(old.h||[]).concat([edId?{t:d.u,u:UID,n:u.name,a:'e',ch:ch}:{t:d.u,u:UID,n:u.name,a:'c'}]).slice(-60);
   state.b[id]=d;
   try{localStorage.removeItem('zap-by')}catch(x){}
   var jump=d.date!==(old.date||cur);
@@ -946,10 +1023,34 @@ document.getElementById('fSave').onclick=function(){
 };
 document.getElementById('fDel').onclick=function(){
   if(!delArm){delArm=true;this.textContent='Точно удалить запись?';this.className='eo arm';return}
-  var b=state.b[edId];if(b){state.b[edId]={id:edId,del:true,u:now()}}
+  if(!(canWrite&&KEY&&can('del')))return;
+  var b=state.b[edId];if(b){state.b[edId]={id:edId,del:true,u:now(),ub:me().name,ui:UID}}
   dlg.close();commit();
 };
 document.getElementById('fCancel').onclick=function(){dlg.close()};
+/* ---------- история изменений карточки ---------- */
+var HF=[['date','Дата'],['start','Время приезда'],['post','Пост'],['len','Длительность'],['type','Вид работ'],['ton','Номер ТО'],['src','Откуда клиент'],['client','Клиент'],['phone','Телефон'],['brand','Марка'],['model','Модель'],['year','Год выпуска'],['plate','Госномер'],['km','Пробег'],['desc','Комментарий'],['status','Статус']];
+function hDiff(a,b){var r={};HF.forEach(function(f){var k=f[0],x=a[k]==null?'':a[k],y=b[k]==null?'':b[k];if(k==='status'){x=st(a);y=st(b)}if(String(x)!==String(y))r[k]=[x,y]});return r}
+function hDur(m){m=+m||0;var h=Math.floor(m/60),mm=m%60;return (h?h+' ч':'')+(h&&mm?' ':'')+(mm?mm+' мин':'')||'—'}
+function hVal(k,v){if(v===''||v==null)return '—';
+  if(k==='date')return fshort(v);if(k==='start')return fm(+v);if(k==='post')return postName(v);if(k==='len')return hDur(v);
+  if(k==='type'){var t=TYPES.filter(function(x){return x.k===v})[0];return t?t.n:v}if(k==='ton')return 'ТО-'+v;
+  if(k==='src')return SRC[v]||v;if(k==='status')return SN[v]||v;if(k==='phone')return '+7 '+phFmt(String(v));if(k==='km')return fkm(v);
+  if(k==='desc'&&String(v).length>60)return String(v).slice(0,60)+'…';return String(v)}
+function hWhen(t){var d=new Date(t);return d.getDate()+' '+MN[d.getMonth()].slice(0,3)+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'')+', '+fm(d.getHours()*60+d.getMinutes())}
+function hLine(e){var w='<span class="hw">'+hWhen(e.t)+' · '+esc(e.n||'—')+'</span> — ';
+  if(e.a==='c')return w+'создал(а) запись';
+  var ch=e.ch||{},mv=['date','start','post'].filter(function(k){return ch[k]}),rest=Object.keys(ch).filter(function(k){return mv.indexOf(k)<0}),o=[];
+  if(mv.length)o.push('<span class="hc">перенос: '+esc(mv.map(function(k){return hVal(k,ch[k][0])}).join(', '))+' → '+esc(mv.map(function(k){return hVal(k,ch[k][1])}).join(', '))+'</span>');
+  rest.forEach(function(k){var f=HF.filter(function(x){return x[0]===k})[0];o.push('<span class="hc">'+esc(f?f[1]:k)+': <s>'+esc(hVal(k,ch[k][0]))+'</s> → '+esc(hVal(k,ch[k][1]))+'</span>')});
+  return w+(o.length?'изменил(а):'+o.join(''):'изменил(а) запись')}
+function renderHist(b){var box=document.getElementById('fHist'),l=document.getElementById('fHistL'),sm=document.getElementById('fHistS');
+  if(!b){box.hidden=true;return}box.hidden=false;box.open=false;
+  var h=b.h||[];
+  if(!h.length){sm.textContent='История изменений';l.innerHTML='<li>Запись создана до того, как появилась история изменений'+(b.by?' (записал(а): '+esc(b.by)+')':'')+'. Новые правки будут видны здесь.</li>';return}
+  var n=h.filter(function(e){return e.a!=='c'}).length;
+  sm.textContent='История изменений'+(n?' · правок: '+n:' · без правок');
+  l.innerHTML=h.slice().reverse().map(function(e){return '<li>'+hLine(e)+'</li>'}).join('')}
 document.getElementById('frm').addEventListener('submit',function(e){e.preventDefault()});
 
 /* ---------- настройки ---------- */
@@ -966,8 +1067,6 @@ function renderSet(){
   h+='<div class="row" style="margin-top:6px"><b>Приём клиентов</b></div><div class="row"><label style="min-width:240px">Не больше клиентов на одни полчаса</label><input type="number" id="capI" min="1" max="10" value="'+c.cap+'" style="width:70px"></div><div class="sub" style="margin:0">Обычно равно числу сервисных консультантов на приёмке.</div>';
   var hh='';for(var m=360;m<=1320;m+=30)hh+='<option value="'+m+'">'+fm(m)+'</option>';
   h+='<div class="row" style="margin-top:6px"><b>Часы записи</b></div><div class="row"><label>с</label><select id="openI">'+hh+'</select><label>до</label><select id="closeI">'+hh+'</select></div>';
-  if(PLAIN)h+='<div class="row" style="margin-top:6px"><b>Шифрование данных клиентов</b></div><div class="sub" style="margin:0">Выключено: записи хранятся в репозитории открытым текстом, пароль не нужен.</div>';
-  else h+='<div class="row" style="margin-top:6px"><b>Пароль на данные клиентов</b></div><div class="row"><input type="password" id="np1" placeholder="Новый пароль" autocomplete="new-password"><input type="password" id="np2" placeholder="Повторите" autocomplete="new-password"><button id="npGo">Сменить пароль</button></div><div class="err" id="npErr"></div><div class="sub" style="margin:0">После смены на других устройствах попросит ввести новый пароль.</div>';
   var s=document.getElementById('set');s.innerHTML=h;
   sv('openI',c.open);sv('closeI',c.close);
 }
@@ -1008,10 +1107,10 @@ async function hashPw(pw,saltHex){var k=await crypto.subtle.importKey('raw',new 
 function pwDialog(title,o){o=o||{};return new Promise(function(res){
   var m=document.getElementById('pwM'),i0=document.getElementById('pwI0'),i1=document.getElementById('pwI'),i2=document.getElementById('pwI2'),er=document.getElementById('pwE'),ok=document.getElementById('pwOk'),no=document.getElementById('pwNo');
   document.getElementById('pwT').textContent=title;i0.value='';i1.value='';i2.value='';er.textContent='';
-  i0.style.display=o.old?'':'none';i2.style.display=o.two?'':'none';i1.placeholder=o.old?'Новый пароль (пусто — убрать пароль)':'Пароль';
-  m.hidden=false;setTimeout(function(){(o.old?i0:i1).focus()},30);
-  function done(v){m.hidden=true;ok.onclick=no.onclick=m.onkeydown=null;res(v)}
-  async function submit(){var v=i1.value;er.textContent='';
+  i0.placeholder=o.old?'Текущий пароль':'Старый пароль';i0.style.display=o.old?'':'none';i2.style.display=o.two?'':'none';i1.style.display=o.info?'none':'';i1.placeholder=o.ph||(o.old?'Новый пароль (пусто — убрать пароль)':'Пароль');no.style.display=o.info?'none':'';
+  m.hidden=false;setTimeout(function(){(o.info?ok:o.old?i0:i1).focus()},30);
+  function done(v){m.hidden=true;no.style.display='';i1.style.display='';ok.onclick=no.onclick=m.onkeydown=null;res(v)}
+  async function submit(){var v=i1.value;er.textContent='';if(o.info){done(true);return}
     if(o.old&&!i0.value){er.textContent='Введите старый пароль';return}
     if(o.two&&v!==i2.value){er.textContent='Пароли не совпадают';return}
     ok.disabled=true;try{var e=o.check?await o.check(v,i0.value):'';if(e){er.textContent=e;ok.disabled=false;return}}catch(x){er.textContent='Не получилось проверить пароль';ok.disabled=false;return}
@@ -1019,23 +1118,62 @@ function pwDialog(title,o){o=o||{};return new Promise(function(res){
   ok.onclick=submit;no.onclick=function(){done(null)};
   m.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();submit()}else if(e.key==='Escape'){e.preventDefault();done(null)}};
 })}
-async function sGate(){if(!sLocked())return true;
+async function sGate(){return canWrite&&!!KEY&&can('set');
   var p=await pwDialog('Пароль на настройки',{check:async function(v){var h=await hashPw(v,state.cfg.spw.s);if(h!==state.cfg.spw.h)return 'Неверный пароль';SUNL=h;return ''}});
   return p!==null}
 var setOpen=false;
-function applySetBox(){var pb=document.getElementById('spB');if(pb)pb.textContent=state.cfg.spw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки';var t=document.getElementById('sToggle');document.getElementById('setBox').style.display=setOpen?'':'none';t.textContent='Настройки '+(setOpen?'▾':'▸');t.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()}
+function applySetBox(){var t=document.getElementById('sToggle');document.getElementById('setBox').style.display=setOpen?'':'none';t.textContent='Настройки '+(setOpen?'▾':'▸');t.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()}
 document.getElementById('sToggle').onclick=async function(){if(!setOpen&&!(await sGate()))return;setOpen=!setOpen;if(setOpen&&stOpen){stOpen=false;applyStBox()}if(setOpen&&ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}applySetBox()};
-document.getElementById('spB').addEventListener('click',async function(){
-  var had=!!state.cfg.spw;
-  var p=await pwDialog(had?'Смена пароля на настройки':'Придумайте пароль на настройки',{old:had,two:true,check:async function(v,o){
-    if(had){var h=await hashPw(o,state.cfg.spw.s);if(h!==state.cfg.spw.h)return 'Старый пароль неверный'}
-    if(!had&&v.length<4)return 'Пароль не короче 4 символов';
-    if(had&&v&&v.length<4)return 'Пароль не короче 4 символов';
-    return ''}});
-  if(p===null)return;
-  if(p===''){delete state.cfg.spw;SUNL=null}
-  else{var sl=bhex(crypto.getRandomValues(new Uint8Array(16)));state.cfg.spw={s:sl,h:await hashPw(p,sl)};SUNL=state.cfg.spw.h}
-  cfgTouch();applySetBox()});
+/* ---------- пользователи (только владелец) ---------- */
+var uOpen=false,uDelArm=null,uMsg='';
+function applyUBox(){var t=document.getElementById('uToggle');document.getElementById('uBox').style.display=uOpen?'':'none';t.textContent='Пользователи '+(uOpen?'▾':'▸');t.setAttribute('aria-expanded',uOpen);if(uOpen)renderUsers();fitMenu()}
+function closeU(){if(uOpen){uOpen=false;applyUBox()}}
+function roleSel(id,v){return '<select '+id+'>'+ROLE_ORDER.map(function(k){return '<option value="'+k+'"'+(k===v?' selected':'')+'>'+ROLES[k].n+'</option>'}).join('')+'</select>'}
+function owners(){var n=0,k;for(k in state.users)if(!state.users[k].del&&state.users[k].role==='owner')n++;return n}
+function renderUsers(){
+  var us=state.users||{},ids=Object.keys(us).filter(function(k){return !us[k].del}).sort(function(a,b){return ROLE_ORDER.indexOf(us[a].role)-ROLE_ORDER.indexOf(us[b].role)||us[a].name.localeCompare(us[b].name,'ru')});
+  var h='<div class="row"><b>Пользователи</b></div><div class="sub" style="margin:0 0 6px">У каждого свой пароль: по нему видно, кто записал клиента и кто менял карточку. Механикам можно завести одного общего пользователя.</div><div class="ul">';
+  ids.forEach(function(k){var u=us[k],self=k===UID;
+    h+='<div class="row"><span class="un">'+esc(u.name)+(self?'<small>это вы</small>':'')+'</span>'+roleSel('data-ur="'+k+'"'+(self?' disabled':''),u.role)+'<button data-up="'+k+'">Новый пароль</button>'+(self?'':'<button data-ud="'+k+'" class="'+(uDelArm===k?'arm':'')+'">'+(uDelArm===k?'Точно удалить?':'Удалить')+'</button>')+'</div>'});
+  h+='</div><div class="row" style="margin-top:8px"><b>Добавить</b></div><div class="row"><input type="text" id="nuName" maxlength="40" placeholder="Имя, например Петров С." style="max-width:220px">'+roleSel('id="nuRole"','sc')+'<input type="password" id="nuPw" placeholder="Пароль, не короче 6 символов" autocomplete="new-password" style="max-width:240px"><button id="nuGo" class="pri">Добавить</button></div><div class="err" id="uErr">'+esc(uMsg)+'</div>';
+  h+='<div class="sub" style="margin:4px 0 0">Сообщите человеку пароль лично — сменить его он сможет сам через «Сменить мой пароль». Удалённый пользователь больше не войдёт, а на его устройствах произойдёт выход.</div>';
+  document.getElementById('usr').innerHTML=h;uMsg='';
+}
+function uErr(t,ok){var e=document.getElementById('uErr');if(e){e.style.color=ok?'var(--ok)':'';e.textContent=t}}
+async function setUserPw(id,pw){var w=await wrapFor(pw,SALT,KEY);if(await pwTaken(w.K,id))return 'Такой пароль уже есть у другого пользователя — придумайте другой';var u=state.users[id];u.iv=w.iv;u.w=w.w;u.u=now();return ''}
+document.getElementById('uToggle').onclick=function(){if(!uOpen&&!(canWrite&&KEY&&can('users')))return;var o=!uOpen;collapseMenuSections();uOpen=o;uDelArm=null;applyUBox()};
+document.getElementById('usr').addEventListener('change',function(e){var t=e.target;if(t.dataset.ur===undefined||!can('users'))return;var u=state.users[t.dataset.ur];if(!u)return;
+  if(u.role==='owner'&&t.value!=='owner'&&owners()<=1){uErr('Должен остаться хотя бы один владелец');t.value='owner';return}
+  u.role=t.value;u.u=now();commit();uMsg='Роль «'+u.name+'» изменена';renderUsers();var e2=document.getElementById('uErr');if(e2)e2.style.color='var(--ok)'});
+document.getElementById('usr').addEventListener('click',async function(e){var t=e.target.closest('button');if(!t||!can('users'))return;
+  if(t.id==='nuGo'){var name=fv('nuName').trim(),role=fv('nuRole'),pw=fv('nuPw');
+    if(!name){uErr('Укажите имя');return}
+    if(Object.keys(state.users).some(function(k){var u=state.users[k];return !u.del&&u.name.toLowerCase()===name.toLowerCase()})){uErr('Пользователь с таким именем уже есть');return}
+    if(pw.length<6){uErr('Пароль должен быть не короче 6 символов');return}
+    t.disabled=true;uErr('Добавляю…',true);
+    var id=uid();state.users[id]={id:id,name:name,role:role,u:now()};
+    var er=await setUserPw(id,pw);if(er){delete state.users[id];uErr(er);t.disabled=false;return}
+    commit();uMsg='Добавлен: '+name+' · '+ROLES[role].n;renderUsers();uErr(uMsg,true);return}
+  if(t.dataset.up){var u=state.users[t.dataset.up];if(!u)return;
+    var p=await pwDialog('Новый пароль: '+u.name,{two:true,ph:'Новый пароль, не короче 6 символов',check:async function(v){if(v.length<6)return 'Пароль должен быть не короче 6 символов';return await setUserPw(u.id,v)}});
+    if(p!==null){commit();uMsg='Пароль для «'+u.name+'» изменён';renderUsers();uErr(uMsg,true)}return}
+  if(t.dataset.ud){var id2=t.dataset.ud,u2=state.users[id2];if(!u2||id2===UID)return;
+    if(u2.role==='owner'&&owners()<=1){uErr('Должен остаться хотя бы один владелец');return}
+    if(uDelArm!==id2){uDelArm=id2;renderUsers();return}
+    state.users[id2]={id:id2,del:true,u:now(),name:u2.name};uDelArm=null;commit();uMsg='Удалён: '+u2.name;renderUsers();uErr(uMsg,true)}
+});
+/* закрывать «Пользователей», когда открывают другой раздел меню */
+['sToggle','gToggle','stToggle'].forEach(function(id){document.getElementById(id).addEventListener('click',closeU,true)});
+/* ---------- свой пароль и выход ---------- */
+document.getElementById('myPw').onclick=async function(){var u=me();if(!u||!KEY)return;
+  if(!canWrite){alertMsg('Сменить пароль можно на устройстве, где введён токен GitHub: новый пароль сохраняется в репозитории.');return}
+  var p=await pwDialog('Сменить мой пароль',{old:true,two:true,ph:'Новый пароль, не короче 6 символов',check:async function(v,o){
+    var K=await deriveKey(o,SALT),r=await unwrapWith(K,[{id:u.id,iv:u.iv,w:u.w}]);if(!r)return 'Текущий пароль неверный';
+    if(v.length<6)return 'Новый пароль должен быть не короче 6 символов';
+    return await setUserPw(u.id,v)}});
+  if(p!==null){commit();alertMsg('Пароль изменён. На других устройствах вы останетесь в системе; при следующем входе — новый пароль.')}};
+document.getElementById('outB').onclick=function(){menuOpen=false;applyMenu();dropKey();state=emptyState();showLock()};
+function alertMsg(t){pwDialog(t,{info:true})}
 
 /* ---------- блок синхронизации ---------- */
 function renderGh(box){
@@ -1086,10 +1224,10 @@ function renderStat(){
 function applyStBox(){var t=document.getElementById('stToggle');document.getElementById('stBox').style.display=stOpen?'':'none';t.textContent='Статистика '+(stOpen?'▾':'▸');t.setAttribute('aria-expanded',stOpen);if(stOpen)renderStat()}
 function closeGh(){if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
 document.getElementById('stToggle').onclick=function(){stOpen=!stOpen;if(stOpen){if(setOpen){setOpen=false;applySetBox()}closeGh()}applyStBox()};
-function collapseMenuSections(){if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
+function collapseMenuSections(){closeU();if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
 document.getElementById('menu').addEventListener('mousedown',function(e){var t=e.target;
   if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('#stBox')||t.closest('button,input,select,textarea,a,label'))return;
-  if(setOpen||ghOpen||stOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
+  if(setOpen||ghOpen||stOpen||uOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
 
 /* ---------- скрываемое меню в закреплённом заголовке ---------- */
 var menuOpen=false;try{localStorage.removeItem('zap-menu')}catch(e){}
@@ -1098,7 +1236,7 @@ addEventListener('resize',fitMenu);
 /* отступ справа под ползунок меню — только когда меню прокручивается */
 (function(){var m=document.getElementById('menu');function ov(){var o=m.scrollHeight>m.clientHeight+1;if(m.classList.contains('ov')!==o)m.classList.toggle('ov',o)}
 if(window.ResizeObserver){var ro=new ResizeObserver(ov);ro.observe(m);for(var i=0;i<m.children.length;i++)ro.observe(m.children[i])}addEventListener('resize',ov)})();
-function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
+function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){closeU();if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
 function setMenu(open){if(menuOpen===open)return;if(open)applySetBox();var a=anchor(),t0=a?a.getBoundingClientRect().top:0;menuOpen=open;applyMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}
 document.getElementById('menuB').onclick=function(){setMenu(!menuOpen)};
 /* клик по таблице, кнопкам сверху или любому месту вне меню закрывает его */
@@ -1110,7 +1248,6 @@ var rzT=null,rzN=innerWidth<600;addEventListener('resize',function(){clearTimeou
   if(!window.crypto||!crypto.subtle){document.getElementById('syncSt').textContent='Этот браузер не поддерживает шифрование. Откройте страницу по адресу https:// в современном браузере.';return}
   loadGraphCache();
   await loadKey();
-  if(!KEY&&PLAIN)KEY={plain:1};
   if(KEY&&await loadCache()){openApp();render()}else showLock();
   setSt();
   await pull();
