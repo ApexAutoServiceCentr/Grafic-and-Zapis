@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>График смен</title>
+<link rel="icon" id="ico" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMjQiIHk9IjUiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI1IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM0NzU1NjkiLz48cmVjdCB4PSI1IiB5PSIyNCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNDc1NTY5Ii8+PHJlY3QgeD0iMjQiIHk9IjI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM2MGE1ZmEiLz48cmVjdCB4PSI0MyIgeT0iMjQiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjUiIHk9IjQzIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiNmYmJmMjQiLz48cmVjdCB4PSIyNCIgeT0iNDMiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI0MyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PC9zdmc+">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMjQiIHk9IjUiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI1IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM0NzU1NjkiLz48cmVjdCB4PSI1IiB5PSIyNCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNDc1NTY5Ii8+PHJlY3QgeD0iMjQiIHk9IjI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM2MGE1ZmEiLz48cmVjdCB4PSI0MyIgeT0iMjQiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjUiIHk9IjQzIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiNmYmJmMjQiLz48cmVjdCB4PSIyNCIgeT0iNDMiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI0MyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PC9zdmc+">
+<meta name="theme-color" content="#1f2937">
+<style>
+:root{color-scheme:light dark}
+html,body{margin:0;height:100%;overflow:hidden;background:#f6f7f9}
+@media (prefers-color-scheme:dark){html,body{background:#14161a}}
+iframe{position:fixed;top:0;left:0;width:100%;height:100%;border:0;display:block;background:transparent}
+iframe.off{visibility:hidden;pointer-events:none;z-index:-1}
+</style>
+</head>
+<body>
+<iframe id="fg" src="grafik.html" title="График смен"></iframe>
+<iframe id="fz" src="zapis.html" title="Запись на сервис" class="off"></iframe>
+<script>
+/* Общая страница: две вкладки — «График смен» (grafik.html) и «Запись на сервис» (zapis.html).
+   Обе страницы загружены сразу, переключение без перезагрузки. */
+var TABS={grafik:{f:'fg',t:'График смен',i:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMjQiIHk9IjUiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI1IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM0NzU1NjkiLz48cmVjdCB4PSI1IiB5PSIyNCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNDc1NTY5Ii8+PHJlY3QgeD0iMjQiIHk9IjI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM2MGE1ZmEiLz48cmVjdCB4PSI0MyIgeT0iMjQiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjUiIHk9IjQzIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiNmYmJmMjQiLz48cmVjdCB4PSIyNCIgeT0iNDMiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI0MyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PC9zdmc+'},zapis:{f:'fz',t:'Запись на сервис',i:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iMSIgeT0iNyIgd2lkdGg9IjYyIiBoZWlnaHQ9IjU2IiByeD0iOSIgZmlsbD0iIzM3NDE1MSIvPjxwYXRoIGQ9Ik0xIDE2IGE5IDkgMCAwIDEgOSAtOSBoNDQgYTkgOSAwIDAgMSA5IDkgdjggaC02MiB6IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMTMiIHk9IjEiIHdpZHRoPSI3IiBoZWlnaHQ9IjEzIiByeD0iMy41IiBmaWxsPSIjOTRhM2I4Ii8+PHJlY3QgeD0iNDQiIHk9IjEiIHdpZHRoPSI3IiBoZWlnaHQ9IjEzIiByeD0iMy41IiBmaWxsPSIjOTRhM2I4Ii8+PGcgdHJhbnNmb3JtPSJyb3RhdGUoLTQ1IDMyIDQzKSI+PHJlY3QgeD0iMjcuNSIgeT0iMzAiIHdpZHRoPSI5IiBoZWlnaHQ9IjI5IiByeD0iNC41IiBmaWxsPSIjZmJiZjI0Ii8+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMCIgcj0iMTAuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjI4IiB5PSIxOCIgd2lkdGg9IjgiIGhlaWdodD0iMTIiIHJ4PSIxLjUiIGZpbGw9IiMzNzQxNTEiLz48L2c+PC9zdmc+'}},cur=null;
+function showTab(k){if(!TABS[k])k='grafik';var first=cur===null;if(k===cur)return;cur=k;
+  for(var n in TABS){var f=document.getElementById(TABS[n].f);f.classList.toggle('off',n!==k);f.setAttribute('aria-hidden',n!==k?'true':'false')}
+  document.title=TABS[k].t;document.getElementById('ico').href=TABS[k].i;
+  try{history.replaceState(null,'','#'+k)}catch(e){location.hash=k}
+  try{localStorage.setItem('shell-tab',k)}catch(e){}
+  var w=document.getElementById(TABS[k].f).contentWindow;
+  if(!first){try{w.focus()}catch(e){}try{if(w.tabShown)w.tabShown()}catch(e){}}
+}
+var h=(location.hash||'').replace('#',''),st='';try{st=localStorage.getItem('shell-tab')||''}catch(e){}
+showTab(TABS[h]?h:(TABS[st]?st:'grafik'));
+addEventListener('hashchange',function(){var k=(location.hash||'').replace('#','');if(TABS[k])showTab(k)});
+</script>
+</body>
+</html>
