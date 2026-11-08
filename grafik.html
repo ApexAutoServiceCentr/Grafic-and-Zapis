@@ -216,6 +216,9 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <div id="zM" class="pwm" hidden><div class="pwb zmb" role="dialog" aria-modal="true" aria-labelledby="zMt"><div id="zMt" style="font-weight:600">Есть записи клиентов</div><div id="zMx"></div><div class="bt"><button id="zMno">Отмена</button><button id="zMok" class="go">Всё равно поставить</button></div></div></div>
 <div id="pwM" class="pwm" hidden><div class="pwb"><div id="pwT" style="font-weight:600;margin-bottom:8px"></div><input type="text" class="secret" data-lpignore="true" autocapitalize="off" spellcheck="false" id="pwI0" name="otp0" autocomplete="one-time-code" placeholder="Старый пароль" style="display:none"><input type="text" class="secret" data-lpignore="true" autocapitalize="off" spellcheck="false" id="pwI" name="otp1" autocomplete="one-time-code" placeholder="Пароль"><input type="text" class="secret" data-lpignore="true" autocapitalize="off" spellcheck="false" id="pwI2" name="otp2" autocomplete="one-time-code" placeholder="Повторите пароль"><div id="pwE" style="color:var(--danger);font-size:13px;min-height:18px"></div><div style="display:flex;gap:8px"><button id="pwOk" class="on">OK</button><button id="pwNo">Отмена</button></div></div></div>
 <script>
+/* внутри общей страницы права берутся у пользователя, вошедшего во вкладке «Запись на сервис» */
+var EMB=false;try{EMB=window.parent!==window&&!!parent.showTab}catch(e){}
+function RP(){if(!EMB)return null;try{var w=parent.document.getElementById('fz').contentWindow;return (w&&w.permFor&&w.permFor())||{}}catch(e){return {}}}
 var DN=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 var MN=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
 var MF=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -439,7 +442,7 @@ var armed=false,rb=document.getElementById('reset');
 function disarm(){armed=false;rb.textContent='Сбросить правки периода';rb.className=''}
 rb.onclick=async function(){
   if(!canWrite)return;
-  if(!armed){if(!(await gate()))return;armed=true;rb.textContent='Точно сбросить?';rb.className='arm';return}
+  if(!armed){if(!(await gate('b')))return;armed=true;rb.textContent='Точно сбросить?';rb.className='arm';return}
   var P=period();
   for(var i=0;i<state.w.length;i++)for(var k=0;k<P.n;k++)delete state.ov[ok(i,P.s+k)];
   disarm();save();render();
@@ -478,17 +481,22 @@ var collapsed=true;
 function setBrush(v){brush=v;Array.prototype.forEach.call(document.querySelectorAll('#brush button'),function(x){x.classList.toggle('on',v!==null&&x.dataset.b===String(v))})}
 function updCur(){
   var b=document.querySelector('#brush button.on'),t='';
-  if(locked())t='Правки закрыты паролем: откройте «Режимы корректировки»';
+  if(locked())t=EMB?(RP().name?'Только просмотр: менять график могут мастер цеха, руководитель сервиса и директор':'Только просмотр: чтобы менять график, войдите во вкладке «Запись на сервис»'):'Правки закрыты паролем: откройте «Режимы корректировки»';
   else if(brush===null)t='Режим клика не выбран: выберите режим, чтобы править клетки';
   else if(collapsed&&b)t='Выбрано: '+b.textContent;
   document.getElementById('bCur').textContent=t;
 }
-document.getElementById('bToggle').onclick=async function(){var open=collapsed||locked();if(open){if(!(await gate()))return;showOnly('b')}else keepTbl(function(){collapsed=true;applyUI();fitMenu()})};
-function applyUI(){var hn=document.getElementById('hint');if(hn)hn.style.display=locked()?'none':'';if(state.pw){if(locked()&&brush!==null)setBrush(null)}else if(brush===null)setBrush('cyc');var t=document.getElementById('bToggle'),h=collapsed||locked();document.getElementById('brush').style.display=h?'none':'';t.textContent='Режимы корректировки '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');updCur()}
+document.getElementById('bToggle').onclick=async function(){var open=collapsed||locked();if(open){if(!(await gate('b')))return;showOnly('b')}else keepTbl(function(){collapsed=true;applyUI();fitMenu()})};
+function applyUI(){var hn=document.getElementById('hint');if(hn)hn.style.display=locked()?'none':'';if(state.pw||EMB){if(locked()&&brush!==null)setBrush(null)}else if(brush===null)setBrush('cyc');var t=document.getElementById('bToggle'),h=collapsed||locked();document.getElementById('brush').style.display=h?'none':'';t.textContent='Режимы корректировки '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');updCur()}
 /* ---------- пароль на настройки ---------- */
 var UNL=null;
 function unlocked(){return !!state.pw&&UNL===state.pw.h}
-function locked(){return !!state.pw&&!unlocked()}
+function locked(){if(EMB)return !RP().graf;return !!state.pw&&!unlocked()}
+function setLocked(){if(EMB)return !RP().set;return locked()}
+function applyRole(){if(!EMB)return;var r=RP(),b=document.getElementById('bToggle'),st=document.getElementById('sToggle'),pb=document.getElementById('pwB');
+  b.style.display=r.graf?'':'none';st.style.display=r.set?'':'none';if(pb)pb.style.display='none';
+  if(!r.graf&&!collapsed){collapsed=true}if(!r.set&&!setCol){setCol=true}
+  applySet();updCur()}
 function hexb(h){var a=new Uint8Array(h.length/2),i;for(i=0;i<a.length;i++)a[i]=parseInt(h.substr(i*2,2),16);return a}
 function bhex(a){return Array.prototype.map.call(a,function(x){return (x<16?'0':'')+x.toString(16)}).join('')}
 async function hashPw(pw,saltHex){
@@ -519,7 +527,8 @@ function pwDialog(title,o){
     m.onkeydown=function(e){if(e.key==='Enter')submit();else if(e.key==='Escape')done(null)};
   });
 }
-async function gate(){
+async function gate(kind){
+  if(EMB)return kind==='s'?!setLocked():!locked();
   if(!state.pw||unlocked())return true;
   var p=await pwDialog('Введите пароль',{check:async function(v){
     var h=await hashPw(v,state.pw.s);
@@ -543,8 +552,8 @@ document.getElementById('pwB').onclick=async function(){
   save();applySet();
 };
 var setCol=true;
-function applySet(){var t=document.getElementById('sToggle'),h=setCol||locked();document.getElementById('setBox').style.display=h?'none':'';t.textContent='Сотрудники и график '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');applyUI();var b=document.getElementById('pwB');if(b)b.textContent=state.pw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки'}
-document.getElementById('sToggle').onclick=async function(){var open=setCol||locked();if(open){if(!(await gate()))return;showOnly('s')}else keepTbl(function(){setCol=true;applySet();fitMenu()})};
+function applySet(){var t=document.getElementById('sToggle'),h=setCol||setLocked();document.getElementById('setBox').style.display=h?'none':'';t.textContent='Сотрудники и график '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');applyUI();var b=document.getElementById('pwB');if(b)b.textContent=state.pw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки'}
+document.getElementById('sToggle').onclick=async function(){var open=setCol||setLocked();if(open){if(!(await gate('s')))return;showOnly('s')}else keepTbl(function(){setCol=true;applySet();fitMenu()})};
 try{var sm=localStorage.getItem('shift-app-mode');if(sm==='month'||sm==='week')mode=sm}catch(e){}
 document.getElementById('m-toggle').textContent=mode==='week'?'Вид: неделя ⇄':'Вид: месяц ⇄';
 
@@ -900,7 +909,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!document.g
 /* вкладки: внутри общей страницы переключаем без перезагрузки */
 var tabsEl=document.querySelector('.tabs');if(tabsEl)tabsEl.addEventListener('click',function(e){var a=e.target.closest('a[data-tab]');if(!a)return;
   try{if(window.parent!==window&&parent.showTab){e.preventDefault();parent.showTab(a.dataset.tab)}}catch(x){}});
-window.tabShown=function(){render();pull();zLoad()};
+window.tabShown=function(){rpS=JSON.stringify(RP());applyRole();applyUI();render();pull();zLoad()};
+var rpS='';setInterval(function(){if(!EMB)return;var x=JSON.stringify(RP());if(x!==rpS){rpS=x;applyRole();applyUI();render()}},1500);
+applyRole();
 var zSg='';function zSig(){var z=zData();if(!z)return '';var k,n=0,m=0;for(k in z.b){n++;m=Math.max(m,z.b[k].u||0)}return n+'|'+m+'|'+JSON.stringify(z.posts)}
 setInterval(function(){if(document.visibilityState!=='visible')return;var g=zSig();if(g!==zSg){zSg=g;render()}},3000);
 
