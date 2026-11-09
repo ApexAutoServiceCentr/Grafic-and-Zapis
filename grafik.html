@@ -88,6 +88,8 @@ td.h small{display:block;font-weight:400;color:var(--mu);font-size:10px;white-sp
 tr.cov td{font-size:12px;color:var(--mu);border-bottom:none}
 tr.cov td.bad{color:var(--danger);font-weight:700}
 .leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;color:var(--mu);font-size:13px}
+.menu .leg{margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+#gToggle,#ghBox{display:none!important}
 .leg b{display:inline-block;min-width:22px;text-align:center;border-radius:6px;padding:1px 4px;color:var(--stx);margin-right:4px}
 .brush{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
 .brush span{font-size:13px;color:var(--mu);margin-right:2px}
@@ -162,9 +164,8 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <select id="dFilter" aria-label="Отдел"></select>
 </div>
 <div id="menuPanel" class="menu" hidden>
-<div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Введите токен в разделе «Синхронизация GitHub».</div>
-<div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и график ▾</button><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button></div>
-<div class="mrow"><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
+<div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Токен вводится во вкладке «Запись на сервис»: Меню → Синхронизация GitHub.</div>
+<div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и график ▾</button><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом Excel (.xlsx) по всем отделам">Скачать график ⭳</button><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
 <div id="setBox" class="eo">
 <div class="set" id="set"></div>
 <div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла. Для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс, праздничные дни Казахстана учитываются автоматически (если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную). Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, праздничные дни РК при этом не учитываются. Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит; выбираются вручную, по умолчанию дежурств нет (у 2/2 их нет вообще). При смене типа графика дежурные дни очищаются. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой, тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой. Если два дежурства приходятся на один день, в строке «На работе» число дежурных покраснеет. Минимум на работе в день задаётся в каждом отделе.</div>
@@ -191,13 +192,6 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 </div>
 <div class="sub" style="margin-top:8px">Просмотр графика работает без токена. Чтобы править, создайте токен на GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens. Выберите доступ только к этому репозиторию и право Repository permissions → Contents: Read and write. Токен сохраняется только в этом браузере и отправляется только на api.github.com. Данные графика лежат в файле data.json в репозитории; страница и репозиторий публичны, поэтому имена сотрудников видны всем, у кого есть адрес.</div>
 </div>
-<div class="mi" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:8px"><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом Excel (.xlsx) по всем отделам">Скачать график ⭳</button></div>
-</div>
-</div>
-<div id="bCur" class="sub eo" style="margin:-4px 0 8px"></div>
-<div class="soon" id="soon"></div>
-</div>
-<div class="wrap"><table id="tbl"></table></div>
 <div class="leg">
 <span><b style="background:var(--wk)">Р</b>Рабочий 9–18</span>
 <span><b style="background:var(--dt)">Д</b>Дежурство 9–19</span>
@@ -213,6 +207,12 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <span><i class="zl">3</i>Записей клиентов на пост мастера</span>
 <span><i class="zl zw">3</i>Мастер не на смене, клиентов нужно перенести</span>
 </div>
+</div>
+</div>
+<div id="bCur" class="sub eo" style="margin:-4px 0 8px"></div>
+<div class="soon" id="soon"></div>
+</div>
+<div class="wrap"><table id="tbl"></table></div>
 </main>
 <div id="zM" class="pwm" hidden><div class="pwb zmb" role="dialog" aria-modal="true" aria-labelledby="zMt"><div id="zMt" style="font-weight:600">Есть записи клиентов</div><div id="zMx"></div><div class="bt"><button id="zMno">Отмена</button><button id="zMok" class="go">Всё равно поставить</button></div></div></div>
 <div id="pwM" class="pwm" hidden><div class="pwb"><div id="pwT" style="font-weight:600;margin-bottom:8px"></div><input type="text" class="secret" data-lpignore="true" autocapitalize="off" spellcheck="false" id="pwI0" name="otp0" autocomplete="one-time-code" placeholder="Старый пароль" style="display:none"><input type="text" class="secret" data-lpignore="true" autocapitalize="off" spellcheck="false" id="pwI" name="otp1" autocomplete="one-time-code" placeholder="Пароль"><input type="text" class="secret" data-lpignore="true" autocapitalize="off" spellcheck="false" id="pwI2" name="otp2" autocomplete="one-time-code" placeholder="Повторите пароль"><div id="pwE" style="color:var(--danger);font-size:13px;min-height:18px"></div><div style="display:flex;gap:8px"><button id="pwOk" class="on">OK</button><button id="pwNo">Отмена</button></div></div></div>
@@ -920,7 +920,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!document.g
 /* вкладки: внутри общей страницы переключаем без перезагрузки */
 var tabsEl=document.querySelector('.tabs');if(tabsEl)tabsEl.addEventListener('click',function(e){var a=e.target.closest('a[data-tab]');if(!a)return;
   try{if(window.parent!==window&&parent.showTab){e.preventDefault();parent.showTab(a.dataset.tab)}}catch(x){}});
-window.tabShown=function(){rpS=JSON.stringify(RP());applyRole();applyUI();render();pull();zLoad()};
+window.tabShown=function(){reToken();rpS=JSON.stringify(RP());applyRole();applyUI();render();pull();zLoad()};
+/* токен и репозиторий вводятся во вкладке записи — подхватываем их без перезагрузки */
+function reToken(){var t='';try{t=localStorage.getItem('shift-gh-token')||''}catch(e){}if(t===token)return;token=t;canWrite=!!token;remoteReady=false;remoteSha=null;conn='connecting';stMsg='';setSt();renderSet();applyUI();render();pull()}
+addEventListener('storage',function(e){if(e.key==='shift-gh-token'||e.key===null)reToken()});
 function roNote(){var r=RP(),n=document.getElementById('roNote');if(n)n.style.display=EMB&&(r.graf||r.set)&&!canWrite?'':'none'}
 var rpS='';setInterval(function(){if(!EMB)return;roNote();var x=JSON.stringify(RP());if(x!==rpS){rpS=x;applyRole();applyUI();render()}},1500);
 applyRole();
