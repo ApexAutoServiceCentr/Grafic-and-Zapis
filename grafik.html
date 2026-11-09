@@ -717,19 +717,30 @@ function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
 function b64d(s){return decodeURIComponent(escape(atob(String(s).replace(/\s/g,''))))}
 function ghUrl(p){return 'https://api.github.com/repos/'+encodeURIComponent(GH.owner)+'/'+encodeURIComponent(GH.repo)+p}
 function ghHead(extra){var h={Accept:'application/vnd.github+json'},k;if(token)h.Authorization='Bearer '+token;if(extra)for(k in extra)h[k]=extra[k];return h}
-function cfgStr(){return JSON.stringify({w:state.w,nid:state.nid,min:state.min,dmin:state.dmin,a33:state.a33,pw:state.pw})}
-function copy(o){var r={},k;for(k in o)r[k]=o[k];return r}
-function ovEq(a,b){var k;for(k in a)if(a[k]!==b[k])return false;for(k in b)if(!(k in a))return false;return true}
-function rerender(){render();applySet();var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}
-async function ghGet(){
-  var r=await fetch(ghUrl('/contents/'+GH.path),{headers:ghHead(),cache:'no-cache'});
+/* Адрес репозитория по умолчанию берём из адреса страницы (владелец.github.io/репозиторий).
+   Без токена файлы читаем прямо с сайта GitHub Pages — у API без токена лимит 60 запросов в час на весь офис. */
+(function(){var h=location.hostname.toLowerCase();if(!/\.github\.io$/.test(h))return;var seg=location.pathname.split('/')[1]||'';
+  GH.owner=h.replace(/\.github\.io$/,'');GH.repo=(seg&&!/\.html?$/i.test(seg))?seg:h;
+  try{var _g=JSON.parse(localStorage.getItem('shift-gh-repo')||'null');if(_g&&_g.owner&&_g.repo&&!(_g.owner.toLowerCase()==='avomik'&&_g.repo==='Grafic-smen')){GH.owner=_g.owner;GH.repo=_g.repo}}catch(e){}})();
+function pagesSame(){var h=location.hostname.toLowerCase();if(!/\.github\.io$/.test(h))return false;var seg=location.pathname.split('/')[1]||'',rp=(seg&&!/\.html?$/i.test(seg))?seg:h;
+  return GH.owner.toLowerCase()===h.replace(/\.github\.io$/,'')&&GH.repo.toLowerCase()===rp.toLowerCase()}
+function strSha(t){var x=2166136261,i;for(i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,16777619)}return 'p'+(x>>>0).toString(16)+t.length}
+async function ghFile(name){
+  if(!token&&pagesSame()){var q=await fetch(name+'?t='+Date.now(),{cache:'no-store'});if(q.status===404)return{exists:false};if(!q.ok)throw{code:'http',status:q.status};var tx=await q.text();return{exists:true,sha:strSha(tx),data:JSON.parse(tx)}}
+  var r=await fetch(ghUrl('/contents/'+name),{headers:ghHead(),cache:'no-cache'});
   if(r.status===404)return{exists:false};
   if(r.status===401)throw{code:'auth'};
   if(r.status===403||r.status===429)throw{code:'rate'};
   if(!r.ok)throw{code:'http',status:r.status};
-  var j=await r.json();
-  return{exists:true,sha:j.sha,data:JSON.parse(b64d(j.content))};
-}
+  var j=await r.json(),content=j.content;
+  if(!content||j.encoding==='none'){var r2=await fetch(ghUrl('/git/blobs/'+j.sha),{headers:ghHead(),cache:'no-cache'});if(!r2.ok)throw{code:'http'};content=(await r2.json()).content}
+  return{exists:true,sha:j.sha,data:JSON.parse(b64d(content))}}
+
+function cfgStr(){return JSON.stringify({w:state.w,nid:state.nid,min:state.min,dmin:state.dmin,a33:state.a33,pw:state.pw})}
+function copy(o){var r={},k;for(k in o)r[k]=o[k];return r}
+function ovEq(a,b){var k;for(k in a)if(a[k]!==b[k])return false;for(k in b)if(!(k in a))return false;return true}
+function rerender(){render();applySet();var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}
+async function ghGet(){return ghFile(GH.path)}
 async function ghPut(data,sha){
   var body={message:'Обновление графика смен',content:b64e(JSON.stringify(data))};
   if(sha)body.sha=sha;
@@ -879,9 +890,8 @@ function isoN(n){var x=dateOf(n);return x.getUTCFullYear()+'-'+pad(x.getUTCMonth
 function sib(id){try{if(window.parent!==window){var f=parent.document.getElementById(id);return f&&f.contentWindow}}catch(e){}return null}
 var ZB=null;
 function zData(){var w=sib('fz');try{if(w&&w.KEY&&w.state&&w.state.cfg&&w.state.cfg.posts)return{posts:w.state.cfg.posts,b:w.state.b}}catch(e){}return ZB}
-async function zLoad(){if(sib('fz'))return;try{var r=await fetch(ghUrl('/contents/zapis.json'),{headers:ghHead(),cache:'no-cache'});if(!r.ok)return;var j=await r.json(),c=j.content;
-  if(!c||j.encoding==='none'){var r2=await fetch(ghUrl('/git/blobs/'+j.sha),{headers:ghHead(),cache:'no-cache'});if(!r2.ok)return;c=(await r2.json()).content}
-  var f=JSON.parse(b64d(c));if(f&&f.plain&&f.data&&f.data.cfg){var nz={posts:f.data.cfg.posts||[],b:f.data.b||{}};if(JSON.stringify(nz)!==JSON.stringify(ZB)){ZB=nz;render()}}}catch(e){}}
+async function zLoad(){if(sib('fz'))return;try{var g=await ghFile('zapis.json');if(!g.exists)return;
+  var f=g.data;if(f&&f.plain&&f.data&&f.data.cfg){var nz={posts:f.data.cfg.posts||[],b:f.data.b||{}};if(JSON.stringify(nz)!==JSON.stringify(ZB)){ZB=nz;render()}}}catch(e){}}
 function zIndex(){var z=zData(),I={wp:{},pd:{},posts:{}};if(!z)return I;
   (z.posts||[]).forEach(function(p){I.posts[p.id]=p;(p.emp||[]).forEach(function(id){(I.wp[id]=I.wp[id]||[]).push(p)})});
   var k,b;for(k in z.b){b=z.b[k];if(!b||b.del||!I.posts[b.post])continue;var q=b.post+'|'+b.date;I.pd[q]=(I.pd[q]||0)+1}
