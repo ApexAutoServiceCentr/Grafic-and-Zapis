@@ -478,20 +478,26 @@ function b64e(s){return btoa(unescape(encodeURIComponent(s)))}
 function b64d(s){return decodeURIComponent(escape(atob(String(s).replace(/\s/g,''))))}
 function ghUrl(p){return 'https://api.github.com/repos/'+encodeURIComponent(GH.owner)+'/'+encodeURIComponent(GH.repo)+p}
 function ghHead(x){var h={Accept:'application/vnd.github+json'},k;if(token)h.Authorization='Bearer '+token;if(x)for(k in x)h[k]=x[k];return h}
-async function ghGet(){
-  var r=await fetch(ghUrl('/contents/'+GH.path),{headers:ghHead(),cache:'no-cache'});
+/* Адрес репозитория по умолчанию берём из адреса страницы (владелец.github.io/репозиторий).
+   Без токена файлы читаем прямо с сайта GitHub Pages — у API без токена лимит 60 запросов в час на весь офис. */
+(function(){var h=location.hostname.toLowerCase();if(!/\.github\.io$/.test(h))return;var seg=location.pathname.split('/')[1]||'';
+  GH.owner=h.replace(/\.github\.io$/,'');GH.repo=(seg&&!/\.html?$/i.test(seg))?seg:h;
+  try{var _g=JSON.parse(localStorage.getItem('shift-gh-repo')||'null');if(_g&&_g.owner&&_g.repo&&!(_g.owner.toLowerCase()==='avomik'&&_g.repo==='Grafic-smen')){GH.owner=_g.owner;GH.repo=_g.repo}}catch(e){}})();
+function pagesSame(){var h=location.hostname.toLowerCase();if(!/\.github\.io$/.test(h))return false;var seg=location.pathname.split('/')[1]||'',rp=(seg&&!/\.html?$/i.test(seg))?seg:h;
+  return GH.owner.toLowerCase()===h.replace(/\.github\.io$/,'')&&GH.repo.toLowerCase()===rp.toLowerCase()}
+function strSha(t){var x=2166136261,i;for(i=0;i<t.length;i++){x^=t.charCodeAt(i);x=Math.imul(x,16777619)}return 'p'+(x>>>0).toString(16)+t.length}
+async function ghFile(name){
+  if(!token&&pagesSame()){var q=await fetch(name+'?t='+Date.now(),{cache:'no-store'});if(q.status===404)return{exists:false};if(!q.ok)throw{code:'http',status:q.status};var tx=await q.text();return{exists:true,sha:strSha(tx),data:JSON.parse(tx)}}
+  var r=await fetch(ghUrl('/contents/'+name),{headers:ghHead(),cache:'no-cache'});
   if(r.status===404)return{exists:false};
   if(r.status===401)throw{code:'auth'};
   if(r.status===403||r.status===429)throw{code:'rate'};
-  if(!r.ok)throw{code:'http'};
+  if(!r.ok)throw{code:'http',status:r.status};
   var j=await r.json(),content=j.content;
-  if(!content||j.encoding==='none'){
-    var r2=await fetch(ghUrl('/git/blobs/'+j.sha),{headers:ghHead(),cache:'no-cache'});
-    if(!r2.ok)throw{code:'http'};
-    content=(await r2.json()).content;
-  }
-  return{exists:true,sha:j.sha,data:JSON.parse(b64d(content))};
-}
+  if(!content||j.encoding==='none'){var r2=await fetch(ghUrl('/git/blobs/'+j.sha),{headers:ghHead(),cache:'no-cache'});if(!r2.ok)throw{code:'http'};content=(await r2.json()).content}
+  return{exists:true,sha:j.sha,data:JSON.parse(b64d(content))}}
+
+async function ghGet(){return ghFile(GH.path)}
 async function ghPut(data,sha){
   var body={message:'Обновление записи на сервис',content:b64e(JSON.stringify(data))};
   if(sha)body.sha=sha;
@@ -545,9 +551,9 @@ async function loadGraph(){
   if(sibGraph())return;
   if(gLoading)return;gLoading=true;
   try{
-    var r=await fetch(ghUrl('/contents/data.json'),{headers:ghHead(),cache:'no-cache'});
-    if(r.ok){var j=await r.json();
-      if(j.sha!==G.sha){var d=JSON.parse(b64d(j.content));if(setGraph(d,j.sha)){try{localStorage.setItem('zap-graph',JSON.stringify({sha:j.sha,d:d}))}catch(e){}if(KEY&&document.getElementById('app').style.display!=='none')rerender()}}}
+    var j=await ghFile('data.json');
+    if(j.exists){
+      if(j.sha!==G.sha){var d=j.data;if(setGraph(d,j.sha)){try{localStorage.setItem('zap-graph',JSON.stringify({sha:j.sha,d:d}))}catch(e){}if(KEY&&document.getElementById('app').style.display!=='none')rerender()}}}
   }catch(e){}
   gLoading=false;
 }
