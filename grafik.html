@@ -162,6 +162,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <select id="dFilter" aria-label="Отдел"></select>
 </div>
 <div id="menuPanel" class="menu" hidden>
+<div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Введите токен в разделе «Синхронизация GitHub».</div>
 <div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и график ▾</button><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button></div>
 <div class="mrow"><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
 <div id="setBox" class="eo">
@@ -920,7 +921,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!document.g
 var tabsEl=document.querySelector('.tabs');if(tabsEl)tabsEl.addEventListener('click',function(e){var a=e.target.closest('a[data-tab]');if(!a)return;
   try{if(window.parent!==window&&parent.showTab){e.preventDefault();parent.showTab(a.dataset.tab)}}catch(x){}});
 window.tabShown=function(){rpS=JSON.stringify(RP());applyRole();applyUI();render();pull();zLoad()};
-var rpS='';setInterval(function(){if(!EMB)return;var x=JSON.stringify(RP());if(x!==rpS){rpS=x;applyRole();applyUI();render()}},1500);
+function roNote(){var r=RP(),n=document.getElementById('roNote');if(n)n.style.display=EMB&&(r.graf||r.set)&&!canWrite?'':'none'}
+var rpS='';setInterval(function(){if(!EMB)return;roNote();var x=JSON.stringify(RP());if(x!==rpS){rpS=x;applyRole();applyUI();render()}},1500);
 applyRole();
 var zSg='';function zSig(){var z=zData();if(!z)return '';var k,n=0,m=0;for(k in z.b){n++;m=Math.max(m,z.b[k].u||0)}return n+'|'+m+'|'+JSON.stringify(z.posts)}
 setInterval(function(){if(document.visibilityState!=='visible')return;var g=zSig();if(g!==zSg){zSg=g;render()}},3000);
