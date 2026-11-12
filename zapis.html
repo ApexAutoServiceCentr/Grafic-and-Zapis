@@ -227,6 +227,11 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 .ul .un{min-width:180px;font-weight:600}
 .ul .un small{display:block;font-weight:400;color:var(--mu)}
 .lock label{display:block;font-size:13px;color:var(--mu);margin-top:6px}
+.qw{position:relative;flex:1;min-width:200px;display:flex}
+.qw #q{flex:1;width:100%;padding-right:40px}
+.qx,.qx:hover{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:32px;height:32px;padding:0;border:0;background:transparent;color:var(--mu);display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:default;box-shadow:none}
+.qx.qon{cursor:pointer}
+.qx.qon:hover{color:var(--tx);background:var(--bd)}
 </style>
 </head>
 <body class="ro">
@@ -243,7 +248,7 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 <input type="date" id="dPick" aria-label="Перейти к дате">
 <button id="newB" class="pri eo pe" aria-label="Новая запись">+<span class="t"><span class="t2"> Новая</span> запись</span></button>
 </div>
-<div class="bar" style="margin-bottom:0"><input type="text" id="q" placeholder="Поиск по всем записям: госномер, телефон, имя или слово из комментария" style="flex:1;min-width:200px" autocomplete="off"></div>
+<div class="bar" style="margin-bottom:0"><div class="qw"><input type="text" id="q" placeholder="Поиск по всем записям: госномер, телефон, имя или слово из комментария" autocomplete="off"><button type="button" id="qX" class="qx" tabindex="-1" aria-label="Поиск"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div></div>
 </div>
 </div>
 <div id="qRes"></div>
@@ -833,7 +838,17 @@ function doSearch(){
   r.sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:a.start-b.start});
   box.innerHTML='<div class="list" style="margin-bottom:12px">'+(r.length?r.slice(0,30).map(itemHtml).join('')+(r.length>30?'<div class="sub" style="padding:8px 0;margin:0">Показаны 30 из '+r.length+', уточните запрос</div>':''):'<div class="sub" style="padding:8px 0;margin:0">Ничего не найдено</div>')+'</div>';
 }
-document.getElementById('q').addEventListener('input',function(){doSearch();render()});
+var QI='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+    QX='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+function qIcon(){var b=document.getElementById('qX'),has=!!document.getElementById('q').value;if(b.classList.contains('qon')!==has){b.classList.toggle('qon',has);b.innerHTML=has?QX:QI;b.setAttribute('aria-label',has?'Очистить поиск':'Поиск');b.title=has?'Очистить поиск':''}}
+function qShow(v){var box=document.getElementById('qRes');if(box.hidden===!v)return;box.hidden=!v;render()}
+document.getElementById('q').addEventListener('input',function(){qIcon();document.getElementById('qRes').hidden=false;doSearch();render()});
+document.getElementById('q').addEventListener('focus',function(){if(query())qShow(true)});
+document.getElementById('q').addEventListener('keydown',function(e){if(e.key==='Escape'){qShow(false);this.blur()}});
+document.getElementById('qX').addEventListener('click',function(){if(!this.classList.contains('qon'))return;var q=document.getElementById('q');q.value='';qIcon();doSearch();document.getElementById('qRes').hidden=false;render();q.focus()});
+/* клик мимо списка найденного — список сворачивается (текст поиска остаётся, клик в поле снова его покажет) */
+document.addEventListener('pointerdown',function(e){var box=document.getElementById('qRes');if(box.hidden||!box.firstChild)return;
+  if(e.target.closest('#qRes,.qw,#dlg,.pwm,.cbl'))return;qShow(false)},true);
 
 /* ---------- форма записи ---------- */
 var dlg=document.getElementById('dlg'),edId=null,fType='to',delArm=false;
