@@ -181,6 +181,9 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 #fHint{background:var(--bg);border:1px solid var(--ac);border-radius:10px;padding:8px 10px;font-size:13px;flex-direction:row!important;flex-wrap:wrap;align-items:center;gap:6px 10px}
 #fHint .sp{flex:1}
 #fHint button{padding:5px 10px}
+#fHint .hc{flex-basis:100%;display:flex;align-items:center;gap:10px;border-top:1px solid var(--bd);padding-top:6px}
+#fHint .hc span{flex:1;min-width:0}
+#fHint .hc small{color:var(--mu);white-space:nowrap}
 .cnt{display:flex;gap:6px;flex-wrap:wrap}
 .cnt button{padding:5px 10px;font-size:13px;border-radius:999px}
 .cnt button b{margin-left:4px}
@@ -985,25 +988,33 @@ document.getElementById('fModel').addEventListener('change',function(){var k=bra
 /* постоянный клиент: ищем прошлую запись по госномеру или телефону */
 function normPlate(p){return String(p||'').toUpperCase().replace(/\s+/g,'')}
 function phoneKey(p){var d=digits(p);return d.length>=10?d.slice(-10):''}
-function findPrev(){var pl=normPlate(fv('fPlate')),ph=phoneKey(fv('fPhone')),best=null,k,b;if(pl.length<4&&!ph)return null;
+/* все машины, которые уже приезжали с этим телефоном или госномером: у одного клиента их может быть несколько */
+function carKey(b){var p=normPlate(b.plate);if(p)return 'p:'+p;var m=splitCar(b);return 'm:'+[m.brand,m.model,b.year].join('|').toLowerCase()}
+function findPrev(){var pl=normPlate(fv('fPlate')),ph=phoneKey(fv('fPhone')),cars={},k,b,q;if(pl.length<4&&!ph)return [];
   for(k in state.b){b=state.b[k];if(!live(b)||k===edId)continue;
-    if((pl.length>=4&&normPlate(b.plate)===pl)||(ph&&phoneKey(b.phone)===ph)){if(!best||(b.date+pad(b.start))>(best.date+pad(best.start)))best=b}}
-  return best}
+    if((pl.length>=4&&normPlate(b.plate)===pl)||(ph&&phoneKey(b.phone)===ph)){q=carKey(b);if(!cars[q]||(b.date+pad(b.start))>(cars[q].date+pad(cars[q].start)))cars[q]=b}}
+  var r=Object.keys(cars).map(function(x){return cars[x]});
+  r.sort(function(a,c){var ap=pl.length>=4&&normPlate(a.plate)===pl,cp=pl.length>=4&&normPlate(c.plate)===pl;if(ap!==cp)return ap?-1:1;return (c.date+pad(c.start))>(a.date+pad(a.start))?1:-1});
+  return r.slice(0,6)}
 var hintFor=null;
 function hideHint(){var h=document.getElementById('fHint');h.style.display='none';h.innerHTML='';hintFor=null}
 function showHint(){
   if(edId||!(canWrite&&KEY&&can('edit')))return;
-  var b=findPrev();if(!b){hideHint();return}
-  if(hintFor===b.id)return;hintFor=b.id;
-  var bm=splitCar(b),h=document.getElementById('fHint');
-  h.innerHTML='<span>Уже был у нас ('+fshort(b.date)+'): <b>'+esc([b.client,b.phone].filter(Boolean).join(' · ')||'—')+'</b> · '+esc([b.plate,bm.brand,bm.model,b.year].filter(Boolean).join(' '))+(b.km?' · '+fkm(b.km):'')+'</span><span class="sp"></span><button type="button" id="hUse" class="pri">Подставить</button><button type="button" id="hNo">Нет</button>';
-  h.style.display='flex';
-  document.getElementById('hUse').onclick=function(){
+  var list=findPrev();if(!list.length){hideHint();return}
+  var sig=list.map(function(b){return b.id}).join(',');if(hintFor===sig)return;hintFor=sig;
+  var h=document.getElementById('fHint'),f=list[0],names=[];
+  list.forEach(function(b){if(b.client&&names.indexOf(b.client)<0)names.push(b.client)});
+  var html='<span>Уже был'+(names.length>1?'и':'')+' у нас: <b>'+esc(names.join(', ')||'—')+(f.phone?' · +7 '+esc(phFmt(String(f.phone))):'')+'</b>'+(list.length>1?' · машин: '+list.length:'')+'</span><span class="sp"></span><button type="button" id="hNo">Нет</button>';
+  list.forEach(function(b,i){var bm=splitCar(b);
+    html+='<div class="hc"><span>'+esc([b.plate,bm.brand,bm.model,b.year].filter(Boolean).join(' ')||'машина без данных')+(b.km?' · '+fkm(b.km):'')+(names.length>1&&b.client?' · '+esc(b.client):'')+' <small>последний раз '+fshort(b.date)+'</small></span><button type="button" class="pri" data-hi="'+i+'">Подставить</button></div>'});
+  h.innerHTML=html;h.style.display='flex';
+  h.querySelectorAll('[data-hi]').forEach(function(btn){btn.onclick=function(){var b=list[+btn.dataset.hi],bm=splitCar(b);
     function put(id,v){if(v&&!fv(id).trim())sv(id,v)}
-    put('fClient',b.client);if(b.phone&&!fv('fPhone').trim())setPhone(b.phone);put('fPlate',b.plate);put('fBrand',bm.brand);put('fModel',bm.model);put('fYear',b.year);
-    fillModels();if(b.km)document.getElementById('fKm').placeholder='в прошлый раз '+fkm(b.km);
-    h.style.display='none';clearMiss();
-  };
+    put('fClient',b.client);if(b.phone&&!fv('fPhone').trim())setPhone(b.phone);
+    /* машину выбрали из списка — её данные ставим целиком */
+    sv('fPlate',b.plate||'');sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');sv('fYear',b.year||'');
+    fillModels();var km=document.getElementById('fKm');km.placeholder=b.km?'в прошлый раз '+fkm(b.km):'';
+    h.style.display='none';clearMiss()}});
   document.getElementById('hNo').onclick=function(){h.style.display='none'};
 }
 var hintT=null;['fPlate','fPhone'].forEach(function(id){document.getElementById(id).addEventListener('input',function(){clearTimeout(hintT);hintT=setTimeout(showHint,250)})});
