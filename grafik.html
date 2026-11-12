@@ -443,7 +443,7 @@ var armed=false,rb=document.getElementById('reset');
 function disarm(){armed=false;rb.textContent='Сбросить правки периода';rb.className=''}
 rb.onclick=async function(){
   if(!canWrite)return;
-  if(!armed){if(!(await gate('b')))return;armed=true;rb.textContent='Точно сбросить?';rb.className='arm';return}
+  if(!armed){if(!(await gate('r')))return;armed=true;rb.textContent='Точно сбросить?';rb.className='arm';return}
   var P=period();
   for(var i=0;i<state.w.length;i++)for(var k=0;k<P.n;k++)delete state.ov[ok(i,P.s+k)];
   disarm();save();render();
@@ -494,8 +494,9 @@ var UNL=null;
 function unlocked(){return !!state.pw&&UNL===state.pw.h}
 function locked(){if(EMB)return !RP().graf;return !!state.pw&&!unlocked()}
 function setLocked(){if(EMB)return !RP().set;return locked()}
-function applyRole(){if(!EMB)return;var r=RP(),b=document.getElementById('bToggle'),st=document.getElementById('sToggle'),pb=document.getElementById('pwB');
+function applyRole(){if(!EMB){var rs0=document.getElementById('reset');if(rs0)rs0.style.display='none';return}var r=RP(),b=document.getElementById('bToggle'),st=document.getElementById('sToggle'),pb=document.getElementById('pwB');
   b.style.display=r.graf?'':'none';st.style.display=r.set?'':'none';if(pb)pb.style.display='none';
+  var rs=document.getElementById('reset');if(rs)rs.style.display=r.role==='owner'?'':'none';
   if(!r.graf&&!collapsed){collapsed=true}if(!r.set&&!setCol){setCol=true}
   applySet();updCur()}
 function hexb(h){var a=new Uint8Array(h.length/2),i;for(i=0;i<a.length;i++)a[i]=parseInt(h.substr(i*2,2),16);return a}
@@ -529,7 +530,7 @@ function pwDialog(title,o){
   });
 }
 async function gate(kind){
-  if(EMB)return kind==='s'?!setLocked():!locked();
+  if(EMB)return kind==='s'?!setLocked():kind==='r'?RP().role==='owner':!locked();
   if(!state.pw||unlocked())return true;
   var p=await pwDialog('Введите пароль',{check:async function(v){
     var h=await hashPw(v,state.pw.s);
