@@ -120,7 +120,7 @@ body.ro .sl:hover{background:transparent}
 .list{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:4px 12px}
 .it{display:flex;gap:4px 12px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap;cursor:pointer;font-size:14px}
 .it:last-child{border-bottom:none}
-.it .wh{margin-left:auto;color:var(--mu);font-size:13px}
+.it .wh{color:var(--mu);font-size:13px;min-width:250px}
 .lock{max-width:420px;margin:40px auto;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:20px}
 .lock input{width:100%;margin:6px 0}
 .err{color:var(--danger);font-size:13px;min-height:18px}
@@ -808,7 +808,8 @@ gridEl.addEventListener('mouseover',function(e){var t=e.target.closest('.bk');if
 gridEl.addEventListener('mousemove',function(e){if(tip.style.display==='block')tipMove(e)});
 gridEl.addEventListener('mouseleave',function(){tip.style.display='none'});
 gridEl.addEventListener('click',function(){tip.style.display='none'});
-function itemHtml(b){return '<div class="it" data-id="'+b.id+'"><b>'+esc(b.plate||b.client||'Без имени')+'</b><span>'+esc(tName(b))+'</span><span>'+esc([carY(b),b.client,b.phone].filter(Boolean).join(' · '))+'</span>'+(b.desc?'<span style="font-style:italic;color:var(--mu)">'+esc(b.desc)+'</span>':'')+'<span class="wh">'+fshort(b.date)+', '+fm(b.start)+' · '+esc(postName(b.post))+' · '+SN[st(b)]+'</span></div>'}
+function itemHtml(b){var who=[b.client,b.phone].filter(Boolean).join(' · '),car=[carY(b),b.plate].filter(Boolean).join(' · ');
+  return '<div class="it" data-id="'+b.id+'"><span class="wh">'+fshort(b.date)+', '+fm(b.start)+' · '+esc(postName(b.post))+' · '+SN[st(b)]+'</span><b>'+esc(who||'Без имени')+'</b>'+(car?'<span>'+esc(car)+'</span>':'')+'<span>'+esc(tName(b))+'</span>'+(b.desc?'<span style="font-style:italic;color:var(--mu)">'+esc(b.desc)+'</span>':'')+'</div>'}
 document.getElementById('days').addEventListener('click',function(e){
   var it=e.target.closest('.it');if(it){listClick(e);return}
   var t=e.target.closest('button');if(!t)return;
