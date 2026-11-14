@@ -49,6 +49,8 @@ h1{font-size:20px;margin:0}
 .dbody{padding:2px 0 4px 8px}
 .mrow{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .mlbl{font-size:12px;color:var(--mu);margin:8px 0 0}
+td.nm .mdl{background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;box-shadow:none;min-height:0;text-align:left}
+td.nm .mdl:hover{color:var(--ac)}
 th.cd small{box-shadow:inset 0 -2px 0 var(--ac)}
 .uchip{position:relative;flex:none;margin-left:auto}
 .uchip>button{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
@@ -319,7 +321,7 @@ function render(){modeLabels();
     if(!cl)h+=hd;
     if(!cl)idx.forEach(function(i){
       var tot=0,tof=0,cnt=[0,0,0,0,0,0,0,0];
-      h+='<tr><td class="nm">'+esc(state.w[i].name)+'</td>';
+      h+='<tr><td class="nm">'+(EMB&&(state.w[i].dept==='me'||state.w[i].dept==='el')&&RP().name?'<button class="mdl" data-mdw="'+i+'" title="День мастера: смена и клиенты">'+esc(state.w[i].name)+'</button>':esc(state.w[i].name))+'</td>';
       days.forEach(function(d){var v=val(i,d),xo=(v===3||v===5)&&base(i,d)===0;if(!(xo&&v===3))tot+=H[v];cnt[v]++;if(xo&&v===5)tof++;
         h+='<td><button class="cell '+(mo?'c ':'')+C[v]+(xo?' xo':'')+(v===0&&isCal(state.w[i])&&isHol(d)?' hd':'')+(state.ov[ok(i,d)]!==undefined?' ov':'')+'" data-i="'+i+'" data-d="'+d+'"'+zTitle(Z,i,d)+'>'+zBadge(Z,i,d)+(v===0&&isCal(state.w[i])&&isHol(d)?'П':L[v])+(mo?'':'<small>'+(xo?(v===3?'вых. 0 ч':'в вых.'):(v===0&&isCal(state.w[i])&&isHol(d)?'празд.':T[v]))+'</small>')+'</button></td>'});
       if(!sumHide)h+='<td class="h">'+tot+(tof?'<small>в вых. '+tof+'</small>':'')+'</td>'+(mo?'<td class="h">'+cnt[2]+'</td><td class="h">'+cnt[3]+'</td><td class="h">'+cnt[5]+'</td><td class="h">'+cnt[4]+'</td><td class="h">'+cnt[6]+'</td><td class="h">'+cnt[7]+'</td>':'');
@@ -426,6 +428,7 @@ document.getElementById('tbl').addEventListener('click',function(ev){
     if(b.dataset.tg==='sum'){sumHide=!sumHide;try{localStorage.setItem('shift-app-sum',sumHide?'1':'0')}catch(e){}}
     else{covHide=!covHide;try{localStorage.setItem('shift-app-cov',covHide?'1':'0')}catch(e){}}
     render();return}
+  if(b.dataset.mdw!==undefined){var ds=[].map.call(document.querySelectorAll('#tbl .cell[data-d]'),function(c){return +c.dataset.d}),tn0=dn(new Date()),dd0=ds.indexOf(tn0)>=0?tn0:Math.min.apply(null,ds),z0=sib('fz');try{parent.showTab('zapis');z0.zApi.masterDay(state.w[+b.dataset.mdw].id,isoN(dd0))}catch(e){}return}
   if(b.dataset.dc){dCol[b.dataset.dc]=dCol[b.dataset.dc]?0:1;try{localStorage.setItem('shift-app-dcol',JSON.stringify(dCol))}catch(e){}render();return}
   if(!b.dataset.i)return;
   if(!canWrite)return;
