@@ -219,6 +219,8 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <script>
 /* внутри общей страницы права берутся у пользователя, вошедшего во вкладке «Запись на сервис» */
 var EMB=false;try{EMB=window.parent!==window&&!!parent.showTab}catch(e){}
+/* график работает только внутри общей страницы: там права даёт вход по ролям. Отдельно открытый grafik.html уводим на неё */
+if(!EMB&&/^https?:$/.test(location.protocol)){try{location.replace('index.html#grafik')}catch(e){}}
 function RP(){if(!EMB)return null;try{var w=parent.document.getElementById('fz').contentWindow;return (w&&w.permFor&&w.permFor())||{}}catch(e){return {}}}
 var DN=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 var MN=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
@@ -492,8 +494,8 @@ function applyUI(){var hn=document.getElementById('hint');if(hn)hn.style.display
 /* ---------- пароль на настройки ---------- */
 var UNL=null;
 function unlocked(){return !!state.pw&&UNL===state.pw.h}
-function locked(){if(EMB)return !RP().graf;return !!state.pw&&!unlocked()}
-function setLocked(){if(EMB)return !RP().set;return locked()}
+function locked(){if(EMB)return !RP().graf;return true}
+function setLocked(){if(EMB)return !RP().set;return true}
 function applyRole(){if(!EMB){var rs0=document.getElementById('reset');if(rs0)rs0.style.display='none';return}var r=RP(),b=document.getElementById('bToggle'),st=document.getElementById('sToggle'),pb=document.getElementById('pwB');
   b.style.display=r.graf?'':'none';st.style.display=r.set?'':'none';if(pb)pb.style.display='none';
   var rs=document.getElementById('reset');if(rs)rs.style.display=r.role==='owner'?'':'none';
@@ -531,6 +533,7 @@ function pwDialog(title,o){
 }
 async function gate(kind){
   if(EMB)return kind==='s'?!setLocked():kind==='r'?RP().role==='owner':!locked();
+  return false;
   if(!state.pw||unlocked())return true;
   var p=await pwDialog('Введите пароль',{check:async function(v){
     var h=await hashPw(v,state.pw.s);
