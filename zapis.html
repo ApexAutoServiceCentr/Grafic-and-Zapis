@@ -720,12 +720,12 @@ function dayHtml(D){
     var nw=notWorking(b,AV[j]);if(nw)nNw++;
     var r0=Math.max(0,Math.floor((b.start-c.open)/c.step)),r1=Math.min(S.length,Math.ceil((b.start+b.len-c.open)/c.step));if(r1<=r0)r1=r0+1;
     var span=r1-r0,sw=st(b)!=='zap'?'<span class="stw">'+SN[st(b)].toUpperCase()+'</span>':'',lines='<span class="ln">'+(nar?sw:'')+'<b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+tName(b,true)+(b.src&&!nar?'<span class="srt" title="Откуда клиент: '+SRC[b.src]+'">'+SRCI[b.src]+'</span>':'')+(nar?'':sw)+'</span>';
-    var car=[b.plate,carY(b)].filter(Boolean).join(' · '),who=[b.client,b.phone].filter(Boolean).join(' · ');
-    if(span===1){var l2=[b.plate||b.car,b.desc].filter(Boolean).join(' · ');if(l2)lines+='<span class="ln">'+esc(l2)+'</span>'}
+    var car=[carY(b),b.plate].filter(Boolean).join(' · '),who=[b.client,b.phone].filter(Boolean).join(' · ');
+    if(span===1){var l2=[car,b.desc].filter(Boolean).join(' · ');if(l2)lines+='<span class="ln">'+esc(l2)+'</span>'}
     else{
     if(car)lines+='<span class="ln">'+esc(car)+'</span>';
-    if(b.desc)lines+='<span class="cm">'+esc(b.desc)+'</span>';
-    if(who&&(span>=3||!(car&&b.desc)))lines+='<span class="ln">'+esc(who)+'</span>';}
+    if(who)lines+='<span class="ln">'+esc(who)+'</span>';
+    if(b.desc&&(span>=3||!(car&&who)))lines+='<span class="cm">'+esc(b.desc)+'</span>';}
     h+='<button class="bk '+(span===1?'one ':'')+b.type+' st-'+st(b)+(cf[b.id]?' cf':'')+(nw?' nw':'')+(Q?(match(b,Q)?' hit':' dim'):'')+'" style="grid-row:'+(r0+2)+' / span '+span+';grid-column:'+(j+2)+'" data-id="'+b.id+'" aria-label="'+esc(TN[b.type]+', '+fm(b.start)+'–'+fm(b.start+b.len)+(car?', '+car:'')+(who?', '+who:'')+(b.desc?', '+b.desc:''))+'">'+lines+'</button>';
   });
   var cap=P.length*(c.close-c.open),wd=dd.getDay(),info='Записей: '+nOcc+(nOff?' · не приехали: '+nOff:'')+' · загрузка постов: '+(cap?Math.round(tot/cap*100):0)+'%';
@@ -786,9 +786,9 @@ function onScroll(){
 addEventListener('scroll',function(){if(scT)return;scT=true;requestAnimationFrame(function(){scT=false;onScroll()})},{passive:true});
 /* всплывающая подсказка с полной информацией при наведении курсора */
 var tip=document.getElementById('tip');
-function tipHtml(b){var r='<b>'+esc(tName(b))+' · '+fm(b.start)+'–'+fm(b.start+b.len)+' ('+fdur(b.len)+')</b>';
+function tipHtml(b){var r='<b>'+fm(b.start)+'–'+fm(b.start+b.len)+' ('+fdur(b.len)+') · '+esc(tName(b))+'</b>';
   r+='<div class="r">'+esc(postName(b.post))+' · '+SN[st(b)]+'</div>';
-  if(b.plate||b.car||b.year||b.km)r+='<div>'+esc([b.plate,carY(b),fkm(b.km)].filter(Boolean).join(' · '))+'</div>';
+  if(b.plate||b.car||b.year||b.km)r+='<div>'+esc([carY(b),b.plate,fkm(b.km)].filter(Boolean).join(' · '))+'</div>';
   if(b.client||b.phone)r+='<div>'+esc([b.client,b.phone].filter(Boolean).join(' · '))+'</div>';
   if(b.desc)r+='<div class="c">'+esc(b.desc)+'</div>';
   if(occupies(b)&&notWorking(b,postAvail(state.cfg.posts[postIdx(b.post)],b.date)))r+='<div class="w">Мастер не на смене по графику — перенесите клиента</div>';
