@@ -18,7 +18,7 @@ main{max-width:1040px;margin:0 auto;padding:0 12px 32px}
 body.mo main{max-width:1560px}
 h1{font-size:20px;margin:0}
 .ttl{display:flex;align-items:center;gap:8px 10px;margin:0 0 10px;flex-wrap:wrap}
-.ttl .rng{flex:1;text-align:center;font-weight:600;min-width:142px;white-space:nowrap}
+.ttl .rng{flex:1;text-align:center;font-weight:600;min-width:128px;white-space:nowrap}
 #dFilter{max-width:240px}
 .ttl select{font:inherit;padding:8px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
 #m-toggle{background:#134e4a;border-color:#2dd4bf;color:#fff}
@@ -48,6 +48,17 @@ h1{font-size:20px;margin:0}
 .dsec{margin:6px 0}
 .dbody{padding:2px 0 4px 8px}
 .mrow{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.mlbl{font-size:12px;color:var(--mu);margin:8px 0 0}
+th.cd small{box-shadow:inset 0 -2px 0 var(--ac)}
+.uchip{position:relative;flex:none;margin-left:auto}
+.uchip>button{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:1699px){.uchip .un{display:none}}
+.umenu{position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:230px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.umenu[hidden]{display:none}
+.umenu .ur{font-size:12px;color:var(--mu);padding:0 2px 4px}
+.umenu button{text-align:left}
+.pst{display:flex;flex-direction:column;gap:2px;margin-bottom:10px}
+.pst .row{flex-wrap:wrap}
 .dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--mu);flex:none;cursor:help}
 .dot.g{background:#22c55e}.dot.n{background:var(--mu)}.dot.w{background:#f59e0b}.dot.r{background:var(--danger)}
 #syncTx{font-size:13px;color:var(--mu)}
@@ -140,7 +151,8 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 .tabs a.on{background:var(--tx);color:var(--bg);font-weight:700}
 @media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
 @media (min-width:1500px){main{max-width:1240px}}
-#dFilter{max-width:200px}
+#dFilter{max-width:165px}
+.uchip>button{padding-left:10px;padding-right:10px}
 .cell .zb{position:absolute;right:2px;bottom:2px;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:#0f766e;color:#fff;font-size:10px;font-weight:700;line-height:15px;text-align:center}
 .cell.c .zb{min-width:12px;height:12px;line-height:12px;font-size:9px;padding:0 2px;right:1px;bottom:1px;border-radius:6px}
 .cell .zb.zw{background:var(--danger)}
@@ -162,14 +174,17 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <button id="next" aria-label="Вперёд">›</button>
 <button id="today">Сегодня</button>
 <select id="dFilter" aria-label="Отдел"></select>
+<div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
 <div id="menuPanel" class="menu" hidden>
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Токен вводится во вкладке «Запись на сервис»: Меню → Синхронизация GitHub.</div>
-<div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и график ▾</button><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом Excel (.xlsx) по всем отделам">Скачать график ⭳</button><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
+<div class="mlbl">Общее для обеих вкладок</div><div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и посты ▾</button><button id="mToggle" class="eo" aria-expanded="false">Режим работы ▸</button><button id="goUsers" style="display:none">Пользователи ↗</button><button id="goSync">Синхронизация GitHub ↗</button></div>
+<div class="mlbl">График смен</div><div class="mrow"><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом Excel (.xlsx) по всем отделам">Скачать график ⭳</button><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
 <div id="setBox" class="eo">
 <div class="set" id="set"></div>
 <div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла. Для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс, праздничные дни Казахстана учитываются автоматически (если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную). Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, праздничные дни РК при этом не учитываются. Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит; выбираются вручную, по умолчанию дежурств нет (у 2/2 их нет вообще). При смене типа графика дежурные дни очищаются. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой, тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой. Если два дежурства приходятся на один день, в строке «На работе» число дежурных покраснеет. Минимум на работе в день задаётся в каждом отделе.</div>
 </div>
+<div class="eo" id="modeBox" style="display:none"><div class="set" id="modeSet"></div></div>
 <div class="eo" id="brush">
 <div class="set">
 <div class="row"><label>Режим клика по клетке: выберите режим и нажимайте на клетки таблицы</label></div>
@@ -193,8 +208,9 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <div class="sub" style="margin-top:8px">Просмотр графика работает без токена. Чтобы править, создайте токен на GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens. Выберите доступ только к этому репозиторию и право Repository permissions → Contents: Read and write. Токен сохраняется только в этом браузере и отправляется только на api.github.com. Данные графика лежат в файле data.json в репозитории; страница и репозиторий публичны, поэтому имена сотрудников видны всем, у кого есть адрес.</div>
 </div>
 <div class="leg">
-<span><b style="background:var(--wk)">Р</b>Рабочий 9–18</span>
-<span><b style="background:var(--dt)">Д</b>Дежурство 9–19</span>
+<span><b style="background:var(--wk)">Р</b><span id="lgR">Рабочий 9–18</span></span>
+<span><b style="background:var(--dt)">Д</b><span id="lgD">Дежурство 9–19</span></span>
+<span><b style="background:transparent;color:var(--tx);box-shadow:inset 0 -2px 0 var(--ac)">15</b>Подчёркнутая дата — свой выходной или перенос (подробности при наведении)</span>
 <span><b style="border:1px dashed var(--bd)">В</b>Выходной</span>
 <span><b style="background:var(--tr)">ОБ</b>Обучение на месте / вебинар</span>
 <span><b style="background:var(--tk)">К</b>Командировка / обучение с выездом</span>
@@ -258,9 +274,16 @@ function kzYear(y){
   });
   KZH.cache[y]=set;return set;
 }
-function isHol(n){return !!kzYear(dateOf(n).getUTCFullYear())[n]}
+function cdG(n){var d=state.days&&state.days[isoN(n)];return d||null}
+function isHol(n){var cd=cdG(n);if(cd&&(cd.t==='hol'||cd.t==='closed'))return true;if(cd&&cd.t==='work')return false;return !!kzYear(dateOf(n).getUTCFullYear())[n]}
+var MDEF={open:540,day:1080,duty:1140,brk:[780,840],cap:3};
+function GM(){var m=state.mode||{},r={},k;for(k in MDEF)r[k]=m[k]!=null?m[k]:MDEF[k];if(!state.mode){var z=ZA();if(z)r.cap=z.cap()||r.cap}return r}
+function hh(m){return Math.floor(m/60)+(m%60?':'+pad(m%60):'')}
+function hhm(m){return Math.floor(m/60)+':'+pad(m%60)}
+function modeLabels(){var m=GM();T[1]=T[3]=hh(m.open)+'–'+hh(m.day);T[2]=hh(m.open)+'–'+hh(m.duty);H[1]=H[3]=H[5]=Math.max(0,Math.round((m.day-m.open)/60-1));H[2]=Math.max(0,Math.round((m.duty-m.open)/60-1));
+  var a=document.getElementById('lgR'),b=document.getElementById('lgD');if(a)a.textContent='Рабочий '+T[1];if(b)b.textContent='Дежурство '+T[2]}
 function isCal(w){return w.type==='5/2'&&w.cal!==false}
-function base(i,day){var w=state.w[i],t=TY[w.type]||TY['4/2'],c=t[0]+t[1],n=((day-sd(w))%c+c)%c;if(isCal(w)){var wd=dateOf(day).getUTCDay();return wd>0&&wd<6&&!isHol(day)?1:0}return n<t[0]?((w.duty||[]).indexOf(n+1)>=0&&w.type!=='2/2'?2:1):0}
+function base(i,day){var w=state.w[i],t=TY[w.type]||TY['4/2'],c=t[0]+t[1],n=((day-sd(w))%c+c)%c,cd=cdG(day);if(cd&&cd.t==='closed')return 0;if(isCal(w)){if(cd&&cd.t==='work')return 1;var wd=dateOf(day).getUTCDay();return wd>0&&wd<6&&!isHol(day)?1:0}return n<t[0]?((w.duty||[]).indexOf(n+1)>=0&&w.type!=='2/2'?2:1):0}
 function ok(i,d){return state.w[i].id+'|'+d}
 var DEPTS=[{k:'sc',n:'Сервисные консультанты',c:'92D050'},{k:'el',n:'Электрики',c:'FFC000'},{k:'me',n:'Механики',c:'FFFF00'},{k:'wh',n:'Склад',c:'9DC3E6'},{k:'cw',n:'Мойка',c:'D5B8EA'},{k:'of',n:'Офис',c:'F4B6C2'}];
 var dFil='all',dCol={},sumHide=false,covHide=false;
@@ -269,7 +292,7 @@ try{var _f=localStorage.getItem('shift-app-dfil');if(_f==='all'||DEPTS.some(func
 function dOpts(c){return DEPTS.map(function(x){return '<option value="'+x.k+'"'+(x.k===c?' selected':'')+'>'+x.n+'</option>'}).join('')}
 function val(i,day){var o=state.ov[ok(i,day)];return o!==undefined?o:base(i,day)}
 var L=['В','Р','Д','ОБ','ОТ','К','Б','БС'],T=['','9–18','9–19','9–18','','команд.','больн.','без сод.'],C=['','w','d','t','v','k','s','n'],H=[0,8,9,8,0,8,0,0];
-function render(){
+function render(){modeLabels();
   var P=period(),mo=mode==='month',days=[],i,j;document.body.classList.toggle('mo',mo);
   for(i=0;i<P.n;i++)days.push(P.s+i);
   var a=dateOf(days[0]),e=dateOf(days[P.n-1]);
@@ -281,7 +304,8 @@ function render(){
   else ml=cap(MN[m1.getUTCMonth()])+' – '+cap(MN[m2.getUTCMonth()]);
   var hd='<tr class="dayh"><th class="nm mh">'+ml+'</th>';
   days.forEach(function(d){var dt=dateOf(d),wd=(dt.getUTCDay()+6)%7;
-    hd+='<th class="'+(d===tn?'today ':'')+(wd>4?'we ':'')+(isHol(d)?'hol':'')+'"'+(isHol(d)?' title="Праздничный день РК"':'')+'>'+DN[wd]+'<small>'+dt.getUTCDate()+'</small></th>'});
+    var cdh=cdG(d),cdt=cdh?(cdh.t==='closed'?'Сервис закрыт':cdh.t==='short'?'Сокращённый день до '+hhm(cdh.end):cdh.t==='hol'?'Выходной (перенос)':'Рабочий день (перенос)')+(cdh.n?': '+cdh.n:''):'';
+    hd+='<th class="'+(d===tn?'today ':'')+(wd>4&&!(cdh&&cdh.t==='work')?'we ':'')+(isHol(d)?'hol ':'')+(cdh?'cd':'')+'"'+(cdt?' title="'+esc(cdt)+'"':isHol(d)?' title="Праздничный день РК"':'')+'>'+DN[wd]+'<small>'+dt.getUTCDate()+'</small></th>'});
   if(sumHide)hd+='<th><button class="tg" data-tg="sum" title="Показать итоги" aria-label="Показать итоги">▸</button></th>';else hd+='<th class="sumh"><button class="tg tgs" data-tg="sum" title="Свернуть итоги" aria-label="Свернуть итоги">◂</button>Часы</th>'+(mo?'<th>Деж.</th><th>Об.</th><th>Ком.</th><th>Отп.</th><th>Бол.</th><th>БС</th>':'');hd+='</tr>';
   var h='',Z=zIndex();
   var ncol=days.length+1+(sumHide?1:(mo?7:1)),shown=0;
@@ -373,14 +397,14 @@ function newForm(k){
   +'<div class="row"><button class="on" data-add="'+k+'">Добавить</button></div></div>';
 }
 function renderSet(){
-  var rows=[];
+  var rows=[],za=ZA(),zp=za?za.posts():null;
   state.w.forEach(function(w,i){
     var nd=(TY[w.type]||TY['4/2'])[0],ch='',n,warn='';
     if(w.type==='3/3')w.duty.forEach(function(dd){var cl=[];state.w.forEach(function(o,k){if(k!==i&&o.type==='3/3'&&o.dept===w.dept&&ph(o.start)===ph(w.start)&&o.duty.indexOf(dd)>=0)cl.push(esc(o.name))});if(cl.length)warn+='<div class="row" style="color:var(--danger);font-size:13px">Дежурство в день '+dd+' пересекается: '+cl.join(', ')+'</div>'});
     for(n=1;n<=nd;n++)ch+='<button class="sm'+(w.duty.indexOf(n)>=0?' on':'')+'" data-duty="'+i+':'+n+'">'+n+'</button>';
-    rows[i]='<div class="emp"><div class="row"><input type="text" autocomplete="off" spellcheck="false" data-lpignore="true" maxlength="30" data-n="'+i+'" value="'+esc(w.name)+'" aria-label="Имя"><select data-t="'+i+'">'+opts(w.type)+'</select><select data-dp="'+i+'">'+dOpts(w.dept)+'</select><button class="sm'+(delArm===i?' arm':'')+'" data-del="'+i+'">'+(delArm===i?'Удалить?':'✕')+'</button></div>'+(w.type==='5/2'?'<div class="row"><label>Привязка</label><select data-cal="'+i+'"><option value="1"'+(w.cal!==false?' selected':'')+'>По календарю (Пн–Пт)</option><option value="0"'+(w.cal===false?' selected':'')+'>Со сдвигом выходных</option></select></div>':'')+(isCal(w)?'<div class="row"><label>Пн–Пт рабочие, Сб–Вс выходные (по календарю)</label></div>':'<div class="row"><label>Первый рабочий день цикла'+(w.type==='5/2'?' (5 рабочих, потом 2 выходных)':'')+'</label><input type="date" data-s="'+i+'" value="'+w.start+'"></div>'+(w.type==='2/2'?'':''+(w.type==='2/2'?'':'<div class="row"><label>Дежурные дни:</label>'+ch+'</div>'+warn)))+'</div>';
+    rows[i]='<div class="emp"><div class="row"><input type="text" autocomplete="off" spellcheck="false" data-lpignore="true" maxlength="30" data-n="'+i+'" value="'+esc(w.name)+'" aria-label="Имя"><select data-t="'+i+'">'+opts(w.type)+'</select><select data-dp="'+i+'">'+dOpts(w.dept)+'</select><button class="sm'+(delArm===i?' arm':'')+'" data-del="'+i+'">'+(delArm===i?'Удалить?':'✕')+'</button></div>'+(zp&&(w.dept==='me'||w.dept==='el')?'<div class="row"><label>Пост</label><select data-wp="'+i+'"><option value="">без поста</option>'+zp.filter(function(p){return p.kind===w.dept}).map(function(p){return '<option value="'+p.id+'"'+((p.emp||[]).indexOf(w.id)>=0?' selected':'')+'>'+esc(p.name)+'</option>'}).join('')+'</select></div>':'')+(w.type==='5/2'?'<div class="row"><label>Привязка</label><select data-cal="'+i+'"><option value="1"'+(w.cal!==false?' selected':'')+'>По календарю (Пн–Пт)</option><option value="0"'+(w.cal===false?' selected':'')+'>Со сдвигом выходных</option></select></div>':'')+(isCal(w)?'<div class="row"><label>Пн–Пт рабочие, Сб–Вс выходные (по календарю)</label></div>':'<div class="row"><label>Первый рабочий день цикла'+(w.type==='5/2'?' (5 рабочих, потом 2 выходных)':'')+'</label><input type="date" data-s="'+i+'" value="'+w.start+'"></div>'+(w.type==='2/2'?'':''+(w.type==='2/2'?'':'<div class="row"><label>Дежурные дни:</label>'+ch+'</div>'+warn)))+'</div>';
   });
-  var h='';
+  var h=postsHtml(zp);
   DEPTS.forEach(function(D){
     var idx=[],op=!!sdOpen[D.k];state.w.forEach(function(w,i){if(w.dept===D.k)idx.push(i)});
     h+='<div class="dsec"><button class="dbtn" data-sd="'+D.k+'" aria-expanded="'+(op?'true':'false')+'">'+(op?'▾':'▸')+' '+D.n+' · '+idx.length+'</button>';
@@ -431,7 +455,10 @@ document.getElementById('set').addEventListener('input',function(ev){
   else if(t.dataset.t!==undefined){var w0=state.w[+t.dataset.t];w0.type=t.value;w0.duty=defDuty(w0.type,w0.start,+t.dataset.t,w0.dept);save();render();renderSet();return}
   else if(t.dataset.a!==undefined&&t.value){state.a33=t.value}
   else if(t.dataset.tm!==undefined){var w2=state.w[+t.dataset.tm];w2.team=+t.value;w2.duty=defDuty('3/3',w2.team,+t.dataset.tm);save();render();renderSet();return}
-  else if(t.dataset.dp!==undefined){var w3=state.w[+t.dataset.dp];w3.dept=t.value;save();render();renderSet();return}
+  else if(t.dataset.dp!==undefined){var w3=state.w[+t.dataset.dp];w3.dept=t.value;var za3=ZA();if(za3)za3.setEmpPost(w3.id,'');save();render();renderSet();return}
+  else if(t.dataset.wp!==undefined){var za4=ZA();if(za4){var e4=za4.setEmpPost(state.w[+t.dataset.wp].id,t.value);if(e4)ppErr(e4)}render();renderSet();return}
+  else if(t.dataset.ppn!==undefined){return}
+  else if(t.dataset.ppk!==undefined){var za6=ZA();if(za6)za6.kind(+t.dataset.ppk,t.value);renderSet();return}
   else if(t.dataset.dm!==undefined){state.dmin[t.dataset.dm]=Math.max(0,parseInt(t.value,10)||0)}
   else if(t.dataset.nt!==undefined){nTog(t.dataset.nt);return}
   else if(t.dataset.cal!==undefined){var wc=state.w[+t.dataset.cal];if(t.value==='0')wc.cal=false;else{delete wc.cal;wc.duty=[]}save();render();renderSet();return}
@@ -498,6 +525,8 @@ function locked(){if(EMB)return !RP().graf;return true}
 function setLocked(){if(EMB)return !RP().set;return true}
 function applyRole(){if(!EMB){var rs0=document.getElementById('reset');if(rs0)rs0.style.display='none';return}var r=RP(),b=document.getElementById('bToggle'),st=document.getElementById('sToggle'),pb=document.getElementById('pwB');
   b.style.display=r.graf?'':'none';st.style.display=r.set?'':'none';if(pb)pb.style.display='none';
+  document.getElementById('mToggle').style.display=r.set?'':'none';document.getElementById('goUsers').style.display=r.role==='owner'?'':'none';document.getElementById('goSync').style.display=r.name?'':'none';if(!r.set&&!modeCol){modeCol=true;applyMode()}
+  var uc=document.getElementById('uChip');uc.hidden=!r.name;if(r.name){document.getElementById('uB').innerHTML='👤<span class="un"> '+esc(r.name)+'</span> ▾';document.getElementById('uB').title=r.name;document.getElementById('uRole').textContent=r.name+' · '+(r.roleName||'')}
   var rs=document.getElementById('reset');if(rs)rs.style.display=r.role==='owner'?'':'none';
   if(!r.graf&&!collapsed){collapsed=true}if(!r.set&&!setCol){setCol=true}
   applySet();updCur()}
@@ -557,7 +586,7 @@ document.getElementById('pwB').onclick=async function(){
   save();applySet();
 };
 var setCol=true;
-function applySet(){var t=document.getElementById('sToggle'),h=setCol||setLocked();document.getElementById('setBox').style.display=h?'none':'';t.textContent='Сотрудники и график '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');applyUI();var b=document.getElementById('pwB');if(b)b.textContent=state.pw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки'}
+function applySet(){var t=document.getElementById('sToggle'),h=setCol||setLocked();document.getElementById('setBox').style.display=h?'none':'';t.textContent='Сотрудники и посты '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');applyUI();var b=document.getElementById('pwB');if(b)b.textContent=state.pw?'🔒 Сменить или убрать пароль':'🔓 Задать пароль на настройки'}
 document.getElementById('sToggle').onclick=async function(){var open=setCol||setLocked();if(open){if(!(await gate('s')))return;showOnly('s')}else keepTbl(function(){setCol=true;applySet();fitMenu()})};
 try{var sm=localStorage.getItem('shift-app-mode');if(sm==='month'||sm==='week')mode=sm}catch(e){}
 document.getElementById('m-toggle').textContent=mode==='week'?'Вид: неделя ⇄':'Вид: месяц ⇄';
@@ -690,6 +719,7 @@ function exportXlsx(){
 }
 document.getElementById('expB').onclick=function(){exportXlsx().catch(function(e){exportCsv();alert('Не удалось собрать Excel-файл, скачан упрощённый CSV.')})};
 
+document.getElementById('set').addEventListener('change',function(ev){var t=ev.target;if(t.dataset.ppn!==undefined){var z=ZA();if(z)z.rename(+t.dataset.ppn,t.value);renderSet()}});
 document.getElementById('set').addEventListener('click',function(ev){
   var b=ev.target.closest('button');if(!b)return;
   if(b.dataset.duty!==undefined){
@@ -699,11 +729,14 @@ document.getElementById('set').addEventListener('click',function(ev){
   }else if(b.dataset.del!==undefined){
     var di=+b.dataset.del;
     if(delArm===di){
-      var id=state.w[di].id;state.w.splice(di,1);
+      var id=state.w[di].id;state.w.splice(di,1);var za7=ZA();if(za7)za7.setEmpPost(id,'');
       Object.keys(state.ov).forEach(function(k){if(k.split('|')[0]==id)delete state.ov[k]});
       delArm=-1;save();render();renderSet();
     }else{delArm=di;renderSet()}
   }else if(b.dataset.add!==undefined){addEmp(b.dataset.add)}
+  else if(b.dataset.ppa!==undefined){var za8=ZA();if(za8){za8.add(b.dataset.ppa);ppArm=-1;renderSet();fitMenu()}}
+  else if(b.dataset.ppu!==undefined){var za9=ZA();if(za9){za9.up(+b.dataset.ppu);ppArm=-1;renderSet()}}
+  else if(b.dataset.ppd!==undefined){var zb=ZA(),pi=+b.dataset.ppd;if(!zb)return;if(ppArm!==pi){var pp=zb.posts()[pi];ppArm=pi;renderSet();return}var er=zb.del(pi);ppArm=-1;renderSet();if(er)ppErr(er);render()}
   else if(b.dataset.sd!==undefined){keepTbl(function(){sdOpen[b.dataset.sd]=!sdOpen[b.dataset.sd];renderSet();fitMenu()})}
 });
 applyUI();applySet();renderSet();render();
@@ -741,7 +774,7 @@ async function ghFile(name){
   if(!content||j.encoding==='none'){var r2=await fetch(ghUrl('/git/blobs/'+j.sha),{headers:ghHead(),cache:'no-cache'});if(!r2.ok)throw{code:'http'};content=(await r2.json()).content}
   return{exists:true,sha:j.sha,data:JSON.parse(b64d(content))}}
 
-function cfgStr(){return JSON.stringify({w:state.w,nid:state.nid,min:state.min,dmin:state.dmin,a33:state.a33,pw:state.pw})}
+function cfgStr(){return JSON.stringify({w:state.w,nid:state.nid,min:state.min,dmin:state.dmin,a33:state.a33,pw:state.pw,mode:state.mode,days:state.days})}
 function copy(o){var r={},k;for(k in o)r[k]=o[k];return r}
 function ovEq(a,b){var k;for(k in a)if(a[k]!==b[k])return false;for(k in b)if(!(k in a))return false;return true}
 function rerender(){render();applySet();var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}
@@ -758,7 +791,7 @@ async function ghPut(data,sha){
 }
 function applyRemote(d){
   var c=d.cfg||{};
-  if(c.w){state.w=c.w;state.nid=c.nid;state.min=c.min;state.dmin=c.dmin;state.a33=c.a33;state.pw=c.pw}
+  if(c.w){state.w=c.w;state.nid=c.nid;state.min=c.min;state.dmin=c.dmin;state.a33=c.a33;state.pw=c.pw;state.mode=c.mode;state.days=c.days}
   state.ov=d.ov||{};
   normState();cacheLocal();
   synced={cfg:cfgStr(),ov:copy(state.ov)};
@@ -796,8 +829,8 @@ async function mergeRemote(){
   var res=copy(ro);
   for(k in state.ov)if(synced.ov[k]!==state.ov[k])res[k]=state.ov[k];
   for(k in synced.ov)if(!(k in state.ov))delete res[k];
-  var rcs=JSON.stringify({w:rc.w,nid:rc.nid,min:rc.min,dmin:rc.dmin,a33:rc.a33,pw:rc.pw});
-  if(!cfgChanged&&rc.w){state.w=rc.w;state.nid=rc.nid;state.min=rc.min;state.dmin=rc.dmin;state.a33=rc.a33;state.pw=rc.pw;normState()}
+  var rcs=JSON.stringify({w:rc.w,nid:rc.nid,min:rc.min,dmin:rc.dmin,a33:rc.a33,pw:rc.pw,mode:rc.mode,days:rc.days});
+  if(!cfgChanged&&rc.w){state.w=rc.w;state.nid=rc.nid;state.min=rc.min;state.dmin=rc.dmin;state.a33=rc.a33;state.pw=rc.pw;state.mode=rc.mode;state.days=rc.days;normState()}
   state.ov=res;
   remoteSha=g.sha;
   synced={cfg:cfgChanged?rcs:cfgStr(),ov:copy(ro)};
@@ -833,7 +866,7 @@ function keepTbl(fn){
   fn();
   if(st)scrollBy(0,tb.getBoundingClientRect().top-t0);
 }
-function showOnly(k){keepTbl(function(){setCol=k!=='s';collapsed=k!=='b';ghCol=k!=='g';sdOpen={};applyUI();applySet();applyGh();renderSet();fitMenu()})}
+function showOnly(k){keepTbl(function(){setCol=k!=='s';collapsed=k!=='b';ghCol=k!=='g';modeCol=k!=='m';sdOpen={};applyUI();applySet();applyGh();applyMode();renderSet();fitMenu()})}
 function collapseAll(){showOnly('')}
 var menuB=document.getElementById('menuB'),menuP=document.getElementById('menuPanel');
 function fitMenu(){if(menuP.hidden)return;menuP.style.maxHeight='none';menuP.style.maxHeight=Math.max(160,innerHeight-menuP.getBoundingClientRect().top-12)+'px'}
@@ -882,7 +915,7 @@ document.getElementById('ghFile').onchange=function(ev){
     try{
       var d=JSON.parse(rd.result);
       if(!d||!d.cfg||!d.cfg.w)throw 0;
-      state.w=d.cfg.w;state.nid=d.cfg.nid;state.min=d.cfg.min;state.dmin=d.cfg.dmin;state.a33=d.cfg.a33;state.pw=d.cfg.pw;state.ov=d.ov||{};
+      state.w=d.cfg.w;state.nid=d.cfg.nid;state.min=d.cfg.min;state.dmin=d.cfg.dmin;state.a33=d.cfg.a33;state.pw=d.cfg.pw;state.mode=d.cfg.mode;state.days=d.cfg.days;state.ov=d.ov||{};
       normState();save();rerender();stMsg='';
     }catch(e){stMsg='Файл не подходит'}
     setSt();ev.target.value='';
@@ -921,6 +954,66 @@ document.getElementById('zMno').onclick=zClose;
 document.getElementById('zMok').onclick=function(){var cb=zCb;zClose();if(cb)cb()};
 document.getElementById('zM').addEventListener('click',function(e){if(e.target===this)zClose()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!document.getElementById('zM').hidden)zClose()});
+
+/* ---------- посты (хранятся в записи на сервис, правятся здесь) ---------- */
+function ZA(){var w=sib('fz');try{return w&&w.zApi&&w.zApi.ok()?w.zApi:null}catch(e){return null}}
+var ppArm=-1,ppMsg='';
+function ppErr(t){ppMsg=t;var e=document.getElementById('ppErr');if(e)e.textContent=t}
+function postsHtml(zp){
+  if(!zp)return EMB?'<div class="sub" style="margin:0 0 8px">Посты появятся здесь после входа во вкладке «Запись на сервис».</div>':'';
+  var K={me:'механик',el:'электрик'},h='<div class="pst"><div class="row"><b>Посты</b></div>';
+  zp.forEach(function(p,i){var who=state.w.filter(function(w){return (p.emp||[]).indexOf(w.id)>=0}).map(function(w){return esc(w.name)}).join(', ');
+    h+='<div class="row"><input type="text" maxlength="20" data-ppn="'+i+'" value="'+esc(p.name)+'" aria-label="Название поста" style="max-width:150px"><select data-ppk="'+i+'">'+Object.keys(K).map(function(k){return '<option value="'+k+'"'+(k===p.kind?' selected':'')+'>'+K[k]+'</option>'}).join('')+'</select>'+(i>0?'<button class="sm" data-ppu="'+i+'" aria-label="Выше">↑</button>':'')+'<button class="sm'+(ppArm===i?' arm':'')+'" data-ppd="'+i+'">'+(ppArm===i?'Удалить?':'✕')+'</button><label>'+(who||'мастер не выбран')+'</label></div>'});
+  h+='<div class="row"><button data-ppa="me">+ Пост механика</button><button data-ppa="el">+ Пост электрика</button></div><div class="err" id="ppErr" style="color:var(--danger);font-size:13px">'+esc(ppMsg)+'</div>';
+  h+='<div class="sub" style="margin:0">Мастера закрепляются за постом в карточке сотрудника ниже (поле «Пост» у механиков и электриков). Пост открыт для записи, когда на смене хотя бы один из его мастеров.</div></div>';
+  ppMsg='';return h}
+/* ---------- режим работы и свои выходные ---------- */
+var modeCol=true;
+function applyMode(){var t=document.getElementById('mToggle'),h=modeCol||setLocked();document.getElementById('modeBox').style.display=h?'none':'';t.textContent='Режим работы '+(h?'▸':'▾');t.setAttribute('aria-expanded',h?'false':'true');if(!h)renderMode()}
+document.getElementById('mToggle').onclick=async function(){var open=modeCol||setLocked();if(open){if(!(await gate('s')))return;showOnly('m')}else keepTbl(function(){modeCol=true;applyMode();fitMenu()})};
+var CDT={closed:'Сервис закрыт',hol:'Выходной (перенос, праздник)',work:'Рабочий день (перенос)',short:'Сокращённый день'};
+function tOpts(a,b,v){var o='',m;for(m=a;m<=b;m+=30)o+='<option value="'+m+'"'+(m===v?' selected':'')+'>'+hh(m).replace(/^(\d+)$/,'$1:00')+'</option>';return o}
+function renderMode(){var m=GM(),h='';
+  h+='<div class="row"><label style="min-width:200px">Рабочий день</label><label>с</label><select data-md="open">'+tOpts(360,720,m.open)+'</select><label>до</label><select data-md="day">'+tOpts(720,1320,m.day)+'</select></div>';
+  h+='<div class="row"><label style="min-width:200px">Дежурство до</label><select data-md="duty">'+tOpts(720,1380,m.duty)+'</select></div>';
+  h+='<div class="row"><label style="min-width:200px">Обед, запись закрыта</label><label>с</label><select data-md="b0">'+tOpts(600,1080,m.brk[0])+'</select><label>до</label><select data-md="b1">'+tOpts(630,1110,m.brk[1])+'</select></div>';
+  h+='<div class="row"><label style="min-width:200px">Клиентов на одни полчаса</label><input type="number" min="1" max="10" data-md="cap" value="'+m.cap+'" style="width:70px"><label>обычно равно числу консультантов на приёмке</label></div>';
+  h+='<div class="err" id="mdErr" style="color:var(--danger);font-size:13px"></div>';
+  h+='<div class="sub" style="margin:0 0 6px">Часы работы задают смены «Р» и «Д» в графике и часы записи клиентов. Шаг записи — 30 минут. Праздники РК учитываются автоматически.</div>';
+  var td=isoN(dn(new Date())),list=Object.keys(state.days||{}).filter(function(k){return k>=isoN(dn(new Date())-31)}).sort();
+  h+='<div class="row" style="margin-top:6px"><b>Свои выходные и переносы</b></div>';
+  if(!list.length)h+='<div class="sub" style="margin:0">Пока нет. Добавьте, например, сокращённый день 31 декабря или день инвентаризации.</div>';
+  list.forEach(function(k){var d=state.days[k],x=dateOf(dnum(k));
+    h+='<div class="row"'+(k<td?' style="opacity:.6"':'')+'><span style="min-width:150px">'+x.getUTCDate()+' '+MN[x.getUTCMonth()]+' '+x.getUTCFullYear()+', '+DN[x.getUTCDay()].toLowerCase()+'</span><b style="font-weight:600">'+CDT[d.t]+(d.t==='short'?' до '+hhm(d.end):'')+'</b>'+(d.n?'<label>'+esc(d.n)+'</label>':'')+'<button class="sm" data-cdx="'+k+'" aria-label="Убрать">✕</button></div>'});
+  h+='<div class="row" style="margin-top:6px"><input type="date" id="cdD" value="'+isoN(dn(new Date())+1)+'"><select id="cdT">'+Object.keys(CDT).map(function(k){return '<option value="'+k+'">'+CDT[k]+'</option>'}).join('')+'</select><span id="cdEw" style="display:none"><label>до</label><select id="cdE">'+tOpts(600,1320,840)+'</select></span><input type="text" id="cdN" maxlength="40" placeholder="Причина, например инвентаризация" style="max-width:260px"><button id="cdAdd">Добавить</button></div><div class="err" id="cdErr" style="color:var(--danger);font-size:13px"></div>';
+  h+='<div class="sub" style="margin:4px 0 0">«Сервис закрыт» — не работает никто, запись закрыта. «Выходной» — выходной у тех, кто работает 5/2 по календарю, сменные работают как обычно. «Рабочий день» — пятидневка выходит в этот день. «Сокращённый день» — запись клиентов только до указанного времени. Ручные отметки в клетках графика важнее этих правил.</div>';
+  document.getElementById('modeSet').innerHTML=h;fitMenu()}
+document.getElementById('modeSet').addEventListener('change',function(e){var t=e.target;
+  if(t.id==='cdT'){document.getElementById('cdEw').style.display=t.value==='short'?'':'none';return}
+  var k=t.dataset.md;if(!k)return;var m=GM(),v=+t.value,er=document.getElementById('mdErr');
+  if(k==='b0')m.brk=[v,Math.max(v+30,m.brk[1])];else if(k==='b1')m.brk=[Math.min(m.brk[0],v-30),v];else if(k==='cap')m.cap=Math.max(1,Math.min(10,parseInt(t.value,10)||1));else m[k]=v;
+  if(m.day<=m.open){er.textContent='Конец рабочего дня должен быть позже начала';renderMode();return}
+  if(m.duty<m.day){er.textContent='Дежурство не может закончиться раньше рабочего дня';renderMode();return}
+  if(m.brk[0]<m.open||m.brk[1]>m.day){er.textContent='Обед должен быть внутри рабочего дня';renderMode();return}
+  state.mode=m;save();render();renderMode()});
+document.getElementById('modeSet').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.cdx){delete state.days[b.dataset.cdx];save();render();renderMode();return}
+  if(b.id==='cdAdd'){var d=document.getElementById('cdD').value,t=document.getElementById('cdT').value,n=document.getElementById('cdN').value.trim(),er=document.getElementById('cdErr');
+    if(!d){er.textContent='Выберите дату';return}
+    var x=dateOf(dnum(d)).getUTCDay();if(t==='work'&&x>0&&x<6){er.textContent='Рабочий день-перенос ставится на субботу или воскресенье';return}
+    var o={t:t};if(t==='short'){o.end=+document.getElementById('cdE').value;if(o.end<=GM().open){er.textContent='Время окончания должно быть позже начала рабочего дня';return}}if(n)o.n=n;
+    if(!state.days)state.days={};state.days[d]=o;save();render();renderMode()}});
+/* открыть раздел по ссылке из вкладки записи */
+window.openSec=function(k){menuSet(true);if(k==='m'?!setLocked():!setLocked())showOnly(k)};
+function zw(){return sib('fz')}
+document.getElementById('goUsers').onclick=function(){var z=zw();try{parent.showTab('zapis');z.zApi.open('u')}catch(e){}};
+document.getElementById('goSync').onclick=function(){var z=zw();try{parent.showTab('zapis');z.zApi.open('g')}catch(e){}};
+/* чип пользователя */
+function uMenuSet(o){var m=document.getElementById('uMenu');m.hidden=!o;document.getElementById('uB').setAttribute('aria-expanded',o?'true':'false')}
+document.getElementById('uB').onclick=function(e){e.stopPropagation();uMenuSet(document.getElementById('uMenu').hidden)};
+document.getElementById('uPw').onclick=function(){uMenuSet(false);var z=zw();try{parent.showTab('zapis');z.zApi.myPw()}catch(e){}};
+document.getElementById('uOut').onclick=function(){uMenuSet(false);var z=zw();try{z.zApi.logout();parent.showTab('zapis')}catch(e){}};
+document.addEventListener('pointerdown',function(e){if(!e.target.closest('.uchip'))uMenuSet(false)},true);
 /* вкладки: внутри общей страницы переключаем без перезагрузки */
 var tabsEl=document.querySelector('.tabs');if(tabsEl)tabsEl.addEventListener('click',function(e){var a=e.target.closest('a[data-tab]');if(!a)return;
   try{if(window.parent!==window&&parent.showTab){e.preventDefault();parent.showTab(a.dataset.tab)}}catch(x){}});
