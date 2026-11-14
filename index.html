@@ -34,6 +34,11 @@ function showTab(k){if(!TABS[k])k='grafik';var first=cur===null;if(k===cur)retur
 }
 var h=(location.hash||'').replace('#',''),st='';try{st=localStorage.getItem('shell-tab')||''}catch(e){}
 showTab(TABS[h]?h:(TABS[st]?st:'grafik'));
+/* один вход: пока никто не вошёл, показываем экран входа (он во вкладке записи), после входа возвращаем выбранную вкладку */
+var want=null;
+function authSt(){try{var w=document.getElementById('fz').contentWindow;return w&&w.authState?w.authState():''}catch(e){return ''}}
+var _show=showTab;showTab=function(k){if(k==='grafik'&&authSt()==='out'){want='grafik';k='zapis'}else if(k==='zapis'&&cur==='grafik'&&want)want=null;_show(k)};
+setInterval(function(){var a=authSt();if(a==='out'&&cur==='grafik'){want='grafik';_show('zapis')}else if(a==='in'&&want){var t=want;want=null;_show(t)}},400);
 addEventListener('hashchange',function(){var k=(location.hash||'').replace('#','');if(TABS[k])showTab(k)});
 </script>
 </body>
