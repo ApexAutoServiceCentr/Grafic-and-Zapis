@@ -240,6 +240,12 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 .rng .cal:hover{color:var(--tx);background:var(--bd)}
 .rng .dpk{position:absolute;right:0;bottom:0;width:32px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
 @media (max-width:599px){.bar .rng{justify-content:flex-start}}
+.wchk{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--tx)!important;padding:6px 0;flex-wrap:wrap}
+.wchk input{width:18px;height:18px;margin:0;accent-color:#1D9E75;cursor:pointer}
+.wchk small{color:var(--mu);font-size:12px}
+.wni{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-left:5px;border-radius:50%;background:#1D9E75;color:#fff;vertical-align:-2px}
+#tip .wn{color:#1D9E75}
+#tip .wno{color:var(--mu)}
 </style>
 </head>
 <body class="ro">
@@ -313,6 +319,7 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 <div class="f"><label for="fKm">Пробег, км</label><input type="text" id="fKm" inputmode="numeric" maxlength="11" placeholder="85 000"></div>
 <div class="f w2"><label for="fDesc">Комментарий: что нужно сделать, жалоба клиента</label><textarea id="fDesc" maxlength="1000"></textarea></div>
 <div class="f"><label for="fStatus">Статус</label><select id="fStatus"></select></div>
+<div class="f w2"><label class="wchk"><input type="checkbox" id="fWarn"><span>Клиент предупреждён</span><small id="fWarnI"></small></label></div>
 <div class="f"><label for="fBy">Кто записал</label><input type="text" id="fBy" maxlength="40" readonly tabindex="-1" placeholder="заполнится автоматически"></div>
 </div>
 <div class="reqn eo"><span class="req">*</span> обязательные поля. Госномер можно указать не полностью.</div>
@@ -723,7 +730,7 @@ function dayHtml(D){
     var j=postIdx(b.post);if(j<0)return;nOcc++;if(st(b)==='nos')nOff++;else tot+=b.len;
     var nw=notWorking(b,AV[j]);if(nw)nNw++;
     var r0=Math.max(0,Math.floor((b.start-c.open)/c.step)),r1=Math.min(S.length,Math.ceil((b.start+b.len-c.open)/c.step));if(r1<=r0)r1=r0+1;
-    var span=r1-r0,sw=st(b)!=='zap'?'<span class="stw">'+SN[st(b)].toUpperCase()+'</span>':'',lines='<span class="ln">'+(nar?sw:'')+'<b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+tName(b,true)+(b.src&&!nar?'<span class="srt" title="Откуда клиент: '+SRC[b.src]+'">'+SRCI[b.src]+'</span>':'')+(nar?'':sw)+'</span>';
+    var span=r1-r0,sw=st(b)!=='zap'?'<span class="stw">'+SN[st(b)].toUpperCase()+'</span>':'',lines='<span class="ln">'+(nar?sw:'')+'<b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+tName(b,true)+(b.wn?'<span class="wni" title="Клиент предупреждён"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg></span>':'')+(b.src&&!nar?'<span class="srt" title="Откуда клиент: '+SRC[b.src]+'">'+SRCI[b.src]+'</span>':'')+(nar?'':sw)+'</span>';
     var car=[carY(b),b.plate].filter(Boolean).join(' · '),who=[b.client,b.phone].filter(Boolean).join(' · ');
     if(span===1){var l2=[car,b.desc].filter(Boolean).join(' · ');if(l2)lines+='<span class="ln">'+esc(l2)+'</span>'}
     else{
@@ -795,6 +802,8 @@ function tipHtml(b){var r='<b>'+fm(b.start)+'–'+fm(b.start+b.len)+' ('+fdur(b.
   if(b.plate||b.car||b.year||b.km)r+='<div>'+esc([carY(b),b.plate,fkm(b.km)].filter(Boolean).join(' · '))+'</div>';
   if(b.client||b.phone)r+='<div>'+esc([b.client,b.phone].filter(Boolean).join(' · '))+'</div>';
   if(b.desc)r+='<div class="c">'+esc(b.desc)+'</div>';
+  if(b.wn)r+='<div class="wn">✓ Клиент предупреждён · '+hWhen(b.wn)+(b.wnb?' · '+esc(b.wnb):'')+'</div>';
+  else if(st(b)==='zap'&&b.date>=iso(new Date()))r+='<div class="wno">Клиент ещё не предупреждён</div>';
   if(occupies(b)&&notWorking(b,postAvail(state.cfg.posts[postIdx(b.post)],b.date)))r+='<div class="w">Мастер не на смене по графику — перенесите клиента</div>';
   if(b.src||b.by)r+='<div class="r" style="margin-top:4px">'+[b.src?'Откуда: '+SRC[b.src].toLowerCase():'',b.by?'записал: '+esc(b.by):''].filter(Boolean).join(' · ')+'</div>';
   return r}
@@ -895,6 +904,7 @@ function openForm(b,pre){
   fillSelects(d.start,d.len);setType(d.type);setSrc(d.src||'');
   var bm=splitCar(d);sv('fClient',d.client);setPhone(d.phone);sv('fBrand',bm.brand);sv('fModel',bm.model);fillModels();setTon(d.ton||'');sv('fPlate',d.plate);hideHint();document.getElementById('fKm').placeholder='85 000';sv('fYear',d.year);sv('fKm',d.km?fkm(d.km).replace(' км',''):'');sv('fDesc',d.desc);sv('fStatus',b?st(b):'zap');
   sv('fBy',b?(d.by||''):(me()?me().name:''));
+  document.getElementById('fWarn').checked=!!(b&&b.wn);document.getElementById('fWarnI').textContent=b&&b.wn?'отметил(а) '+(b.wnb||'—')+', '+hWhen(b.wn):'';
   document.getElementById('fErr').textContent='';
   var del=document.getElementById('fDel');del.textContent='Удалить (отмена)';del.className='eo pdl';del.style.display=b?'':'none';
   document.getElementById('fMeta').textContent=b&&b.u?'Последнее изменение: '+new Date(b.u).toLocaleString('ru-RU')+(b.ub?' · '+b.ub:''):'';
@@ -1058,6 +1068,7 @@ document.getElementById('fSave').onclick=function(){
   var id=edId||uid(),old=state.b[id]||{},u=me();
   d.car=[d.brand,d.model].filter(Boolean).join(' ');
   d.by=edId?(old.by||''):u.name;
+  if(document.getElementById('fWarn').checked){if(old.wn){d.wn=old.wn;d.wnb=old.wnb||''}else{d.wn=now();d.wnb=u.name}}
   var ch=edId?hDiff(old,d):null;
   if(edId&&!Object.keys(ch).length){dlg.close();return}
   d.id=id;d.u=now();d.ub=u.name;d.ui=UID;d.c=old.c||d.u;
@@ -1075,13 +1086,13 @@ document.getElementById('fDel').onclick=function(){
 };
 document.getElementById('fCancel').onclick=function(){dlg.close()};
 /* ---------- история изменений карточки ---------- */
-var HF=[['date','Дата'],['start','Время приезда'],['post','Пост'],['len','Длительность'],['type','Вид работ'],['ton','Номер ТО'],['src','Откуда клиент'],['client','Клиент'],['phone','Телефон'],['brand','Марка'],['model','Модель'],['year','Год выпуска'],['plate','Госномер'],['km','Пробег'],['desc','Комментарий'],['status','Статус']];
+var HF=[['date','Дата'],['start','Время приезда'],['post','Пост'],['len','Длительность'],['type','Вид работ'],['ton','Номер ТО'],['src','Откуда клиент'],['client','Клиент'],['phone','Телефон'],['brand','Марка'],['model','Модель'],['year','Год выпуска'],['plate','Госномер'],['km','Пробег'],['desc','Комментарий'],['status','Статус'],['wn','Клиент предупреждён']];
 function hDiff(a,b){var r={};HF.forEach(function(f){var k=f[0],x=a[k]==null?'':a[k],y=b[k]==null?'':b[k];if(k==='status'){x=st(a);y=st(b)}if(String(x)!==String(y))r[k]=[x,y]});return r}
 function hDur(m){m=+m||0;var h=Math.floor(m/60),mm=m%60;return (h?h+' ч':'')+(h&&mm?' ':'')+(mm?mm+' мин':'')||'—'}
-function hVal(k,v){if(v===''||v==null)return '—';
+function hVal(k,v){if(k==='wn')return v?'да':'нет';if(v===''||v==null)return '—';
   if(k==='date')return fshort(v);if(k==='start')return fm(+v);if(k==='post')return postName(v);if(k==='len')return hDur(v);
   if(k==='type'){var t=TYPES.filter(function(x){return x.k===v})[0];return t?t.n:v}if(k==='ton')return 'ТО-'+v;
-  if(k==='src')return SRC[v]||v;if(k==='status')return SN[v]||v;if(k==='phone')return '+7 '+phFmt(String(v));if(k==='km')return fkm(v);
+  if(k==='src')return SRC[v]||v;if(k==='status')return SN[v]||v;if(k==='phone'){var pd=digits(v);return pd.length>=10?'+7 '+phFmt(pd.slice(-10)):String(v)}if(k==='km')return fkm(v);
   if(k==='desc'&&String(v).length>60)return String(v).slice(0,60)+'…';return String(v)}
 function hWhen(t){var d=new Date(t);return d.getDate()+' '+MN[d.getMonth()].slice(0,3)+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'')+', '+fm(d.getHours()*60+d.getMinutes())}
 function hLine(e){var w='<span class="hw">'+hWhen(e.t)+' · '+esc(e.n||'—')+'</span> — ';
