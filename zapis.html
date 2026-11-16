@@ -288,6 +288,7 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 .mdd .pact a{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--bd);border-radius:8px;color:var(--tx);text-decoration:none}
 .mdd .sugg{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:4px 0 2px}
 .mdd .sugg .sub{margin:0;width:100%}
+body.nocli .f.cli{display:none!important}
 </style>
 </head>
 <body class="ro">
@@ -354,8 +355,8 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 <div class="f"><label for="fLen">Длительность работ<span class="req" aria-hidden="true">*</span></label><select id="fLen"></select></div>
 <div class="f w2"><label>Вид работ<span class="req" aria-hidden="true">*</span></label><div class="tyw"><div class="seg" id="fType"></div><div class="cbl tonl" id="tonList" role="listbox" aria-label="Номер ТО" hidden></div></div><div id="fTonW" hidden><select id="fTon" aria-label="Номер ТО"></select></div></div>
 <div class="f w2"><label>Откуда клиент<span class="req" aria-hidden="true">*</span></label><div class="seg src" id="fSrc" role="group" aria-label="Откуда клиент"><button type="button" data-src="call"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"/></svg>Звонок</button><button type="button" data-src="visit"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M3 7v1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1m0 1a3 3 0 0 0 6 0v-1h-18l2 -4h14l2 4"/><path d="M5 21v-10.15"/><path d="M19 21v-10.15"/><path d="M9 21v-4a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v4"/></svg>Визит</button><button type="button" data-src="online"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18"/><path d="M12.5 3a17 17 0 0 1 0 18"/></svg>Онлайн</button></div></div>
-<div class="f"><label for="fClient">Клиент<span class="req" aria-hidden="true">*</span></label><input type="text" id="fClient" maxlength="60" placeholder="Иван Петров"></div>
-<div class="f"><label for="fPhone">Телефон<span class="req" aria-hidden="true">*</span></label><div class="ph"><span class="pre">+7</span><input type="tel" id="fPhone" inputmode="numeric" maxlength="18" placeholder="701 123 45 67"></div></div>
+<div class="f cli"><label for="fClient">Клиент<span class="req" aria-hidden="true">*</span></label><input type="text" id="fClient" maxlength="60" placeholder="Иван Петров"></div>
+<div class="f cli"><label for="fPhone">Телефон<span class="req" aria-hidden="true">*</span></label><div class="ph"><span class="pre">+7</span><input type="tel" id="fPhone" inputmode="numeric" maxlength="18" placeholder="701 123 45 67"></div></div>
 <div class="f w2" id="fHint" style="display:none"></div>
 <div class="f"><label for="fBrand">Марка<span class="req" aria-hidden="true">*</span></label><div class="cb"><input type="text" id="fBrand" maxlength="30" placeholder="Hyundai" autocomplete="off" role="combobox" aria-expanded="false"><button type="button" class="cbb" tabindex="-1" aria-label="Показать список марок">▾</button><div class="cbl" role="listbox" hidden></div></div></div>
 <div class="f"><label for="fModel">Модель<span class="req" aria-hidden="true">*</span></label><div class="cb"><input type="text" id="fModel" maxlength="40" placeholder="Tucson" autocomplete="off" role="combobox" aria-expanded="false"><button type="button" class="cbb" tabindex="-1" aria-label="Показать список моделей">▾</button><div class="cbl" role="listbox" hidden></div></div></div>
@@ -715,6 +716,7 @@ function commit(){dirty=true;cacheLocal();schedSync();rerender()}
 function applyPerm(){var B=document.body.classList,w=canWrite&&KEY;
   B.toggle('no-edit',!(w&&can('edit')));B.toggle('no-del',!(w&&can('del')));B.toggle('no-stats',!can('stats'));B.toggle('no-set',!(w&&can('set')));B.toggle('no-users',!(w&&can('users')));
   var rn=document.getElementById('roNote');if(rn)rn.style.display=KEY&&!canWrite&&(can('edit')||can('set')||can('users'))?'':'none';
+  document.body.classList.toggle('nocli',noCli());
   var u=me(),mi=document.getElementById('meInfo'),uc=document.getElementById('uChip');if(uc){uc.hidden=!u;if(u){document.getElementById('uB').innerHTML='👤<span class="un"> '+esc(u.name)+'</span> ▾';document.getElementById('uB').title=u.name;document.getElementById('uRole').textContent=u.name+' · '+((ROLES[u.role]||{}).n||'')}}if(mi)mi.innerHTML=u?'👤 <b>'+esc(u.name)+'</b> · '+esc((ROLES[u.role]||{}).n||''):'';
   if(typeof stOpen!=='undefined'&&stOpen&&!can('stats')){stOpen=false;applyStBox()}
   if(typeof setOpen!=='undefined'&&setOpen&&!(w&&can('set'))){setOpen=false;applySetBox()}
@@ -802,7 +804,7 @@ function dayHtml(D){
     var nw=notWorking(b,AV[j]);if(nw)nNw++;
     var r0=Math.max(0,Math.floor((b.start-c.open)/c.step)),r1=Math.min(S.length,Math.ceil((b.start+b.len-c.open)/c.step));if(r1<=r0)r1=r0+1;
     var span=r1-r0,sw=st(b)!=='zap'?'<span class="stw">'+SN[st(b)].toUpperCase()+'</span>':'',lines='<span class="ln">'+(nar?sw:'')+'<b>'+fm(b.start)+'–'+fm(b.start+b.len)+'</b> '+tName(b,true)+(b.src&&!nar?'<span class="srt" title="Откуда клиент: '+SRC[b.src]+'">'+SRCI[b.src]+'</span>':'')+(b.wn?'<span class="wni" title="Клиент предупреждён"><svg viewBox=\"0 0 24 24\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg></span>':'')+(nar?'':sw)+'</span>';
-    var car=[carY(b),b.plate].filter(Boolean).join(' · '),who=[b.client,b.phone].filter(Boolean).join(' · ');
+    var car=[carY(b),b.plate].filter(Boolean).join(' · '),who=noCli()?'':[b.client,b.phone].filter(Boolean).join(' · ');
     if(span===1){var l2=[car,b.desc].filter(Boolean).join(' · ');if(l2)lines+='<span class="ln">'+esc(l2)+'</span>'}
     else{
     if(car)lines+='<span class="ln">'+esc(car)+'</span>';
@@ -873,7 +875,7 @@ var tip=document.getElementById('tip');
 function tipHtml(b){var r='<b>'+fm(b.start)+'–'+fm(b.start+b.len)+' ('+fdur(b.len)+') · '+esc(tName(b))+'</b>';
   r+='<div class="r">'+esc(postName(b.post))+' · '+SN[st(b)]+'</div>';
   if(b.plate||b.car||b.year||b.km)r+='<div>'+esc([carY(b),b.plate,fkm(b.km)].filter(Boolean).join(' · '))+'</div>';
-  if(b.client||b.phone)r+='<div>'+esc([b.client,b.phone].filter(Boolean).join(' · '))+'</div>';
+  if(!noCli()&&(b.client||b.phone))r+='<div>'+esc([b.client,b.phone].filter(Boolean).join(' · '))+'</div>';
   if(b.desc)r+='<div class="c">'+esc(b.desc)+'</div>';
   if(b.wn)r+='<div class="wn">✓ Клиент предупреждён · '+hWhen(b.wn)+(b.wnb?' · '+esc(b.wnb):'')+'</div>';
   else if(st(b)==='zap'&&b.date>=iso(new Date()))r+='<div class="wno">Клиент ещё не предупреждён</div>';
@@ -894,7 +896,7 @@ gridEl.addEventListener('mouseover',function(e){var t=e.target.closest('.bk');if
 gridEl.addEventListener('mousemove',function(e){if(tip.style.display==='block')tipMove(e)});
 gridEl.addEventListener('mouseleave',function(){tip.style.display='none'});
 gridEl.addEventListener('click',function(){tip.style.display='none'});
-function itemHtml(b){var who=[b.client,b.phone].filter(Boolean).join(' · '),car=[carY(b),b.plate].filter(Boolean).join(' · ');
+function itemHtml(b){var nc=noCli(),who=nc?'':[b.client,b.phone].filter(Boolean).join(' · '),car=[carY(b),b.plate].filter(Boolean).join(' · ');if(nc){who=car||'—';car=''}
   return '<div class="it" data-id="'+b.id+'"><span class="wh">'+fshort(b.date)+', '+fm(b.start)+' · '+esc(postName(b.post))+' · '+SN[st(b)]+'</span><b>'+esc(who||'Без имени')+'</b>'+(car?'<span>'+esc(car)+'</span>':'')+'<span>'+esc(tName(b))+'</span>'+(b.desc?'<span style="font-style:italic;color:var(--mu)">'+esc(b.desc)+'</span>':'')+'</div>'}
 document.getElementById('days').addEventListener('click',function(e){
   var ml=e.target.closest('.mdl');if(ml){openMD(+ml.dataset.emp,ml.dataset.d);return}
@@ -926,8 +928,10 @@ document.getElementById('newB').onclick=function(){openForm(null,{})};
 
 /* ---------- поиск ---------- */
 function query(){var q=document.getElementById('q').value.trim().toLowerCase();return q.length<2?'':q}
-function match(b,q){var hay=[b.client,b.plate,b.car,b.desc,b.phone,tName(b),b.src?SRC[b.src]:''].join(' ').toLowerCase(),qd=digits(q),pq=q.replace(/\s+/g,'');
-  return hay.indexOf(q)>=0||String(b.plate||'').toLowerCase().indexOf(pq)>=0||(qd.length>=4&&digits(b.phone).indexOf(qd)>=0)}
+/* механикам имя и телефон клиента не показываем */
+function noCli(){var u=me();return !!(u&&u.role==='mech')}
+function match(b,q){var nc=noCli(),hay=[nc?'':b.client,b.plate,b.car,b.desc,nc?'':b.phone,tName(b),b.src?SRC[b.src]:''].join(' ').toLowerCase(),qd=digits(q),pq=q.replace(/\s+/g,'');
+  return hay.indexOf(q)>=0||String(b.plate||'').toLowerCase().indexOf(pq)>=0||(!nc&&qd.length>=4&&digits(b.phone).indexOf(qd)>=0)}
 function doSearch(){
   var q=query(),box=document.getElementById('qRes');
   if(!q){box.innerHTML='';return}
@@ -1250,7 +1254,7 @@ function hDur(m){m=+m||0;var h=Math.floor(m/60),mm=m%60;return (h?h+' ч':'')+(h
 function hVal(k,v){if(k==='wn')return v?'да':'нет';if(v===''||v==null)return '—';
   if(k==='date')return fshort(v);if(k==='start')return fm(+v);if(k==='post')return postName(v);if(k==='len')return hDur(v);
   if(k==='type'){var t=TYPES.filter(function(x){return x.k===v})[0];return t?t.n:v}if(k==='ton')return 'ТО-'+v;
-  if(k==='src')return SRC[v]||v;if(k==='status')return SN[v]||v;if(k==='phone'){var pd=digits(v);return pd.length>=10?'+7 '+phFmt(pd.slice(-10)):String(v)}if(k==='km')return fkm(v);
+  if((k==='client'||k==='phone')&&noCli())return '•••';if(k==='src')return SRC[v]||v;if(k==='status')return SN[v]||v;if(k==='phone'){var pd=digits(v);return pd.length>=10?'+7 '+phFmt(pd.slice(-10)):String(v)}if(k==='km')return fkm(v);
   if(k==='desc'&&String(v).length>60)return String(v).slice(0,60)+'…';return String(v)}
 function hWhen(t){var d=new Date(t);return d.getDate()+' '+MN[d.getMonth()].slice(0,3)+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'')+', '+fm(d.getHours()*60+d.getMinutes())}
 function hLine(e){var w='<span class="hw">'+hWhen(e.t)+' · '+esc(e.n||'—')+'</span> — ';
