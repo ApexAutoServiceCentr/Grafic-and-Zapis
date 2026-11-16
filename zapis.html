@@ -278,6 +278,14 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 #printArea{display:none}
 @media print{body>*:not(#printArea){display:none!important}#printArea{display:block!important;color:#000;background:#fff;font:13px/1.4 Arial,sans-serif}
 #printArea h1{font-size:18px;margin:0 0 4px}#printArea table{width:100%;border-collapse:collapse;margin-top:10px}#printArea td,#printArea th{border:1px solid #444;padding:6px;text-align:left;vertical-align:top}#printArea .chk{width:60px}}
+#cnt .pkb{border-color:var(--danger);color:var(--danger);background:transparent}
+#cnt .pkb b{background:var(--danger);color:#fff}
+.mdd .pday{font-weight:700;margin:12px 0 2px}
+.mdd .why{font-size:12px;color:var(--danger)}
+.mdd .pact{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.mdd .pact a{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid var(--bd);border-radius:8px;color:var(--tx);text-decoration:none}
+.mdd .sugg{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:4px 0 2px}
+.mdd .sugg .sub{margin:0;width:100%}
 </style>
 </head>
 <body class="ro">
@@ -332,6 +340,7 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 </main>
 
 <div id="pwM" class="pwm" hidden><div class="pwb" role="dialog" aria-modal="true" aria-labelledby="pwT"><div id="pwT" style="font-weight:600;margin-bottom:6px"></div><input type="password" id="pwI0" autocomplete="off" placeholder="Старый пароль" style="display:none"><input type="password" id="pwI" autocomplete="new-password" placeholder="Пароль"><input type="password" id="pwI2" autocomplete="new-password" placeholder="Повторите пароль"><div id="pwE" class="err"></div><div style="display:flex;gap:8px"><button id="pwOk" class="pri">OK</button><button id="pwNo">Отмена</button></div></div></div>
+<dialog id="pkDlg" class="mdd"><div class="dlg" id="pkBody"></div></dialog>
 <dialog id="mdDlg" class="mdd"><div class="dlg" id="mdBody"></div></dialog>
 <div id="printArea"></div>
 <dialog id="dlg"><form method="dialog" class="dlg" id="frm" autocomplete="off">
@@ -462,7 +471,7 @@ function check(bk,ignoreId){
   var av=postAvail(postIdx(bk.post)>=0?state.cfg.posts[postIdx(bk.post)]:null,bk.date);
   if(!av.free){
     if(!av.open)return 'Мастер поста не на смене в этот день ('+av.why+'). Выберите другой пост или день.';
-    if(bk.start+bk.len>av.end){var dp=dutyPosts(bk.date);return 'После 18:00 записывать можно только на пост дежурного мастера.'+(dp.length?' В этот день дежурит: '+dp.join(', ')+'.':' В этот день дежурных мастеров нет.')+' Уменьшите длительность или выберите время раньше.'}
+    if(bk.start+bk.len>av.end){var dp=dutyPosts(bk.date);return (av.short?'Сокращённый день: мастер работает до '+fm(av.end)+'. ':'')+'После '+fm(MD().day)+' записывать можно только на пост дежурного мастера.'+(dp.length?' В этот день дежурит: '+dp.join(', ')+'.':' В этот день дежурных мастеров нет.')+' Уменьшите длительность или выберите время раньше.'}
   }
   for(k in state.b){b=state.b[k];
     if(k===ignoreId||!occupies(b)||b.date!==bk.date)continue;
@@ -808,8 +817,9 @@ function dayHtml(D){
 /* перерисовать все дни ленты, не сдвигая то, что сейчас на экране */
 function renderCnt(){var el=document.getElementById('cnt'),t=iso(new Date()),L=nar||innerWidth<1800?['Сег.','Завт.','Послез.']:['Сегодня','Завтра','Послезавтра'],h='',i,d,n,k,b;
   for(i=0;i<3;i++){d=addDays(t,i);n=0;for(k in state.b){b=state.b[k];if(live(b)&&b.date===d&&st(b)!=='nos')n++}h+='<button type="button" class="'+(n?'':'z')+'" data-go="'+d+'" title="Записано на '+fdate(d)+'">'+L[i]+'<b>'+n+'</b></button>'}
-  el.innerHTML=h;el.style.display=appVisible()?'':'none'}
-document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(t)goto(t.dataset.go,true)});
+  var pn=canWrite&&KEY&&can('edit')?pkList().length:0;if(pn)h+='<button type="button" class="pkb" data-pk="1" title="Записи, у которых мастер не на смене — их нужно перенести">⚠ Перенести<b>'+pn+'</b></button>';
+  el.innerHTML=h;el.style.display=appVisible()?'':'none';if(document.getElementById('pkDlg').open)renderPK()}
+document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;if(t.dataset.pk){openPK();return}goto(t.dataset.go,true)});
 /* линия текущего времени в сегодняшнем дне, обновляется раз в минуту */
 function updNow(){
   [].forEach.call(document.querySelectorAll('#days .nowl'),function(x){x.remove()});
@@ -1148,6 +1158,44 @@ document.getElementById('fDel').onclick=function(){
 };
 document.getElementById('fCancel').onclick=function(){dlg.close()};
 
+
+/* ---------- перенести клиентов ---------- */
+function pkWhy(b){var p=state.cfg.posts[postIdx(b.post)];if(!p)return 'пост удалён';var a=postAvail(p,b.date);
+  if(a.free)return '';if(!a.open)return a.why;if(b.start+b.len>a.end)return a.short?'Сокращённый день: мастер до '+fm(a.end):'После '+fm(a.end)+' никто не дежурит';return ''}
+function pkList(){var t=iso(new Date()),r=[],k,b,w;if(!G.ok)return r;for(k in state.b){b=state.b[k];if(!live(b)||b.date<t||st(b)!=='zap')continue;w=pkWhy(b);if(w)r.push({b:b,why:w})}
+  r.sort(function(x,y){return x.b.date<y.b.date?-1:x.b.date>y.b.date?1:x.b.start-y.b.start||postIdx(x.b.post)-postIdx(y.b.post)});return r}
+var pkOpen=null,pkS=[];
+function pkFree(b,date,post,start){var c=Object.assign({},b,{date:date,post:post,start:start});return !check(c,b.id)}
+function pkSuggest(b){var r=[],seen={},P=state.cfg.posts,kind=(P[postIdx(b.post)]||{}).kind,S=slots(),i,j,d,t=iso(new Date()),nowM=new Date().getHours()*60+new Date().getMinutes();
+  function add(date,post,start){var q=date+'|'+post+'|'+start;if(seen[q]||r.length>=3)return;if(date===t&&start<nowM)return;if(date===b.date&&post===b.post&&start===b.start)return;if(pkFree(b,date,post,start)){seen[q]=1;r.push({date:date,post:post,start:start})}}
+  var same=P.filter(function(p){return p.kind===kind&&p.id!==b.post}),other=P.filter(function(p){return p.kind!==kind&&p.id!==b.post});
+  same.forEach(function(p){add(b.date,p.id,b.start)});
+  var near=S.slice().sort(function(x,y){return Math.abs(x-b.start)-Math.abs(y-b.start)});
+  for(i=0;i<near.length&&r.length<3;i++)same.forEach(function(p){add(b.date,p.id,near[i])});
+  for(d=1;d<=14&&r.length<3;d++){var dt=addDays(b.date,d);add(dt,b.post,b.start);for(j=0;j<near.length&&r.length<3;j++)add(dt,b.post,near[j]);same.forEach(function(p){add(dt,p.id,b.start)})}
+  other.forEach(function(p){add(b.date,p.id,b.start)});
+  return r}
+function openPK(){pkOpen=null;renderPK();var d=document.getElementById('pkDlg');if(!d.open)d.showModal()}
+function renderPK(){var L=pkList(),h='<div class="mh"><div style="flex:1;font-weight:700;font-size:16px">Перенести клиентов · '+L.length+'</div><button type="button" id="pkX" aria-label="Закрыть">✕</button></div>';
+  h+='<div class="sub" style="margin:4px 0 6px">Записи с сегодняшнего дня, у которых мастер поста не на смене, а подменить некому.</div>';
+  if(!L.length)h+='<div class="sub" style="margin:14px 0">Всё в порядке: переносить никого не нужно.</div>';
+  var last='';L.forEach(function(o){var b=o.b,bm=splitCar(b),dd=parseIso(b.date);
+    if(b.date!==last){last=b.date;h+='<div class="pday">'+DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()]+'</div>'}
+    var ph=digits(b.phone||'');
+    h+='<div class="mi cl" data-pid="'+b.id+'"><div><div class="t">'+fm(b.start)+'–'+fm(b.start+b.len)+'</div><div class="m">'+esc(postName(b.post))+'</div></div><div><div>'+esc([tName(b),[bm.brand,bm.model].filter(Boolean).join(' '),b.plate].filter(Boolean).join(' · '))+'</div><div class="m">'+esc([b.client,b.phone].filter(Boolean).join(' · ')||'—')+'</div><div class="why">'+esc(o.why)+'</div></div><div class="pact"><button type="button" data-pmv="'+b.id+'">Перенести</button>'+(ph.length>=10?'<a href="tel:+7'+ph.slice(-10)+'" aria-label="Позвонить" title="Позвонить">📞</a>':'')+'</div>';
+    if(pkOpen===b.id){h+='<div class="sugg">'+(pkS.length?'<div class="sub">Свободные варианты:</div>'+pkS.map(function(x,i){var x2=parseIso(x.date);return '<button type="button" class="pri" data-pgo="'+i+'">'+esc(postName(x.post))+' · '+x2.getDate()+' '+MN[x2.getMonth()].slice(0,3)+' · '+fm(x.start)+'</button>'}).join(''):'<div class="sub">Свободного времени в ближайшие две недели не нашлось.</div>')+'<button type="button" data-pman="'+b.id+'">Выбрать вручную</button></div>'}
+    h+='</div>'});
+  document.getElementById('pkBody').innerHTML=h}
+function pkMove(b,x){if(!(canWrite&&KEY&&can('edit')))return;var u=me(),d=Object.assign({},b,{date:x.date,post:x.post,start:x.start});delete d.wn;delete d.wnb;
+  var ch=hDiff(b,d);d.u=now();d.ub=u.name;d.ui=UID;d.h=(b.h||[]).concat([{t:d.u,u:UID,n:u.name,a:'e',ch:ch}]).slice(-60);state.b[b.id]=d;pkOpen=null;commit()}
+document.getElementById('pkBody').addEventListener('click',function(e){var t=e.target.closest('button,a,.mi');if(!t)return;var dlg=document.getElementById('pkDlg');
+  if(t.tagName==='A')return;
+  if(t.id==='pkX'){dlg.close();return}
+  if(t.dataset.pmv){var b=state.b[t.dataset.pmv];if(pkOpen===b.id){pkOpen=null}else{pkOpen=b.id;pkS=pkSuggest(b)}renderPK();return}
+  if(t.dataset.pgo!==undefined){var b2=state.b[pkOpen],x=pkS[+t.dataset.pgo];if(b2&&x&&pkFree(b2,x.date,x.post,x.start))pkMove(b2,x);renderPK();return}
+  if(t.dataset.pman){var b3=state.b[t.dataset.pman];dlg.close();if(b3){goto(b3.date,true);openForm(b3)}return}
+  if(t.dataset.pid&&!e.target.closest('.sugg')){var b4=state.b[t.dataset.pid];if(b4){dlg.close();openForm(b4)}}});
+document.getElementById('pkDlg').addEventListener('click',function(e){if(e.target===this)this.close()});
 /* ---------- день мастера ---------- */
 var mdEmp=null,mdDate=null,MDL=['В','Р','Д','ОБ','ОТ','К','Б','БС'];
 function mdWorks(v,w,day){return v===1||v===2||(v===3&&gBase(w,day)!==0)}
