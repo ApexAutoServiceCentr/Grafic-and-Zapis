@@ -154,6 +154,14 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 @media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
 @media (min-width:1500px){main{max-width:1240px}}
 #dFilter{max-width:165px}
+.dfw{position:relative;flex:none}
+#dFB{display:inline-flex;align-items:center;gap:8px;max-width:190px;font:inherit;padding:8px 10px 8px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+#dFT{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dfc{color:var(--mu);font-size:14px}
+.cbl{position:absolute;left:0;top:100%;margin-top:3px;min-width:100%;width:max-content;max-width:min(320px,92vw);max-height:300px;overflow:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px;z-index:70;box-shadow:0 8px 22px rgba(0,0,0,.25);padding:4px 0}
+.cbl div{padding:7px 12px;cursor:pointer;font-size:14px;white-space:nowrap}
+.cbl div:hover,.cbl div.act{background:var(--bg)}
+.cbl div.cur{font-weight:700;color:var(--ac)}
 .uchip>button{padding-left:10px;padding-right:10px}
 .cell .zb{position:absolute;right:2px;bottom:2px;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:#0f766e;color:#fff;font-size:10px;font-weight:700;line-height:15px;text-align:center}
 .cell.c .zb{min-width:12px;height:12px;line-height:12px;font-size:9px;padding:0 2px;right:1px;bottom:1px;border-radius:6px}
@@ -175,7 +183,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <div class="rng" id="rng"></div>
 <button id="next" aria-label="Вперёд">›</button>
 <button id="today">Сегодня</button>
-<select id="dFilter" aria-label="Отдел"></select>
+<div class="dfw"><select id="dFilter" aria-label="Отдел" hidden tabindex="-1"></select><button type="button" id="dFB" aria-haspopup="listbox" aria-expanded="false" aria-label="Отдел"><span id="dFT"></span><span class="dfc" aria-hidden="true">▾</span></button><div class="cbl" id="dFL" role="listbox" hidden></div></div>
 <div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
 <div id="menuPanel" class="menu" hidden>
@@ -470,7 +478,24 @@ document.getElementById('set').addEventListener('input',function(ev){
   save();render();
 });
 (function(){var f=document.getElementById('dFilter');f.innerHTML='<option value="all">Все отделы</option>'+DEPTS.map(function(x){return '<option value="'+x.k+'">'+x.n+'</option>'}).join('');f.value=dFil;
-f.onchange=function(){dFil=f.value;try{localStorage.setItem('shift-app-dfil',dFil)}catch(e){}render()}})();
+f.onchange=function(){dFil=f.value;try{localStorage.setItem('shift-app-dfil',dFil)}catch(e){}render()};
+  /* список отделов в том же стиле, что выпадающие списки марок и моделей в записи */
+  var b=document.getElementById('dFB'),t=document.getElementById('dFT'),L=document.getElementById('dFL'),act=-1;
+  function sync(){var o=f.options[f.selectedIndex];t.textContent=o?o.text:''}
+  function open(){L.innerHTML=[].map.call(f.options,function(o,i){return '<div role="option" data-i="'+i+'" class="'+(o.value===f.value?'cur':'')+'">'+esc(o.text)+'</div>'}).join('');L.hidden=false;b.setAttribute('aria-expanded','true');act=-1;
+    var r=L.getBoundingClientRect();L.style.left='';if(r.right>innerWidth-8)L.style.left=(innerWidth-8-r.right)+'px'}
+  function close(){L.hidden=true;b.setAttribute('aria-expanded','false')}
+  function pick(i){var o=f.options[i];if(!o)return;f.value=o.value;sync();close();f.onchange()}
+  b.addEventListener('mousedown',function(e){e.preventDefault();b.focus();if(L.hidden)open();else close()});
+  b.addEventListener('click',function(e){if(e.detail===0){if(L.hidden)open();else close()}});
+  b.addEventListener('blur',function(){setTimeout(close,150)});
+  L.addEventListener('mousedown',function(e){var d=e.target.closest('div[data-i]');if(d){e.preventDefault();pick(+d.dataset.i)}});
+  b.addEventListener('keydown',function(e){
+    if(L.hidden){if(e.key==='ArrowDown'){e.preventDefault();open()}return}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();var n=L.children.length;act=(act+(e.key==='ArrowDown'?1:-1)+n)%n;[].forEach.call(L.children,function(c,i){c.classList.toggle('act',i===act)});L.children[act].scrollIntoView({block:'nearest'})}
+    else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(act>=0)pick(act);else close()}
+    else if(e.key==='Escape'){e.preventDefault();close()}});
+  sync()})();
 var armed=false,rb=document.getElementById('reset');
 function disarm(){armed=false;rb.textContent='Сбросить правки периода';rb.className=''}
 rb.onclick=async function(){
