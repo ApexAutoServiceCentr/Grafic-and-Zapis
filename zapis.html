@@ -311,6 +311,22 @@ body.no-load .ldr{display:none!important}
 .ld .lg{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--mu)}
 .ld .lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 @media (prefers-color-scheme:light){.ld .l1{color:#0f6e56}.ld .l2{color:#854f0b}.ld .l3{color:#a32d2d}}
+.msgr{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;flex-wrap:wrap}
+.msgr .sp{flex:1}
+.msgb{display:inline-flex;gap:6px}
+.msgb button{padding:5px 10px;font-size:13px}
+.mseg{display:inline-flex;border:1px solid var(--bd);border-radius:10px;padding:2px;gap:2px}
+.mseg button{border:0;padding:3px 9px;border-radius:8px;background:transparent;box-shadow:none}
+.mseg button.on{background:var(--tx);color:var(--bg)}
+.svr{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:3px 0}
+.svr input{max-width:200px}
+body.nocli .msgb{display:none!important}
+.msgok{color:#1D9E75;font-size:12px;flex-basis:100%;text-align:right}
+.msgok:empty{display:none}
+.mchips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.mchips button{padding:3px 8px;font-size:12px}
+.msgT{width:100%;min-height:80px;font:inherit}
+.mprev{white-space:pre-wrap;background:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:6px}
 </style>
 </head>
 <body class="ro">
@@ -333,11 +349,12 @@ body.no-load .ldr{display:none!important}
 <div id="menu" class="menu" style="display:none">
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Введите токен в разделе «Синхронизация GitHub».</div>
 <div class="mlbl">Общее для обеих вкладок</div><div class="tools"><button id="goStaff" class="pset">Сотрудники и посты ↗</button><button id="goMode" class="pset">Режим работы ↗</button><button id="uToggle" class="pu" aria-expanded="false">Пользователи ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button></div>
-<div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="ldToggle" class="ldr" aria-expanded="false">Загрузка ▸</button><button id="stToggle" class="ps" aria-expanded="false">Статистика ▸</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
+<div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="ldToggle" class="ldr" aria-expanded="false">Загрузка ▸</button><button id="msToggle" class="pset" aria-expanded="false">Шаблоны сообщений ▸</button><button id="stToggle" class="ps" aria-expanded="false">Статистика ▸</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
 <div id="setBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="uBox" class="pu" style="display:none;margin-bottom:12px"><div class="set" id="usr"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
 <div id="ldBox" style="display:none;margin-bottom:12px"><div class="set" id="load"></div></div>
+<div id="msBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="msgS"></div></div>
 <div id="stBox" style="display:none;margin-bottom:12px"><div class="set" id="stat"></div></div>
 <div class="leg">
 <span><b style="background:var(--to)"></b>ТО</span>
@@ -390,7 +407,7 @@ body.no-load .ldr{display:none!important}
 <div class="f w2"><label for="fDesc">Комментарий: что нужно сделать, жалоба клиента</label><textarea id="fDesc" maxlength="1000"></textarea></div>
 <div class="f"><label for="fStatus">Статус</label><select id="fStatus"></select></div>
 <div class="f"><label for="fBy">Кто записал</label><input type="text" id="fBy" maxlength="40" readonly tabindex="-1" placeholder="заполнится автоматически"></div>
-<div class="f w2"><label class="wchk"><input type="checkbox" id="fWarn"><span>Клиент предупреждён</span><small id="fWarnI"></small></label></div>
+<div class="f w2 msgr"><label class="wchk"><input type="checkbox" id="fWarn"><span>Клиент предупреждён</span><small id="fWarnI"></small></label><span class="sp"></span><span class="msgb pe cli"><span class="mseg" role="group" aria-label="Какое сообщение"><button type="button" class="on" data-mt="c">Подтверждение</button><button type="button" data-mt="r">Напоминание</button></span><button type="button" id="fMsgC" title="Скопировать текст по шаблону">Скопировать</button><button type="button" id="fMsgW" title="Открыть WhatsApp с этим текстом">WhatsApp</button></span><small id="fMsgOk" class="msgok"></small></div>
 </div>
 <div class="reqn eo"><span class="req">*</span> обязательные поля. Госномер можно указать не полностью.</div>
 <div class="err" id="fErr" role="alert" style="margin-top:8px"></div>
@@ -472,7 +489,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function now(){return Date.now()}
 
 /* ---------- данные ---------- */
-function defCfg(){return{posts:[{id:'p1',name:'Пост 1',kind:'me',emp:[3,6]},{id:'p2',name:'Пост 2',kind:'me',emp:[4,7]},{id:'p3',name:'Пост 3',kind:'me',emp:[5,8]},{id:'p4',name:'Пост 4',kind:'el',emp:[9,10]}],open:540,close:1140,step:30,cap:3,brk:[780,810],cu:0}}
+function defCfg(){return{posts:[{id:'p1',name:'Пост 1',kind:'me',emp:[3,6]},{id:'p2',name:'Пост 2',kind:'me',emp:[4,7]},{id:'p3',name:'Пост 3',kind:'me',emp:[5,8]},{id:'p4',name:'Пост 4',kind:'el',emp:[9,10]}],open:540,close:1140,step:30,cap:3,brk:[780,810],msg2:null,svc:null,cu:0}}
 function emptyState(){return{v:1,cfg:defCfg(),b:{},users:{}}}
 var state=emptyState();
 function normCfg(c){var d=defCfg(),k;c=c||{};for(k in d)if(c[k]===undefined)c[k]=d[k];delete c.dur;
@@ -1189,6 +1206,55 @@ document.getElementById('fDel').onclick=function(){
 document.getElementById('fCancel').onclick=function(){dlg.close()};
 
 
+
+/* ---------- сообщения клиенту по шаблонам (подтверждение и напоминание) ---------- */
+var MSG_DEF={c:'{приветствие} Вы записаны на {дата} в {время}.\nЖдём, Вас по адресу Восточный промрайон, 143. {сервис}.',
+  r:'{приветствие} Напоминаем, Вам о записи на {дата} в {время}.\nЖдём, Вас по адресу Восточный промрайон, 143. {сервис}.'};
+var MSG_N={c:'Подтверждение записи',r:'Напоминание о записи'};
+var SVC_DEF={list:[{b:'Hyundai',n:'Сервис Hyundai Bayantau'},{b:'BYD',n:'Сервис BYD'},{b:'MG',n:'Сервис MG'},{b:'Geely Galaxy',n:'Сервис Geely Galaxy'}],other:'Сервис Apex Auto'};
+var MSGK=['приветствие','дата','время','день','сервис','работы','машина','госномер','клиент'];
+var msgT='c';
+function msgTpl(t){var m=state.cfg.msg2||{};return m[t]||MSG_DEF[t]}
+function svcCfg(){return state.cfg.svc||SVC_DEF}
+function svcFor(brand){var c=svcCfg(),k=String(brand||'').toLowerCase().replace(/\s+/g,''),i;if(k)for(i=0;i<c.list.length;i++)if(c.list[i].b.toLowerCase().replace(/\s+/g,'')===k)return c.list[i].n;return c.other||SVC_DEF.other}
+/* приветствие по времени отправки: утро 8–12, день 12–17, вечер 17–20, иначе «Здравствуйте!» */
+function greet(d){var h=(d||new Date()).getHours();return h>=8&&h<12?'Доброе утро!':h>=12&&h<17?'Добрый день!':h>=17&&h<20?'Добрый вечер!':'Здравствуйте!'}
+function msgFor(b,t,now){var d=b.date?parseIso(b.date):null,bm=splitCar(b),v={'приветствие':greet(now),'клиент':(b.client||'').trim(),'работы':b.type?tName(b):'','день':d?DNF[d.getDay()]:'','дата':d?pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear():'','время':b.start!=null&&b.start!==''?fm(+b.start):'','машина':[bm.brand,bm.model].filter(Boolean).join(' '),'госномер':b.plate||'','сервис':svcFor(bm.brand)};
+  return msgTpl(t||msgT).replace(/\{([^}]+)\}/g,function(m,k){k=k.trim().toLowerCase();return v[k]!==undefined?v[k]:m}).replace(/[ \t]{2,}/g,' ').replace(/ ([,.!?])/g,'$1')}
+function msgCur(){return collect()}
+function msgOk(t){var e=document.getElementById('fMsgOk');e.textContent=t;clearTimeout(msgOk.t);msgOk.t=setTimeout(function(){e.textContent=''},3500)}
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();var ok=false;try{ok=document.execCommand('copy')}catch(x){}document.body.removeChild(a);return ok}}
+document.querySelector('.mseg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;msgT=b.dataset.mt;[].forEach.call(this.children,function(x){x.classList.toggle('on',x===b)})});
+document.getElementById('fMsgC').onclick=async function(){var t=msgFor(msgCur());msgOk(await copyText(t)?MSG_N[msgT]+' скопировано — вставьте в WhatsApp':'Не удалось скопировать')};
+document.getElementById('fMsgW').onclick=function(){var d=msgCur(),ph=digits(d.phone||'');if(ph.length<10){msgOk('Сначала укажите телефон клиента');return}window.open('https://wa.me/7'+ph.slice(-10)+'?text='+encodeURIComponent(msgFor(d)),'_blank');msgOk('Открываю WhatsApp — после отправки отметьте «Клиент предупреждён»')};
+var msOpen=false,msTm=null;
+function applyMsBox(){var t=document.getElementById('msToggle');document.getElementById('msBox').style.display=msOpen?'':'none';t.textContent='Шаблоны сообщений '+(msOpen?'▾':'▸');t.setAttribute('aria-expanded',msOpen);if(msOpen)renderMs();fitMenu()}
+document.getElementById('msToggle').onclick=function(){var o=!msOpen;if(o)collapseMenuSections();msOpen=o;applyMsBox()};
+function msSample(){return {type:'to',ton:'3',date:addDays(iso(new Date()),1),start:600,brand:'Hyundai',model:'Tucson',car:'Hyundai Tucson',plate:'111AAA02',client:'Сериков Арман'}}
+function renderMs(){var sv=svcCfg(),h='<div class="row"><b>Шаблоны сообщений клиенту</b></div><div class="sub" style="margin:0 0 4px">Тексты для кнопок «Скопировать» и «WhatsApp» в карточке записи. Слова в фигурных скобках заменяются данными записи. Нажмите на слово, чтобы вставить его туда, где стоит курсор: </div>';
+  h+='<div class="mchips">'+MSGK.map(function(k){return '<button type="button" data-mk="'+k+'">{'+k+'}</button>'}).join('')+'</div>';
+  h+='<div class="sub" style="margin:0 0 6px">{приветствие} — «Доброе утро!» с 8 до 12, «Добрый день!» с 12 до 17, «Добрый вечер!» с 17 до 20, в остальное время «Здравствуйте!» (по времени отправки). {дата} — в виде 16.11.2026. {сервис} — по марке машины, настраивается ниже.</div>';
+  ['c','r'].forEach(function(t){h+='<div class="row" style="margin-top:8px"><b>'+MSG_N[t]+'</b></div><textarea class="msgT" data-mt="'+t+'" maxlength="1000">'+esc(msgTpl(t))+'</textarea><div class="sub" style="margin:4px 0 0">Как увидит клиент (запись Hyundai):</div><div class="mprev" data-mp="'+t+'"></div>'});
+  h+='<div class="row" style="margin-top:12px"><b>Название сервиса для {сервис}</b></div>';
+  sv.list.forEach(function(x,i){h+='<div class="svr"><input type="text" data-svb="'+i+'" value="'+esc(x.b)+'" aria-label="Марка" placeholder="Марка"><span>→</span><input type="text" data-svn="'+i+'" value="'+esc(x.n)+'" aria-label="Название" placeholder="Сервис …" style="max-width:260px"><button type="button" class="sm" data-svx="'+i+'" aria-label="Убрать">✕</button></div>'});
+  h+='<div class="svr"><span style="min-width:200px">Остальные марки</span><span>→</span><input type="text" id="svO" value="'+esc(sv.other)+'" style="max-width:260px"></div><div class="row"><button type="button" id="svAdd">+ Марка</button><button type="button" id="msgR">Вернуть стандартные тексты</button><span class="sub" style="margin:0" id="msgSt"></span></div>';
+  document.getElementById('msgS').innerHTML=h;msPrev()}
+function msPrev(){var now=new Date();now.setHours(10,0,0,0);[].forEach.call(document.querySelectorAll('#msgS [data-mp]'),function(p){p.textContent=msgFor(msSample(),p.dataset.mp,now)})}
+function msSaved(){var s2=document.getElementById('msgSt');if(s2)s2.textContent='Сохранено'}
+function msSaveSoon(){clearTimeout(msTm);var s2=document.getElementById('msgSt');if(s2)s2.textContent='';msTm=setTimeout(function(){cfgTouch();msSaved()},700)}
+function svcEdit(f){var c=JSON.parse(JSON.stringify(svcCfg()));f(c);state.cfg.svc=c}
+var lastTA=null;
+document.getElementById('msgS').addEventListener('focusin',function(e){if(e.target.classList.contains('msgT'))lastTA=e.target});
+document.getElementById('msgS').addEventListener('input',function(e){var t=e.target;
+  if(t.classList.contains('msgT')){var m=Object.assign({},state.cfg.msg2||{});m[t.dataset.mt]=t.value.trim()===MSG_DEF[t.dataset.mt]?'':t.value;state.cfg.msg2=m;msPrev();msSaveSoon();return}
+  if(t.dataset.svb!==undefined){svcEdit(function(c){c.list[+t.dataset.svb].b=t.value.trim()});msPrev();msSaveSoon();return}
+  if(t.dataset.svn!==undefined){svcEdit(function(c){c.list[+t.dataset.svn].n=t.value});msPrev();msSaveSoon();return}
+  if(t.id==='svO'){svcEdit(function(c){c.other=t.value});msPrev();msSaveSoon()}});
+document.getElementById('msgS').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+  if(b.dataset.mk){var ta=lastTA||document.querySelector('#msgS .msgT'),s0=ta.selectionStart,e0=ta.selectionEnd,ins='{'+b.dataset.mk+'}';ta.value=ta.value.slice(0,s0)+ins+ta.value.slice(e0);ta.focus();ta.selectionStart=ta.selectionEnd=s0+ins.length;ta.dispatchEvent(new Event('input',{bubbles:true}));return}
+  if(b.dataset.svx!==undefined){svcEdit(function(c){c.list.splice(+b.dataset.svx,1)});cfgTouch();renderMs();msSaved();return}
+  if(b.id==='svAdd'){svcEdit(function(c){c.list.push({b:'',n:'Сервис '})});renderMs();var ins2=document.querySelectorAll('#msgS [data-svb]');if(ins2.length)ins2[ins2.length-1].focus();return}
+  if(b.id==='msgR'){state.cfg.msg2=null;state.cfg.svc=null;cfgTouch();renderMs();msSaved()}});
 /* ---------- перенести клиентов ---------- */
 function pkWhy(b){var p=state.cfg.posts[postIdx(b.post)];if(!p)return 'пост удалён';var a=postAvail(p,b.date);
   if(a.free)return '';if(!a.open)return a.why;if(b.start+b.len>a.end)return a.short?'Сокращённый день: мастер до '+fm(a.end):'После '+fm(a.end)+' никто не дежурит';return ''}
@@ -1509,10 +1575,10 @@ document.getElementById('load').addEventListener('click',function(e){var t=e.tar
   if(t.id==='ldP'||t.id==='ldN'){ldMon=addDays(ldMon,t.id==='ldP'?-7:7);renderLoad();return}
   if(t.id==='ldT'){ldMon=null;renderLoad();return}
   if(t.dataset.ld){menuOpen=false;applyMenu();goto(t.dataset.ld,true)}});
-function collapseMenuSections(){closeU();if(ldOpen){ldOpen=false;applyLdBox()}if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
+function collapseMenuSections(){closeU();if(msOpen){msOpen=false;applyMsBox()}if(ldOpen){ldOpen=false;applyLdBox()}if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
 document.getElementById('menu').addEventListener('mousedown',function(e){var t=e.target;
-  if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('#stBox')||t.closest('#ldBox')||t.closest('#uBox')||t.closest('button,input,select,textarea,a,label'))return;
-  if(setOpen||ghOpen||stOpen||uOpen||ldOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
+  if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('#stBox')||t.closest('#ldBox')||t.closest('#msBox')||t.closest('#uBox')||t.closest('button,input,select,textarea,a,label'))return;
+  if(setOpen||ghOpen||stOpen||uOpen||ldOpen||msOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
 
 /* ---------- скрываемое меню в закреплённом заголовке ---------- */
 var menuOpen=false;try{localStorage.removeItem('zap-menu')}catch(e){}
@@ -1521,7 +1587,7 @@ addEventListener('resize',fitMenu);
 /* отступ справа под ползунок меню — только когда меню прокручивается */
 (function(){var m=document.getElementById('menu');function ov(){var o=m.scrollHeight>m.clientHeight+1;if(m.classList.contains('ov')!==o)m.classList.toggle('ov',o)}
 if(window.ResizeObserver){var ro=new ResizeObserver(ov);ro.observe(m);for(var i=0;i<m.children.length;i++)ro.observe(m.children[i])}addEventListener('resize',ov)})();
-function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){closeU();if(ldOpen){ldOpen=false;applyLdBox()}if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
+function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){closeU();if(ldOpen){ldOpen=false;applyLdBox()}if(msOpen){msOpen=false;applyMsBox()}if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
 function setMenu(open){if(menuOpen===open)return;if(open)applySetBox();var a=anchor(),t0=a?a.getBoundingClientRect().top:0;menuOpen=open;applyMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}
 document.getElementById('menuB').onclick=function(){setMenu(!menuOpen)};
 /* клик по таблице, кнопкам сверху или любому месту вне меню закрывает его */
