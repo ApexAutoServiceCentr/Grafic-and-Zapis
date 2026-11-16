@@ -313,8 +313,9 @@ body.no-load .ldr{display:none!important}
 @media (prefers-color-scheme:light){.ld .l1{color:#0f6e56}.ld .l2{color:#854f0b}.ld .l3{color:#a32d2d}}
 .msgr{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;flex-wrap:wrap}
 .msgr .sp{flex:1}
-.msgb{display:inline-flex;gap:6px}
+.msgb{display:flex;flex-wrap:wrap;gap:6px;flex-basis:100%;align-items:center}
 .msgb button{padding:5px 10px;font-size:13px}
+#fWaMode{padding:4px 6px;font-size:12px;width:auto;min-width:0}
 .mseg{display:inline-flex;border:1px solid var(--bd);border-radius:10px;padding:2px;gap:2px}
 .mseg button{border:0;padding:3px 9px;border-radius:8px;background:transparent;box-shadow:none}
 .mseg button.on{background:var(--tx);color:var(--bg)}
@@ -407,7 +408,7 @@ body.nocli .msgb{display:none!important}
 <div class="f w2"><label for="fDesc">Комментарий: что нужно сделать, жалоба клиента</label><textarea id="fDesc" maxlength="1000"></textarea></div>
 <div class="f"><label for="fStatus">Статус</label><select id="fStatus"></select></div>
 <div class="f"><label for="fBy">Кто записал</label><input type="text" id="fBy" maxlength="40" readonly tabindex="-1" placeholder="заполнится автоматически"></div>
-<div class="f w2 msgr"><label class="wchk"><input type="checkbox" id="fWarn"><span>Клиент предупреждён</span><small id="fWarnI"></small></label><span class="sp"></span><span class="msgb pe cli"><span class="mseg" role="group" aria-label="Какое сообщение"><button type="button" class="on" data-mt="c">Подтверждение</button><button type="button" data-mt="r">Напоминание</button></span><button type="button" id="fMsgC" title="Скопировать текст по шаблону">Скопировать</button><button type="button" id="fMsgW" title="Открыть WhatsApp с этим текстом">WhatsApp</button></span><small id="fMsgOk" class="msgok"></small></div>
+<div class="f w2 msgr"><label class="wchk"><input type="checkbox" id="fWarn"><span>Клиент предупреждён</span><small id="fWarnI"></small></label><span class="sp"></span><span class="msgb pe cli"><span class="mseg" role="group" aria-label="Какое сообщение"><button type="button" class="on" data-mt="c">Подтверждение</button><button type="button" data-mt="r">Напоминание</button></span><button type="button" id="fMsgC" title="Скопировать текст по шаблону">Скопировать</button><button type="button" id="fMsgW" title="Открыть WhatsApp с этим текстом">WhatsApp</button><select id="fWaMode" aria-label="Где открывать WhatsApp" title="Где открывать WhatsApp на этом компьютере"><option value="web">Web</option><option value="app">Приложение</option></select></span><small id="fMsgOk" class="msgok"></small></div>
 </div>
 <div class="reqn eo"><span class="req">*</span> обязательные поля. Госномер можно указать не полностью.</div>
 <div class="err" id="fErr" role="alert" style="margin-top:8px"></div>
@@ -1226,7 +1227,15 @@ function msgOk(t){var e=document.getElementById('fMsgOk');e.textContent=t;clearT
 async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();var ok=false;try{ok=document.execCommand('copy')}catch(x){}document.body.removeChild(a);return ok}}
 document.querySelector('.mseg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;msgT=b.dataset.mt;[].forEach.call(this.children,function(x){x.classList.toggle('on',x===b)})});
 document.getElementById('fMsgC').onclick=async function(){var t=msgFor(msgCur());msgOk(await copyText(t)?MSG_N[msgT]+' скопировано — вставьте в WhatsApp':'Не удалось скопировать')};
-document.getElementById('fMsgW').onclick=function(){var d=msgCur(),ph=digits(d.phone||'');if(ph.length<10){msgOk('Сначала укажите телефон клиента');return}window.open('https://wa.me/7'+ph.slice(-10)+'?text='+encodeURIComponent(msgFor(d)),'_blank');msgOk('Открываю WhatsApp — после отправки отметьте «Клиент предупреждён»')};
+/* WhatsApp: «Web» — всегда в одной и той же вкладке WhatsApp Web (открытой отсюда), «приложение» — сразу в программе WhatsApp на компьютере */
+function waMode(){try{return localStorage.getItem('zap-wa')||'web'}catch(e){return 'web'}}
+document.getElementById('fWaMode').value=waMode();
+document.getElementById('fWaMode').onchange=function(){try{localStorage.setItem('zap-wa',this.value)}catch(e){}};
+document.getElementById('fMsgW').onclick=function(){var d=msgCur(),ph=digits(d.phone||'');if(ph.length<10){msgOk('Сначала укажите телефон клиента');return}
+  var q='phone=7'+ph.slice(-10)+'&text='+encodeURIComponent(msgFor(d));
+  if(waMode()==='app'){var a=document.createElement('a');a.href='whatsapp://send?'+q;document.body.appendChild(a);a.click();a.remove();msgOk('Открываю приложение WhatsApp — после отправки отметьте «Клиент предупреждён»');return}
+  var w=window.open('https://web.whatsapp.com/send?'+q,'zapis-whatsapp');try{if(w)w.focus()}catch(e){}
+  msgOk('Чат открыт во вкладке WhatsApp Web — после отправки отметьте «Клиент предупреждён»')};
 var msOpen=false,msTm=null;
 function applyMsBox(){var t=document.getElementById('msToggle');document.getElementById('msBox').style.display=msOpen?'':'none';t.textContent='Шаблоны сообщений '+(msOpen?'▾':'▸');t.setAttribute('aria-expanded',msOpen);if(msOpen)renderMs();fitMenu()}
 document.getElementById('msToggle').onclick=function(){var o=!msOpen;if(o)collapseMenuSections();msOpen=o;applyMsBox()};
