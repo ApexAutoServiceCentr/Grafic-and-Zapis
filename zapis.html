@@ -278,8 +278,10 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 #printArea{display:none}
 @media print{body>*:not(#printArea){display:none!important}#printArea{display:block!important;color:#000;background:#fff;font:13px/1.4 Arial,sans-serif}
 #printArea h1{font-size:18px;margin:0 0 4px}#printArea table{width:100%;border-collapse:collapse;margin-top:10px}#printArea td,#printArea th{border:1px solid #444;padding:6px;text-align:left;vertical-align:top}#printArea .chk{width:60px}}
-#cnt .pkb{border-color:var(--danger);color:var(--danger);background:transparent}
-#cnt .pkb b{background:var(--danger);color:#fff}
+#cnt .pkb{border-color:var(--danger);color:#ec7e7e;background:#3c0e0e;font-weight:400}
+#cnt .pkb:hover{background:#4d1414}
+#cnt .pkb b{background:transparent;color:inherit;font-weight:400;padding:0;margin-left:0;min-width:0}
+@media (prefers-color-scheme:light){#cnt .pkb{color:#a32d2d;background:#fcebeb}#cnt .pkb:hover{background:#f7c1c1}}
 .mdd .pday{font-weight:700;margin:12px 0 2px}
 .mdd .why{font-size:12px;color:var(--danger)}
 .mdd .pact{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
@@ -817,7 +819,7 @@ function dayHtml(D){
 /* перерисовать все дни ленты, не сдвигая то, что сейчас на экране */
 function renderCnt(){var el=document.getElementById('cnt'),t=iso(new Date()),L=nar||innerWidth<1800?['Сег.','Завт.','Послез.']:['Сегодня','Завтра','Послезавтра'],h='',i,d,n,k,b;
   for(i=0;i<3;i++){d=addDays(t,i);n=0;for(k in state.b){b=state.b[k];if(live(b)&&b.date===d&&st(b)!=='nos')n++}h+='<button type="button" class="'+(n?'':'z')+'" data-go="'+d+'" title="Записано на '+fdate(d)+'">'+L[i]+'<b>'+n+'</b></button>'}
-  var pn=canWrite&&KEY&&can('edit')?pkList().length:0;if(pn)h+='<button type="button" class="pkb" data-pk="1" title="Записи, у которых мастер не на смене — их нужно перенести">⚠ Перенести<b>'+pn+'</b></button>';
+  var pn=canWrite&&KEY&&can('edit')?pkList().length:0;if(pn)h+='<button type="button" class="pkb" data-pk="1" title="Записи, у которых мастер не на смене — их нужно перенести">⚠ Перенести: <b>'+pn+'</b></button>';
   el.innerHTML=h;el.style.display=appVisible()?'':'none';if(document.getElementById('pkDlg').open)renderPK()}
 document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;if(t.dataset.pk){openPK();return}goto(t.dataset.go,true)});
 /* линия текущего времени в сегодняшнем дне, обновляется раз в минуту */
