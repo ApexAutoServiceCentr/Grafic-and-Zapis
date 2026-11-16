@@ -329,6 +329,18 @@ body.nocli .msgb{display:none!important}
 .mprev{white-space:pre-wrap;background:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:6px}
 body:not(.f-wa) #fMsgW,body:not(.f-tpl) #msToggle,body:not(.f-tpl) #msBox,body:not(.f-load) #ldToggle,body:not(.f-load) #ldBox,body:not(.f-stats) #stToggle,body:not(.f-stats) #stBox,body:not(.f-row) .mlbl.ldr,body:not(.f-row) .tools.ldr{display:none!important}
 body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
+.acc{margin-top:12px;border-top:1px solid var(--bd);padding-top:8px}
+.acc summary{cursor:pointer;font-weight:700;user-select:none}
+.acc table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:640px}
+.acc .tw{overflow-x:auto}
+.acc th{font-weight:600;font-size:12px;color:var(--mu);text-align:center;padding:6px 2px;line-height:1.25;vertical-align:bottom}
+.acc th.f{text-align:left;width:210px}
+.acc td{text-align:center;padding:7px 2px;border-top:1px solid var(--bd)}
+.acc td.f{text-align:left;font-size:13px}
+.acc td.f small{display:block;font-size:12px;color:var(--mu)}
+.acc input[type=checkbox]{width:17px;height:17px;accent-color:#1D9E75;margin:0;cursor:pointer}
+.acc .na{color:var(--mu);font-size:12px}
+.acc h4{margin:12px 0 2px;font-size:14px}
 </style>
 </head>
 <body class="ro">
@@ -436,10 +448,16 @@ var ROLE_ORDER=['adm','sc','war','mc','head','dir','mech','owner'];
 var UID=null;
 /* Функции, открытые пока только части ролей. Чтобы открыть функцию другим, добавьте их роли в список:
    adm, sc, war, mc, head, dir, mech, owner */
-var FEAT={wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],move:['owner']};
-function feat(k){var u=me();return !!u&&(FEAT[k]||[]).indexOf(u.role)>=0}
+var FEAT={wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner']};
+var FEAT_L=[['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Загрузка на неделю','',''],['stats','Статистика','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit']];
+function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];return a||FEAT[k]||[]}
+function featNeed(k,r){var n=(FEAT_L.filter(function(x){return x[0]===k})[0]||[])[3];if(!n)return true;if(n==='mday')return featRoles('mday').indexOf(r)>=0;return roleBase(r).indexOf(n)>=0}
+function feat(k){var u=me();if(!u)return false;if(u.role==='owner')return true;return featRoles(k).indexOf(u.role)>=0&&featNeed(k,u.role)}
 function me(){var u=UID&&state.users&&state.users[UID];return u&&!u.del?u:null}
-function can(p){var u=me(),r=u&&ROLES[u.role];return !!r&&(' '+r.p+' ').indexOf(' '+p+' ')>=0}
+/* основные права роли: из «Доступа к функциям» (настраивает владелец), иначе — как задано в ROLES */
+var BASE_P=[['edit','Создавать и менять записи','и ставить статусы'],['del','Удалять записи',''],['graf','Менять график смен','режимы корректировки'],['set','Сотрудники, посты, режим работы','и шаблоны сообщений']];
+function roleBase(r){var a=state.cfg.acc&&state.cfg.acc.base&&state.cfg.acc.base[r];if(a)return a;return ((ROLES[r]||{}).p||'').split(' ').filter(function(x){return x&&x!=='stats'})}
+function can(p){var u=me();if(!u||!ROLES[u.role])return false;if(u.role==='owner')return true;if(p==='users')return false;if(p==='stats')return feat('stats');return roleBase(u.role).indexOf(p)>=0}
 /* для вкладки «График смен»: кто вошёл и что ему можно */
 window.authState=function(){if(KEY&&me())return 'in';var lb=document.getElementById('lockBox');if(lb&&lb.style.display!=='none'&&lb.querySelector('#pw1,#pwNew,#ghLock'))return 'out';return 'wait'};
 window.zApi={
@@ -495,7 +513,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function now(){return Date.now()}
 
 /* ---------- данные ---------- */
-function defCfg(){return{posts:[{id:'p1',name:'Пост 1',kind:'me',emp:[3,6]},{id:'p2',name:'Пост 2',kind:'me',emp:[4,7]},{id:'p3',name:'Пост 3',kind:'me',emp:[5,8]},{id:'p4',name:'Пост 4',kind:'el',emp:[9,10]}],open:540,close:1140,step:30,cap:3,brk:[780,810],msg2:null,svc:null,cu:0}}
+function defCfg(){return{posts:[{id:'p1',name:'Пост 1',kind:'me',emp:[3,6]},{id:'p2',name:'Пост 2',kind:'me',emp:[4,7]},{id:'p3',name:'Пост 3',kind:'me',emp:[5,8]},{id:'p4',name:'Пост 4',kind:'el',emp:[9,10]}],open:540,close:1140,step:30,cap:3,brk:[780,810],msg2:null,svc:null,acc:null,cu:0}}
 function emptyState(){return{v:1,cfg:defCfg(),b:{},users:{}}}
 var state=emptyState();
 function normCfg(c){var d=defCfg(),k;c=c||{};for(k in d)if(c[k]===undefined)c[k]=d[k];delete c.dur;
@@ -1314,7 +1332,7 @@ function mdPosts(id){return state.cfg.posts.filter(function(p){return (p.emp||[]
 function mdList(id,date){var ps=mdPosts(id).map(function(p){return p.id});return dayList(date).filter(function(b){return ps.indexOf(b.post)>=0})}
 function openMD(id,date){if(!feat('mday'))return;var w=G.w.filter(function(x){return x.id===id})[0];if(!w)return;mdEmp=id;mdDate=date||iso(new Date());renderMD();var d=document.getElementById('mdDlg');if(!d.open)d.showModal()}
 function renderMD(){
-  var w=G.w.filter(function(x){return x.id===mdEmp})[0];if(!w)return;var D=mdDate,day=dnum(D),dd=parseIso(D),u=me(),mech=u&&u.role==='mech',canPrint=u&&(u.role==='mc'||u.role==='owner');
+  var w=G.w.filter(function(x){return x.id===mdEmp})[0];if(!w)return;var D=mdDate,day=dnum(D),dd=parseIso(D),u=me(),mech=u&&u.role==='mech',canPrint=feat('print');
   var ps=mdPosts(w.id),sh=mdShift(w,day),list=mdList(w.id,D),M=MD();
   var mates=[];ps.forEach(function(p){(p.emp||[]).forEach(function(oid){if(oid===w.id)return;var o=G.w.filter(function(x){return x.id===oid})[0];if(o)mates.push({n:o.name,s:mdShift(o,day)})})});
   var mateOn=mates.some(function(m){return m.s.on});
@@ -1455,6 +1473,7 @@ function renderUsers(){
   ids.forEach(function(k){var u=us[k],self=k===UID;
     h+='<div class="row"><span class="un">'+esc(u.name)+(self?'<small>это вы</small>':'')+'</span>'+roleSel('data-ur="'+k+'"'+(self?' disabled':''),u.role)+'<button data-up="'+k+'">Новый пароль</button>'+(self?'':'<button data-ud="'+k+'" class="'+(uDelArm===k?'arm':'')+'">'+(uDelArm===k?'Точно удалить?':'Удалить')+'</button>')+'</div>'});
   h+='</div><div class="row" style="margin-top:8px"><b>Добавить</b></div><div class="row"><input type="text" id="nuName" maxlength="40" placeholder="Имя, например Петров С." style="max-width:220px">'+roleSel('id="nuRole"','sc')+'<input type="password" id="nuPw" placeholder="Пароль, не короче 6 символов" autocomplete="new-password" style="max-width:240px"><button id="nuGo" class="pri">Добавить</button></div><div class="err" id="uErr">'+esc(uMsg)+'</div>';
+  h+=accHtml();
   h+='<div class="sub" style="margin:4px 0 0">Сообщите человеку пароль лично — сменить его он сможет сам через «Сменить мой пароль». Удалённый пользователь больше не войдёт, а на его устройствах произойдёт выход.</div>';
   document.getElementById('usr').innerHTML=h;uMsg='';
 }
@@ -1481,6 +1500,30 @@ document.getElementById('usr').addEventListener('click',async function(e){var t=
     if(uDelArm!==id2){uDelArm=id2;renderUsers();return}
     state.users[id2]={id:id2,del:true,u:now(),name:u2.name};uDelArm=null;commit();uMsg='Удалён: '+u2.name;renderUsers();uErr(uMsg,true)}
 });
+
+/* ---------- доступ к функциям (только владелец) ---------- */
+var accOpen=false,ACC_R=['adm','sc','war','mc','head','dir','mech'];
+var ACC_S={adm:'Адм. сервиса',sc:'Консуль&shy;тант',war:'Гарант. инженер',mc:'Мастер цеха',head:'Руково&shy;дитель',dir:'Дирек&shy;тор',mech:'Меха&shy;ники'};
+function accGet(){var a=state.cfg.acc?JSON.parse(JSON.stringify(state.cfg.acc)):{};a.base=a.base||{};a.feat=a.feat||{};ACC_R.forEach(function(r){if(!a.base[r])a.base[r]=roleBase(r).slice()});FEAT_L.forEach(function(f){if(!a.feat[f[0]])a.feat[f[0]]=featRoles(f[0]).filter(function(r){return r!=='owner'})});return a}
+function accHtml(){var a=accGet(),hd='<tr><th class="f">'+'%s'+'</th>'+ACC_R.map(function(r){return '<th>'+ACC_S[r]+'</th>'}).join('')+'</tr>';
+  var h='<details class="acc" id="accD"'+(accOpen?' open':'')+'><summary>Доступ к функциям</summary><div class="sub" style="margin:4px 0 0">Отметьте, что можно каждой роли. Владельцу открыто всё всегда. Сохраняется сразу и действует на всех устройствах.</div>';
+  h+='<h4>Основные права</h4><div class="tw"><table>'+hd.replace('%s','Право');
+  BASE_P.forEach(function(p){h+='<tr><td class="f">'+p[1]+(p[2]?'<small>'+p[2]+'</small>':'')+'</td>'+ACC_R.map(function(r){return '<td><input type="checkbox" data-ab="'+p[0]+'" data-r="'+r+'"'+(a.base[r].indexOf(p[0])>=0?' checked':'')+' aria-label="'+esc(ROLES[r].n+': '+p[1])+'"></td>'}).join('')+'</tr>'});
+  h+='</table></div><div class="sub" style="margin:4px 0 0">Осторожно: без права «Создавать и менять записи» роль не сможет записывать клиентов. Менять записи и график на устройстве можно только с введённым токеном GitHub.</div>';
+  h+='<h4>Новые функции</h4><div class="tw"><table>'+hd.replace('%s','Функция');
+  FEAT_L.forEach(function(f){h+='<tr><td class="f">'+f[1]+(f[2]?'<small>'+f[2]+'</small>':'')+'</td>'+ACC_R.map(function(r){var need=f[3],ok=!need||(need==='mday'?a.feat.mday.indexOf(r)>=0:a.base[r].indexOf(need)>=0);
+    return ok?'<td><input type="checkbox" data-af="'+f[0]+'" data-r="'+r+'"'+(a.feat[f[0]].indexOf(r)>=0?' checked':'')+' aria-label="'+esc(ROLES[r].n+': '+f[1])+'"></td>':'<td class="na" title="'+(need==='edit'?'Нужно право менять записи':need==='set'?'Нужно право на настройки':'Сначала откройте «День мастера»')+'">—</td>'}).join('')+'</tr>'});
+  h+='</table></div><div class="row" style="margin-top:8px"><button type="button" id="accAll">Открыть все функции всем</button><button type="button" id="accNone">Закрыть все функции</button><button type="button" id="accDef">Вернуть как было</button></div></details>';
+  return h}
+function accSave(a){state.cfg.acc=a;cfgTouch();applyPerm();setSt();rerender();renderUsers()}
+document.getElementById('usr').addEventListener('toggle',function(e){if(e.target.id==='accD')accOpen=e.target.open},true);
+document.getElementById('usr').addEventListener('change',function(e){var t=e.target;if(!can('users'))return;
+  if(t.dataset.ab){var a=accGet(),l=a.base[t.dataset.r],p=t.dataset.ab;a.base[t.dataset.r]=t.checked?l.concat(l.indexOf(p)<0?[p]:[]):l.filter(function(x){return x!==p});accSave(a);return}
+  if(t.dataset.af){var a2=accGet(),l2=a2.feat[t.dataset.af],r=t.dataset.r;a2.feat[t.dataset.af]=t.checked?l2.concat(l2.indexOf(r)<0?[r]:[]):l2.filter(function(x){return x!==r});accSave(a2)}},true);
+document.getElementById('usr').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||!can('users'))return;
+  if(b.id==='accAll'){var a=accGet();FEAT_L.forEach(function(f){a.feat[f[0]]=ACC_R.slice()});accSave(a)}
+  else if(b.id==='accNone'){var a2=accGet();FEAT_L.forEach(function(f){a2.feat[f[0]]=[]});accSave(a2)}
+  else if(b.id==='accDef'){state.cfg.acc=null;cfgTouch();applyPerm();setSt();rerender();renderUsers()}},true);
 /* закрывать «Пользователей», когда открывают другой раздел меню */
 ['sToggle','gToggle','stToggle'].forEach(function(id){document.getElementById(id).addEventListener('click',closeU,true)});
 /* ---------- свой пароль и выход ---------- */
