@@ -1469,12 +1469,12 @@ function roleSel(id,v){return '<select '+id+'>'+ROLE_ORDER.map(function(k){retur
 function owners(){var n=0,k;for(k in state.users)if(!state.users[k].del&&state.users[k].role==='owner')n++;return n}
 function renderUsers(){
   var us=state.users||{},ids=Object.keys(us).filter(function(k){return !us[k].del}).sort(function(a,b){return ROLE_ORDER.indexOf(us[a].role)-ROLE_ORDER.indexOf(us[b].role)||us[a].name.localeCompare(us[b].name,'ru')});
-  var h='<div class="row"><b>Пользователи</b></div><div class="sub" style="margin:0 0 6px">У каждого свой пароль: по нему видно, кто записал клиента и кто менял карточку. Механикам можно завести одного общего пользователя.</div><div class="ul">';
+  var h='<details class="acc" id="usrD" style="margin-top:0;border-top:0;padding-top:0"'+(usrOpen?' open':'')+'><summary>Пользователи · '+ids.length+'</summary><div class="sub" style="margin:4px 0 6px">У каждого свой пароль: по нему видно, кто записал клиента и кто менял карточку. Механикам можно завести одного общего пользователя.</div><div class="ul">';
   ids.forEach(function(k){var u=us[k],self=k===UID;
     h+='<div class="row"><span class="un">'+esc(u.name)+(self?'<small>это вы</small>':'')+'</span>'+roleSel('data-ur="'+k+'"'+(self?' disabled':''),u.role)+'<button data-up="'+k+'">Новый пароль</button>'+(self?'':'<button data-ud="'+k+'" class="'+(uDelArm===k?'arm':'')+'">'+(uDelArm===k?'Точно удалить?':'Удалить')+'</button>')+'</div>'});
   h+='</div><div class="row" style="margin-top:8px"><b>Добавить</b></div><div class="row"><input type="text" id="nuName" maxlength="40" placeholder="Имя, например Петров С." style="max-width:220px">'+roleSel('id="nuRole"','sc')+'<input type="password" id="nuPw" placeholder="Пароль, не короче 6 символов" autocomplete="new-password" style="max-width:240px"><button id="nuGo" class="pri">Добавить</button></div><div class="err" id="uErr">'+esc(uMsg)+'</div>';
+  h+='<div class="sub" style="margin:4px 0 0">Сообщите человеку пароль лично — сменить его он сможет сам через «Сменить мой пароль». Удалённый пользователь больше не войдёт, а на его устройствах произойдёт выход.</div></details>';
   h+=accHtml();
-  h+='<div class="sub" style="margin:4px 0 0">Сообщите человеку пароль лично — сменить его он сможет сам через «Сменить мой пароль». Удалённый пользователь больше не войдёт, а на его устройствах произойдёт выход.</div>';
   document.getElementById('usr').innerHTML=h;uMsg='';
 }
 function uErr(t,ok){var e=document.getElementById('uErr');if(e){e.style.color=ok?'var(--ok)':'';e.textContent=t}}
@@ -1491,18 +1491,18 @@ document.getElementById('usr').addEventListener('click',async function(e){var t=
     t.disabled=true;uErr('Добавляю…',true);
     var id=uid();state.users[id]={id:id,name:name,role:role,u:now()};
     var er=await setUserPw(id,pw);if(er){delete state.users[id];uErr(er);t.disabled=false;return}
-    commit();uMsg='Добавлен: '+name+' · '+ROLES[role].n;renderUsers();uErr(uMsg,true);return}
+    commit();var _m='Добавлен: '+name+' · '+ROLES[role].n;renderUsers();uErr(_m,true);return}
   if(t.dataset.up){var u=state.users[t.dataset.up];if(!u)return;
     var p=await pwDialog('Новый пароль: '+u.name,{two:true,ph:'Новый пароль, не короче 6 символов',check:async function(v){if(v.length<6)return 'Пароль должен быть не короче 6 символов';return await setUserPw(u.id,v)}});
-    if(p!==null){commit();uMsg='Пароль для «'+u.name+'» изменён';renderUsers();uErr(uMsg,true)}return}
+    if(p!==null){commit();var _m='Пароль для «'+u.name+'» изменён';renderUsers();uErr(_m,true)}return}
   if(t.dataset.ud){var id2=t.dataset.ud,u2=state.users[id2];if(!u2||id2===UID)return;
     if(u2.role==='owner'&&owners()<=1){uErr('Должен остаться хотя бы один владелец');return}
     if(uDelArm!==id2){uDelArm=id2;renderUsers();return}
-    state.users[id2]={id:id2,del:true,u:now(),name:u2.name};uDelArm=null;commit();uMsg='Удалён: '+u2.name;renderUsers();uErr(uMsg,true)}
+    state.users[id2]={id:id2,del:true,u:now(),name:u2.name};uDelArm=null;commit();var _m='Удалён: '+u2.name;renderUsers();uErr(_m,true)}
 });
 
 /* ---------- доступ к функциям (только владелец) ---------- */
-var accOpen=false,ACC_R=['adm','sc','war','mc','head','dir','mech'];
+var usrOpen=false,accOpen=false,ACC_R=['adm','sc','war','mc','head','dir','mech'];
 var ACC_S={adm:'Адм. сервиса',sc:'Консуль&shy;тант',war:'Гарант. инженер',mc:'Мастер цеха',head:'Руково&shy;дитель',dir:'Дирек&shy;тор',mech:'Меха&shy;ники'};
 function accGet(){var a=state.cfg.acc?JSON.parse(JSON.stringify(state.cfg.acc)):{};a.base=a.base||{};a.feat=a.feat||{};ACC_R.forEach(function(r){if(!a.base[r])a.base[r]=roleBase(r).slice()});FEAT_L.forEach(function(f){if(!a.feat[f[0]])a.feat[f[0]]=featRoles(f[0]).filter(function(r){return r!=='owner'})});return a}
 function accHtml(){var a=accGet(),hd='<tr><th class="f">'+'%s'+'</th>'+ACC_R.map(function(r){return '<th>'+ACC_S[r]+'</th>'}).join('')+'</tr>';
@@ -1516,7 +1516,7 @@ function accHtml(){var a=accGet(),hd='<tr><th class="f">'+'%s'+'</th>'+ACC_R.map
   h+='</table></div><div class="row" style="margin-top:8px"><button type="button" id="accAll">Открыть все функции всем</button><button type="button" id="accNone">Закрыть все функции</button><button type="button" id="accDef">Вернуть как было</button></div></details>';
   return h}
 function accSave(a){state.cfg.acc=a;cfgTouch();applyPerm();setSt();rerender();renderUsers()}
-document.getElementById('usr').addEventListener('toggle',function(e){if(e.target.id==='accD')accOpen=e.target.open},true);
+document.getElementById('usr').addEventListener('toggle',function(e){if(e.target.id==='accD')accOpen=e.target.open;if(e.target.id==='usrD')usrOpen=e.target.open},true);
 document.getElementById('usr').addEventListener('change',function(e){var t=e.target;if(!can('users'))return;
   if(t.dataset.ab){var a=accGet(),l=a.base[t.dataset.r],p=t.dataset.ab;a.base[t.dataset.r]=t.checked?l.concat(l.indexOf(p)<0?[p]:[]):l.filter(function(x){return x!==p});accSave(a);return}
   if(t.dataset.af){var a2=accGet(),l2=a2.feat[t.dataset.af],r=t.dataset.r;a2.feat[t.dataset.af]=t.checked?l2.concat(l2.indexOf(r)<0?[r]:[]):l2.filter(function(x){return x!==r});accSave(a2)}},true);
