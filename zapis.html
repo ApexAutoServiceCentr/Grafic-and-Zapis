@@ -289,6 +289,28 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 .mdd .sugg{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:4px 0 2px}
 .mdd .sugg .sub{margin:0;width:100%}
 body.nocli .f.cli{display:none!important}
+body.no-load .ldr{display:none!important}
+.ld .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.ld .mt{background:var(--bg);border-radius:8px;padding:6px 12px}
+.ld .mt small{display:block;font-size:12px;color:var(--mu)}
+.ld .mt b{font-size:16px}
+.ld table{width:100%;border-collapse:separate;border-spacing:4px;table-layout:fixed;min-width:560px}
+.ld .tw{overflow-x:auto}
+.ld th{font-weight:600;font-size:12px;color:var(--mu);text-align:center}
+.ld th.p,.ld td.p{text-align:left;width:96px}
+.ld th.td{color:var(--ac)}
+.ld td{border-radius:8px;text-align:center;padding:6px 2px;font-size:12px;line-height:1.3}
+.ld td.c{cursor:pointer}
+.ld td.c:hover{outline:2px solid var(--ac)}
+.ld td.p{font-weight:600;font-size:13px}
+.ld .l1{background:rgba(29,158,117,.22);color:#5dcaa5}
+.ld .l2{background:rgba(239,159,39,.22);color:#efb04f}
+.ld .l3{background:rgba(226,75,74,.24);color:#f09595}
+.ld .off{background:var(--bg);color:var(--mu)}
+.ld .tot td{font-weight:700}
+.ld .lg{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--mu)}
+.ld .lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+@media (prefers-color-scheme:light){.ld .l1{color:#0f6e56}.ld .l2{color:#854f0b}.ld .l3{color:#a32d2d}}
 </style>
 </head>
 <body class="ro">
@@ -311,10 +333,11 @@ body.nocli .f.cli{display:none!important}
 <div id="menu" class="menu" style="display:none">
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Введите токен в разделе «Синхронизация GitHub».</div>
 <div class="mlbl">Общее для обеих вкладок</div><div class="tools"><button id="goStaff" class="pset">Сотрудники и посты ↗</button><button id="goMode" class="pset">Режим работы ↗</button><button id="uToggle" class="pu" aria-expanded="false">Пользователи ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button></div>
-<div class="mlbl ps">Запись на сервис</div><div class="tools ps"><button id="stToggle" class="ps" aria-expanded="false">Статистика ▸</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
+<div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="ldToggle" class="ldr" aria-expanded="false">Загрузка ▸</button><button id="stToggle" class="ps" aria-expanded="false">Статистика ▸</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
 <div id="setBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="uBox" class="pu" style="display:none;margin-bottom:12px"><div class="set" id="usr"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
+<div id="ldBox" style="display:none;margin-bottom:12px"><div class="set" id="load"></div></div>
 <div id="stBox" style="display:none;margin-bottom:12px"><div class="set" id="stat"></div></div>
 <div class="leg">
 <span><b style="background:var(--to)"></b>ТО</span>
@@ -714,6 +737,7 @@ async function syncNow(){
 }
 function commit(){dirty=true;cacheLocal();schedSync();rerender()}
 function applyPerm(){var B=document.body.classList,w=canWrite&&KEY;
+  B.toggle('no-load',!(can('edit')||can('stats')));if(typeof ldOpen!=='undefined'&&ldOpen&&!(can('edit')||can('stats'))){ldOpen=false;applyLdBox()}
   B.toggle('no-edit',!(w&&can('edit')));B.toggle('no-del',!(w&&can('del')));B.toggle('no-stats',!can('stats'));B.toggle('no-set',!(w&&can('set')));B.toggle('no-users',!(w&&can('users')));
   var rn=document.getElementById('roNote');if(rn)rn.style.display=KEY&&!canWrite&&(can('edit')||can('set')||can('users'))?'':'none';
   document.body.classList.toggle('nocli',noCli());
@@ -776,7 +800,7 @@ var cur=iso(new Date()),RS=null,RE=null,needScroll=true,nar=false,RH=36;
 /* высота строки подбирается так, чтобы день целиком помещался на экране (от 30 до 44 пикселей) */
 function calcRH(){var h=document.getElementById('hdr'),mn=document.getElementById('menu'),qr=document.getElementById('qRes'),hh=h?h.offsetHeight-mn.offsetHeight-qr.offsetHeight:120,g=document.querySelector('#days .gh'),gh=g?g.offsetHeight:72,d=document.querySelector('#days .dh'),dh=d?d.offsetHeight+16:44,n=slots().length||20;
   return Math.max(28,Math.min(44,Math.floor((innerHeight-hh-dh-gh-10)/n)))}
-function rerender(){render();if(stOpen)renderStat();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
+function rerender(){render();if(stOpen)renderStat();if(ldOpen)renderLoad();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
 function appVisible(){return document.getElementById('app').style.display!=='none'}
 function secOf(d){return document.querySelector('#days .day[data-d="'+d+'"]')}
 function headRng(){var dd=parseIso(cur);document.getElementById('rng').textContent=(nar||innerWidth<1500?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()].slice(0,3)+' '+dd.getFullYear():innerWidth<1800?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()]+' '+dd.getFullYear():fdate(cur))+(cur===iso(new Date())?' · сегодня':'');document.getElementById('dPick').value=cur}
@@ -1455,11 +1479,40 @@ function renderStat(){
 }
 function applyStBox(){var t=document.getElementById('stToggle');document.getElementById('stBox').style.display=stOpen?'':'none';t.textContent='Статистика '+(stOpen?'▾':'▸');t.setAttribute('aria-expanded',stOpen);if(stOpen)renderStat()}
 function closeGh(){if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
-document.getElementById('stToggle').onclick=function(){stOpen=!stOpen;if(stOpen){if(setOpen){setOpen=false;applySetBox()}closeGh()}applyStBox()};
-function collapseMenuSections(){closeU();if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
+document.getElementById('stToggle').onclick=function(){stOpen=!stOpen;if(stOpen){if(setOpen){setOpen=false;applySetBox()}closeGh();if(ldOpen){ldOpen=false;applyLdBox()}}applyStBox()};
+/* ---------- загрузка на неделю ---------- */
+var ldOpen=false,ldMon=null;
+function applyLdBox(){var t=document.getElementById('ldToggle');document.getElementById('ldBox').style.display=ldOpen?'':'none';t.textContent='Загрузка '+(ldOpen?'▾':'▸');t.setAttribute('aria-expanded',ldOpen);if(ldOpen)renderLoad();fitMenu()}
+document.getElementById('ldToggle').onclick=function(){var o=!ldOpen;if(o){collapseMenuSections()}ldOpen=o;applyLdBox()};
+function ldMonday(s){var d=parseIso(s),w=(d.getDay()+6)%7;return addDays(s,-w)}
+/* рабочие минуты поста за день (без обеда) и сколько из них занято */
+function ldCell(p,D){var a=postAvail(p,D),c=CF(),br=c.brk||[];
+  if(!a.free&&!a.open)return{off:true,why:a.why};
+  var end=a.free?MD().day:a.end,work=end-c.open,k;br.forEach(function(m){if(m>=c.open&&m+30<=end)work-=30});
+  var busy=0;dayList(D).forEach(function(b){if(b.post!==p.id||st(b)==='nos')return;var s0=Math.max(b.start,c.open),e0=Math.min(b.start+b.len,end),m;if(e0<=s0)return;for(m=s0;m<e0;m+=30)if(br.indexOf(m)<0)busy+=Math.min(30,e0-m)});
+  busy=Math.min(busy,work);return{off:false,work:work,busy:busy}}
+function ldH(m){var h=m/60;return (Math.round(h*2)/2).toString().replace('.',',')+' ч'}
+function renderLoad(){if(!ldMon)ldMon=ldMonday(iso(new Date()));var P=state.cfg.posts,days=[],i,t=iso(new Date());for(i=0;i<7;i++)days.push(addDays(ldMon,i));
+  var a=parseIso(days[0]),b=parseIso(days[6]),tw=0,tb=0,dayT=days.map(function(){return{w:0,b:0}}),rows='';
+  P.forEach(function(p){rows+='<tr><td class="p">'+esc(p.name)+'</td>';days.forEach(function(D,j){var c=ldCell(p,D);
+    if(c.off){rows+='<td class="off c" data-ld="'+D+'" title="'+esc(c.why||'мастера нет на смене')+'">закрыт</td>';return}
+    var pc=c.work?Math.round(c.busy/c.work*100):0;tw+=c.work;tb+=c.busy;dayT[j].w+=c.work;dayT[j].b+=c.busy;
+    rows+='<td class="c '+(pc>=80?'l3':pc>=50?'l2':'l1')+'" data-ld="'+D+'" title="Занято '+ldH(c.busy)+' из '+ldH(c.work)+'">'+pc+'%<br>'+(c.work-c.busy?ldH(c.work-c.busy):'0')+'</td>'});rows+='</tr>'});
+  var best=-1,bv=101;dayT.forEach(function(x,j){if(!x.w||days[j]<t)return;var v=x.b/x.w*100;if(v<bv){bv=v;best=j}});
+  var h='<div class="ld"><div class="top"><button type="button" id="ldP" aria-label="Предыдущая неделя">‹</button><b>'+a.getDate()+(a.getMonth()!==b.getMonth()?' '+MN[a.getMonth()]:'')+' – '+b.getDate()+' '+MN[b.getMonth()]+' '+b.getFullYear()+'</b><button type="button" id="ldN" aria-label="Следующая неделя">›</button>'+(ldMon!==ldMonday(t)?'<button type="button" id="ldT">Эта неделя</button>':'')+'<span style="flex:1"></span>';
+  h+='<div class="mt"><small>Занято</small><b>'+(tw?Math.round(tb/tw*100):0)+'%</b></div><div class="mt"><small>Свободно</small><b>'+ldH(tw-tb)+'</b></div>'+(best>=0?'<div class="mt"><small>Самый свободный</small><b>'+DN[parseIso(days[best]).getDay()]+' '+parseIso(days[best]).getDate()+'</b></div>':'')+'</div>';
+  h+='<div class="tw"><table><tr><th class="p">Пост</th>'+days.map(function(D){var x=parseIso(D),cd=G.ok&&cDay(D);return '<th class="'+(D===t?'td':'')+'"'+(cd?' title="'+esc(cd.n||'')+'"':'')+'>'+DN[x.getDay()]+' '+x.getDate()+(cd&&cd.t==='short'?'*':'')+'</th>'}).join('')+'</tr>'+rows;
+  h+='<tr class="tot"><td class="p">Всего</td>'+dayT.map(function(x){return '<td>'+(x.w?Math.round(x.b/x.w*100)+'%':'—')+'</td>'}).join('')+'</tr></table></div>';
+  h+='<div class="lg"><span><i style="background:rgba(29,158,117,.35)"></i>до 50% — есть место</span><span><i style="background:rgba(239,159,39,.35)"></i>50–79%</span><span><i style="background:rgba(226,75,74,.35)"></i>от 80% — почти занято</span><span><i style="background:var(--bg);border:1px solid var(--bd)"></i>мастера нет на смене</span><span>Нажмите на клетку, чтобы открыть день</span></div></div>';
+  document.getElementById('load').innerHTML=h}
+document.getElementById('load').addEventListener('click',function(e){var t=e.target.closest('button,td[data-ld]');if(!t)return;
+  if(t.id==='ldP'||t.id==='ldN'){ldMon=addDays(ldMon,t.id==='ldP'?-7:7);renderLoad();return}
+  if(t.id==='ldT'){ldMon=null;renderLoad();return}
+  if(t.dataset.ld){menuOpen=false;applyMenu();goto(t.dataset.ld,true)}});
+function collapseMenuSections(){closeU();if(ldOpen){ldOpen=false;applyLdBox()}if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
 document.getElementById('menu').addEventListener('mousedown',function(e){var t=e.target;
-  if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('#stBox')||t.closest('button,input,select,textarea,a,label'))return;
-  if(setOpen||ghOpen||stOpen||uOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
+  if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('#stBox')||t.closest('#ldBox')||t.closest('#uBox')||t.closest('button,input,select,textarea,a,label'))return;
+  if(setOpen||ghOpen||stOpen||uOpen||ldOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
 
 /* ---------- скрываемое меню в закреплённом заголовке ---------- */
 var menuOpen=false;try{localStorage.removeItem('zap-menu')}catch(e){}
@@ -1468,7 +1521,7 @@ addEventListener('resize',fitMenu);
 /* отступ справа под ползунок меню — только когда меню прокручивается */
 (function(){var m=document.getElementById('menu');function ov(){var o=m.scrollHeight>m.clientHeight+1;if(m.classList.contains('ov')!==o)m.classList.toggle('ov',o)}
 if(window.ResizeObserver){var ro=new ResizeObserver(ov);ro.observe(m);for(var i=0;i<m.children.length;i++)ro.observe(m.children[i])}addEventListener('resize',ov)})();
-function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){closeU();if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
+function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){closeU();if(ldOpen){ldOpen=false;applyLdBox()}if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
 function setMenu(open){if(menuOpen===open)return;if(open)applySetBox();var a=anchor(),t0=a?a.getBoundingClientRect().top:0;menuOpen=open;applyMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}
 document.getElementById('menuB').onclick=function(){setMenu(!menuOpen)};
 /* клик по таблице, кнопкам сверху или любому месту вне меню закрывает его */
