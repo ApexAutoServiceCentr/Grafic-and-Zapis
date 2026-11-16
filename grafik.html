@@ -321,7 +321,7 @@ function render(){modeLabels();
     if(!cl)h+=hd;
     if(!cl)idx.forEach(function(i){
       var tot=0,tof=0,cnt=[0,0,0,0,0,0,0,0];
-      h+='<tr><td class="nm">'+(EMB&&(state.w[i].dept==='me'||state.w[i].dept==='el')&&RP().name?'<button class="mdl" data-mdw="'+i+'" title="День мастера: смена и клиенты">'+esc(state.w[i].name)+'</button>':esc(state.w[i].name))+'</td>';
+      h+='<tr><td class="nm">'+(EMB&&(state.w[i].dept==='me'||state.w[i].dept==='el')&&RP().mday?'<button class="mdl" data-mdw="'+i+'" title="День мастера: смена и клиенты">'+esc(state.w[i].name)+'</button>':esc(state.w[i].name))+'</td>';
       days.forEach(function(d){var v=val(i,d),xo=(v===3||v===5)&&base(i,d)===0;if(!(xo&&v===3))tot+=H[v];cnt[v]++;if(xo&&v===5)tof++;
         h+='<td><button class="cell '+(mo?'c ':'')+C[v]+(xo?' xo':'')+(v===0&&isCal(state.w[i])&&isHol(d)?' hd':'')+(state.ov[ok(i,d)]!==undefined?' ov':'')+'" data-i="'+i+'" data-d="'+d+'"'+zTitle(Z,i,d)+'>'+zBadge(Z,i,d)+(v===0&&isCal(state.w[i])&&isHol(d)?'П':L[v])+(mo?'':'<small>'+(xo?(v===3?'вых. 0 ч':'в вых.'):(v===0&&isCal(state.w[i])&&isHol(d)?'празд.':T[v]))+'</small>')+'</button></td>'});
       if(!sumHide)h+='<td class="h">'+tot+(tof?'<small>в вых. '+tof+'</small>':'')+'</td>'+(mo?'<td class="h">'+cnt[2]+'</td><td class="h">'+cnt[3]+'</td><td class="h">'+cnt[5]+'</td><td class="h">'+cnt[4]+'</td><td class="h">'+cnt[6]+'</td><td class="h">'+cnt[7]+'</td>':'');
