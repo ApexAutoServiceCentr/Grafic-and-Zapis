@@ -327,6 +327,8 @@ body.nocli .msgb{display:none!important}
 .mchips button{padding:3px 8px;font-size:12px}
 .msgT{width:100%;min-height:80px;font:inherit}
 .mprev{white-space:pre-wrap;background:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:6px}
+body:not(.f-wa) #fMsgW,body:not(.f-tpl) #msToggle,body:not(.f-tpl) #msBox,body:not(.f-load) #ldToggle,body:not(.f-load) #ldBox,body:not(.f-stats) #stToggle,body:not(.f-stats) #stBox,body:not(.f-row) .mlbl.ldr,body:not(.f-row) .tools.ldr{display:none!important}
+body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 </style>
 </head>
 <body class="ro">
@@ -432,6 +434,10 @@ var SN={};STS.forEach(function(s){SN[s.k]=s.n});
 var ROLES={adm:{n:'Администратор сервиса',p:'edit del'},sc:{n:'Сервисный консультант',p:'edit del stats'},war:{n:'Гарантийный инженер',p:'edit stats'},mc:{n:'Мастер цеха',p:'edit del stats graf'},head:{n:'Руководитель сервиса',p:'edit del stats set graf'},dir:{n:'Директор',p:'edit del stats set graf'},mech:{n:'Механики',p:''},owner:{n:'Владелец (управляет пользователями)',p:'edit del stats set graf users'}};
 var ROLE_ORDER=['adm','sc','war','mc','head','dir','mech','owner'];
 var UID=null;
+/* Функции, открытые пока только части ролей. Чтобы открыть функцию другим, добавьте их роли в список:
+   adm, sc, war, mc, head, dir, mech, owner */
+var FEAT={wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],move:['owner']};
+function feat(k){var u=me();return !!u&&(FEAT[k]||[]).indexOf(u.role)>=0}
 function me(){var u=UID&&state.users&&state.users[UID];return u&&!u.del?u:null}
 function can(p){var u=me(),r=u&&ROLES[u.role];return !!r&&(' '+r.p+' ').indexOf(' '+p+' ')>=0}
 /* для вкладки «График смен»: кто вошёл и что ему можно */
@@ -453,7 +459,7 @@ window.zApi={
   logout:function(){doLogout()},
   myPw:function(){openMyPw()}
 };
-window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set')}};
+window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday')}};
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
 var KINDS={me:'механик',el:'электрик'};
 function pad(n){return n<10?'0'+n:''+n}
@@ -754,6 +760,7 @@ async function syncNow(){
 }
 function commit(){dirty=true;cacheLocal();schedSync();rerender()}
 function applyPerm(){var B=document.body.classList,w=canWrite&&KEY;
+  ['wa','tpl','load','stats','mday','move'].forEach(function(k){B.toggle('f-'+k,feat(k))});B.toggle('f-row',feat('load')||feat('stats')||(feat('tpl')&&w&&can('set')));
   B.toggle('no-load',!(can('edit')||can('stats')));if(typeof ldOpen!=='undefined'&&ldOpen&&!(can('edit')||can('stats'))){ldOpen=false;applyLdBox()}
   B.toggle('no-edit',!(w&&can('edit')));B.toggle('no-del',!(w&&can('del')));B.toggle('no-stats',!can('stats'));B.toggle('no-set',!(w&&can('set')));B.toggle('no-users',!(w&&can('users')));
   var rn=document.getElementById('roNote');if(rn)rn.style.display=KEY&&!canWrite&&(can('edit')||can('set')||can('users'))?'':'none';
@@ -862,7 +869,7 @@ function dayHtml(D){
 /* перерисовать все дни ленты, не сдвигая то, что сейчас на экране */
 function renderCnt(){var el=document.getElementById('cnt'),t=iso(new Date()),L=nar||innerWidth<1800?['Сег.','Завт.','Послез.']:['Сегодня','Завтра','Послезавтра'],h='',i,d,n,k,b;
   for(i=0;i<3;i++){d=addDays(t,i);n=0;for(k in state.b){b=state.b[k];if(live(b)&&b.date===d&&st(b)!=='nos')n++}h+='<button type="button" class="'+(n?'':'z')+'" data-go="'+d+'" title="Записано на '+fdate(d)+'">'+L[i]+'<b>'+n+'</b></button>'}
-  var pn=canWrite&&KEY&&can('edit')?pkList().length:0;if(pn)h+='<button type="button" class="pkb" data-pk="1" title="Записи, у которых мастер не на смене — их нужно перенести">⚠ Перенести: <b>'+pn+'</b></button>';
+  var pn=canWrite&&KEY&&can('edit')&&feat('move')?pkList().length:0;if(pn)h+='<button type="button" class="pkb" data-pk="1" title="Записи, у которых мастер не на смене — их нужно перенести">⚠ Перенести: <b>'+pn+'</b></button>';
   el.innerHTML=h;el.style.display=appVisible()?'':'none';if(document.getElementById('pkDlg').open)renderPK()}
 document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;if(t.dataset.pk){openPK();return}goto(t.dataset.go,true)});
 /* линия текущего времени в сегодняшнем дне, обновляется раз в минуту */
@@ -940,7 +947,7 @@ gridEl.addEventListener('click',function(){tip.style.display='none'});
 function itemHtml(b){var nc=noCli(),who=nc?'':[b.client,b.phone].filter(Boolean).join(' · '),car=[carY(b),b.plate].filter(Boolean).join(' · ');if(nc){who=car||'—';car=''}
   return '<div class="it" data-id="'+b.id+'"><span class="wh">'+fshort(b.date)+', '+fm(b.start)+' · '+esc(postName(b.post))+' · '+SN[st(b)]+'</span><b>'+esc(who||'Без имени')+'</b>'+(car?'<span>'+esc(car)+'</span>':'')+'<span>'+esc(tName(b))+'</span>'+(b.desc?'<span style="font-style:italic;color:var(--mu)">'+esc(b.desc)+'</span>':'')+'</div>'}
 document.getElementById('days').addEventListener('click',function(e){
-  var ml=e.target.closest('.mdl');if(ml){openMD(+ml.dataset.emp,ml.dataset.d);return}
+  var ml=e.target.closest('.mdl');if(ml){if(feat('mday'))openMD(+ml.dataset.emp,ml.dataset.d);return}
   var it=e.target.closest('.it');if(it){listClick(e);return}
   var t=e.target.closest('button');if(!t)return;
   if(t.dataset.id)return;
@@ -1227,7 +1234,7 @@ async function copyText(t){try{await navigator.clipboard.writeText(t);return tru
 document.querySelector('.mseg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;msgT=b.dataset.mt;[].forEach.call(this.children,function(x){x.classList.toggle('on',x===b)})});
 document.getElementById('fMsgC').onclick=async function(){var t=msgFor(msgCur());msgOk(await copyText(t)?MSG_N[msgT]+' скопировано — вставьте в WhatsApp':'Не удалось скопировать')};
 /* WhatsApp Web: чаты всегда открываются в одной и той же вкладке */
-document.getElementById('fMsgW').onclick=function(){var d=msgCur(),ph=digits(d.phone||'');if(ph.length<10){msgOk('Сначала укажите телефон клиента');return}
+document.getElementById('fMsgW').onclick=function(){if(!feat('wa'))return;var d=msgCur(),ph=digits(d.phone||'');if(ph.length<10){msgOk('Сначала укажите телефон клиента');return}
   var w=window.open('https://web.whatsapp.com/send?phone=7'+ph.slice(-10)+'&text='+encodeURIComponent(msgFor(d)),'zapis-whatsapp');try{if(w)w.focus()}catch(e){}
   msgOk('Чат открыт во вкладке WhatsApp Web — после отправки отметьте «Клиент предупреждён»')};
 var msOpen=false,msTm=null;
@@ -1305,7 +1312,7 @@ function mdShift(w,day){var v=gVal(w,day),M=MD(),cd=cDay(day);
   return{c:v===2?'d':'w',t:(v===2?'Дежурство ':v===3?'Обучение на месте ':'Рабочий день ')+fm(M.open)+'–'+fm(end)+(cd&&cd.t==='short'?' (сокращённый день)':''),v:v,on:true,end:end}}
 function mdPosts(id){return state.cfg.posts.filter(function(p){return (p.emp||[]).indexOf(id)>=0})}
 function mdList(id,date){var ps=mdPosts(id).map(function(p){return p.id});return dayList(date).filter(function(b){return ps.indexOf(b.post)>=0})}
-function openMD(id,date){var w=G.w.filter(function(x){return x.id===id})[0];if(!w)return;mdEmp=id;mdDate=date||iso(new Date());renderMD();var d=document.getElementById('mdDlg');if(!d.open)d.showModal()}
+function openMD(id,date){if(!feat('mday'))return;var w=G.w.filter(function(x){return x.id===id})[0];if(!w)return;mdEmp=id;mdDate=date||iso(new Date());renderMD();var d=document.getElementById('mdDlg');if(!d.open)d.showModal()}
 function renderMD(){
   var w=G.w.filter(function(x){return x.id===mdEmp})[0];if(!w)return;var D=mdDate,day=dnum(D),dd=parseIso(D),u=me(),mech=u&&u.role==='mech',canPrint=u&&(u.role==='mc'||u.role==='owner');
   var ps=mdPosts(w.id),sh=mdShift(w,day),list=mdList(w.id,D),M=MD();
