@@ -453,8 +453,8 @@ var ROLE_ORDER=['adm','sc','war','mc','head','dir','mech','owner'];
 var UID=null;
 /* Функции, открытые пока только части ролей. Чтобы открыть функцию другим, добавьте их роли в список:
    adm, sc, war, mc, head, dir, mech, owner */
-var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner']};
-var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Загрузка на неделю','',''],['stats','Статистика','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit']];
+var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],backup:['owner']};
+var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Загрузка на неделю','',''],['stats','Статистика','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['backup','Резервная копия графика','скачать и загрузить копию данных графика','graf']];
 function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];return a||FEAT[k]||[]}
 function featNeed(k,r){var n=(FEAT_L.filter(function(x){return x[0]===k})[0]||[])[3];if(!n)return true;if(n==='mday')return featRoles('mday').indexOf(r)>=0;return roleBase(r).indexOf(n)>=0}
 function feat(k){var u=me();if(!u)return false;if(u.role==='owner')return true;return featRoles(k).indexOf(u.role)>=0&&featNeed(k,u.role)}
@@ -482,7 +482,7 @@ window.zApi={
   logout:function(){doLogout()},
   myPw:function(){openMyPw()}
 };
-window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday')}};
+window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),backup:feat('backup')}};
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
 var KINDS={me:'механик',el:'электрик'};
 function pad(n){return n<10?'0'+n:''+n}
@@ -1244,8 +1244,8 @@ document.getElementById('fCancel').onclick=function(){dlg.close()};
 
 
 /* ---------- сообщения клиенту по шаблонам (подтверждение и напоминание) ---------- */
-var MSG_DEF={c:'{приветствие} Вы записаны на {дата} в {время}.\nЖдём, Вас по адресу Восточный промрайон, 143. {сервис}.',
-  r:'{приветствие} Напоминаем, Вам о записи на {дата} в {время}.\nЖдём, Вас по адресу Восточный промрайон, 143. {сервис}.'};
+var MSG_DEF={c:'{приветствие} Вы записаны на {дата} в {время}.\nЖдём Вас по адресу Восточный промрайон, 143. {сервис}.',
+  r:'{приветствие} Напоминаем Вам о записи на {дата} в {время}.\nЖдём Вас по адресу Восточный промрайон, 143. {сервис}.'};
 var MSG_N={c:'Подтверждение записи',r:'Напоминание о записи'};
 var SVC_DEF={list:[{b:'Hyundai',n:'Сервис Hyundai Bayantau'},{b:'BYD',n:'Сервис BYD'},{b:'MG',n:'Сервис MG'},{b:'Geely Galaxy',n:'Сервис Geely Galaxy'}],other:'Сервис Apex Auto'};
 var MSGK=['приветствие','дата','время','день','сервис','работы','машина','госномер','клиент'];
@@ -1534,7 +1534,7 @@ function accHtml(){var a=accGet(),hd='<tr><th class="f">'+'%s'+'</th>'+ACC_R.map
   h+='</table></div><div class="sub" style="margin:4px 0 0">Осторожно: без права «Создавать и менять записи» роль не сможет записывать клиентов. Менять записи и график на устройстве можно только с введённым токеном GitHub.</div>';
   h+='<h4>Новые функции</h4><div class="tw"><table>'+hd.replace('%s','Функция');
   FEAT_L.forEach(function(f){h+='<tr><td class="f">'+f[1]+(f[2]?'<small>'+f[2]+'</small>':'')+'</td>'+ACC_R.map(function(r){var need=f[3],ok=!need||(need==='mday'?a.feat.mday.indexOf(r)>=0:a.base[r].indexOf(need)>=0);
-    return ok?'<td><input type="checkbox" data-af="'+f[0]+'" data-r="'+r+'"'+(a.feat[f[0]].indexOf(r)>=0?' checked':'')+' aria-label="'+esc(ROLES[r].n+': '+f[1])+'"></td>':'<td class="na" title="'+(need==='edit'?'Нужно право менять записи':need==='set'?'Нужно право на настройки':'Сначала откройте «День мастера»')+'">—</td>'}).join('')+'</tr>'});
+    return ok?'<td><input type="checkbox" data-af="'+f[0]+'" data-r="'+r+'"'+(a.feat[f[0]].indexOf(r)>=0?' checked':'')+' aria-label="'+esc(ROLES[r].n+': '+f[1])+'"></td>':'<td class="na" title="'+(need==='edit'?'Нужно право менять записи':need==='set'?'Нужно право на настройки':need==='graf'?'Нужно право менять график':'Сначала откройте «День мастера»')+'">—</td>'}).join('')+'</tr>'});
   h+='</table></div><div class="row" style="margin-top:8px"><button type="button" id="accAll">Открыть все функции всем</button><button type="button" id="accNone">Закрыть все функции</button><button type="button" id="accDef">Вернуть как было</button></div></details>';
   return h}
 function accSave(a){state.cfg.acc=a;cfgTouch();applyPerm();setSt();rerender();renderUsers()}
