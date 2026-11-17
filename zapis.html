@@ -453,8 +453,8 @@ var ROLE_ORDER=['adm','sc','war','mc','head','dir','mech','owner'];
 var UID=null;
 /* Функции, открытые пока только части ролей. Чтобы открыть функцию другим, добавьте их роли в список:
    adm, sc, war, mc, head, dir, mech, owner */
-var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],backup:['owner']};
-var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Загрузка на неделю','',''],['stats','Статистика','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['backup','Резервная копия графика','скачать и загрузить копию данных графика','graf']];
+var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner']};
+var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Загрузка на неделю','',''],['stats','Статистика','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit']];
 function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];return a||FEAT[k]||[]}
 function featNeed(k,r){var n=(FEAT_L.filter(function(x){return x[0]===k})[0]||[])[3];if(!n)return true;if(n==='mday')return featRoles('mday').indexOf(r)>=0;return roleBase(r).indexOf(n)>=0}
 function feat(k){var u=me();if(!u)return false;if(u.role==='owner')return true;return featRoles(k).indexOf(u.role)>=0&&featNeed(k,u.role)}
@@ -482,7 +482,7 @@ window.zApi={
   logout:function(){doLogout()},
   myPw:function(){openMyPw()}
 };
-window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),backup:feat('backup')}};
+window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday')}};
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
 var KINDS={me:'механик',el:'электрик'};
 function pad(n){return n<10?'0'+n:''+n}
