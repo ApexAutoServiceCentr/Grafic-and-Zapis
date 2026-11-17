@@ -151,6 +151,8 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 .tabs a{padding:5px 12px;border-radius:9px;text-decoration:none;color:var(--mu);font-weight:600;font-size:15px;white-space:nowrap;line-height:1.35}
 .tabs a:hover{color:var(--tx)}
 .tabs a.on{background:var(--tx);color:var(--bg);font-weight:700}
+html:not(.obr-on) .tabs a[data-tab="obr"]{display:none}
+.tabs .obc:not(:empty){display:inline-block;margin-left:6px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
 @media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
 @media (min-width:1500px){main{max-width:1240px}}
 #dFilter{max-width:165px}
@@ -177,7 +179,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <body>
 <main>
 <div id="top">
-<div class="ttlw"><div class="ttl"><h1 class="vh">График смен</h1><nav class="tabs" aria-label="Разделы"><a href="index.html#grafik" class="on" aria-current="page" data-tab="grafik">График<span class="tl"> смен</span></a><a href="index.html#zapis" data-tab="zapis">Запись<span class="tl"> на сервис</span></a></nav><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span><button id="menuB" aria-expanded="false" aria-haspopup="true">☰ Меню ▸</button>
+<div class="ttlw"><div class="ttl"><h1 class="vh">График смен</h1><nav class="tabs" aria-label="Разделы"><a href="index.html#grafik" class="on" aria-current="page" data-tab="grafik">График<span class="tl"> смен</span></a><a href="index.html#obr" data-tab="obr">Обращения<span class="obc"></span></a><a href="index.html#zapis" data-tab="zapis">Запись<span class="tl"> на сервис</span></a></nav><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span><button id="menuB" aria-expanded="false" aria-haspopup="true">☰ Меню ▸</button>
 <button id="m-toggle">Вид: неделя ⇄</button>
 <button id="prev" aria-label="Назад">‹</button>
 <div class="rng" id="rng"></div>
