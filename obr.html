@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Обращения</title>
+<script>/* страница работает только внутри общей страницы (index.html) — там вход и данные */
+try{if(window.parent===window)location.replace('index.html#obr')}catch(e){}</script>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--bd:#e2e5ea;--ac:#2563eb;--danger:#dc2626;--ok:#16a34a;--warn:#d97706;--hd:#e9eef6;--rowh:rgba(37,99,235,.08);
+--tn-bg:rgba(226,75,74,.16);--tn:#a32d2d;--tw-bg:rgba(239,159,39,.2);--tw:#854f0b;--td-bg:rgba(29,158,117,.16);--td:#0f6e56;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--hd:#2c333f;--rowh:rgba(110,160,255,.10);
+--tn-bg:rgba(226,75,74,.24);--tn:#f09595;--tw-bg:rgba(239,159,39,.22);--tw:#efb04f;--td-bg:rgba(29,158,117,.22);--td:#5dcaa5;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
+main{flex:1;min-height:0;display:flex;flex-direction:column;padding:16px max(12px,env(safe-area-inset-right,0px)) 12px max(12px,env(safe-area-inset-left,0px))}
+@media (min-width:1000px){main{padding-left:20px;padding-right:20px}}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;cursor:pointer}
+button.on,button.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+input,select,textarea{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);min-width:0}
+a{color:var(--ac)}
+.hrow{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;padding-bottom:12px}
+.tabs{display:inline-flex;flex:none;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:3px;gap:2px}
+.tabs a{padding:5px 12px;border-radius:9px;text-decoration:none;color:var(--mu);font-weight:600;font-size:15px;white-space:nowrap;line-height:1.35}
+.tabs a:hover{color:var(--tx)}
+.tabs a.on{background:var(--tx);color:var(--bg);font-weight:700}
+html:not(.obr-on) .tabs a[data-tab="obr"]{display:none}
+.tabs .obc:not(:empty){display:inline-block;margin-left:6px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
+@media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:3px;gap:2px;flex:none}
+.seg button{border:0;padding:5px 11px;border-radius:9px;background:transparent;color:var(--mu);font-weight:600;white-space:nowrap}
+.seg button.on{background:var(--ac);color:#fff}
+.seg button b{font-weight:700;margin-left:4px;opacity:.85}
+.qw{position:relative;flex:1 1 220px;max-width:360px;display:flex}
+.qw input{width:100%;padding-right:34px}
+.qw button{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:transparent;padding:4px 8px;color:var(--mu)}
+.uchip{position:relative;flex:none;margin-left:auto}
+.uchip>button{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis;padding-left:10px;padding-right:10px}
+@media (max-width:1699px){.uchip .un{display:none}}
+.umenu{position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:230px;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.umenu[hidden]{display:none}
+.umenu .ur{font-size:12px;color:var(--mu);padding:0 2px 4px}
+.umenu button{text-align:left}
+#msg{color:var(--mu);padding:30px 0;text-align:center}
+.tw{flex:1;min-height:0;overflow:auto;background:var(--card);border:1px solid var(--bd);border-radius:12px}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:14px}
+th,td{padding:7px 9px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top;white-space:nowrap}
+th{position:sticky;top:0;z-index:2;background:var(--hd);font-size:12px;font-weight:700;color:var(--mu);text-transform:none}
+th:not(:last-child),td:not(:last-child){border-right:1px solid var(--bd)}
+td.n{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+td.dt{font-variant-numeric:tabular-nums}
+td.cm{white-space:normal;min-width:180px;max-width:320px}
+td.cm .c{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+td.mu,.mu{color:var(--mu)}
+tr.r{cursor:pointer}
+tr.r:hover td{background:var(--rowh)}
+tr.r.x td{background:var(--rowh)}
+tr.r.due td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+tr.r.nw td:first-child{box-shadow:inset 3px 0 0 var(--danger)}
+tr.r.fl td{animation:fl 1.6s ease-out 1}
+@keyframes fl{0%{background:rgba(37,99,235,.35)}100%{background:transparent}}
+.ot{display:inline-block;font-size:12px;padding:2px 8px;border-radius:8px;white-space:nowrap;font-weight:600}
+.ot.new{background:var(--tn-bg);color:var(--tn)}
+.ot.wip,.ot.later{background:var(--tw-bg);color:var(--tw)}
+.ot.done{background:var(--td-bg);color:var(--td)}
+tr.dx>td{background:var(--bg);white-space:normal;padding:10px 14px 12px}
+.hist{font-size:13px;color:var(--mu);display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.acts button{padding:5px 10px;font-size:13px}
+.acts input,.acts select{padding:5px 8px;font-size:13px}
+.acts input{min-width:240px;flex:0 1 340px}
+.err{color:var(--danger);font-size:13px;min-height:1em}
+.more{margin:10px auto;display:block}
+.more[hidden]{display:none}
+dialog{border:1px solid var(--bd);border-radius:14px;background:var(--card);color:var(--tx);padding:0;width:min(640px,calc(100vw - 24px));max-height:calc(100vh - 24px)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dlg{padding:16px}
+.mh{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.mh .t{flex:1;font-weight:700;font-size:16px}
+.og{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.og .f{display:flex;flex-direction:column;gap:3px}
+.og label{font-size:12px;color:var(--mu)}
+.og .w3{grid-column:1/-1}
+@media (max-width:600px){.og{grid-template-columns:1fr 1fr}}
+.foot{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.foot .mu{font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<div class="hrow">
+<h1 class="vh">Обращения клиентов</h1>
+<nav class="tabs" aria-label="Разделы"><a href="index.html#grafik" data-tab="grafik">График<span class="tl"> смен</span></a><a href="index.html#obr" class="on" aria-current="page" data-tab="obr">Обращения<span class="obc"></span></a><a href="index.html#zapis" data-tab="zapis">Запись<span class="tl"> на сервис</span></a></nav>
+<div class="seg" id="flt" role="group" aria-label="Какие обращения показать"></div>
+<div class="qw"><input type="text" id="q" placeholder="Поиск: №, имя, телефон, марка, причина…" autocomplete="off" aria-label="Поиск по обращениям"><button type="button" id="qX" aria-label="Очистить поиск" hidden>✕</button></div>
+<button type="button" class="pri" id="nB" hidden>+ Обращение</button>
+<div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
+</div>
+<div id="msg">Загрузка…</div>
+<div class="tw" id="tw" hidden><table><thead id="th"></thead><tbody id="tb"></tbody></table><button type="button" class="more" id="more" hidden>Показать ещё</button></div>
+</main>
+
+<dialog id="nd" aria-labelledby="ndT"><div class="dlg">
+<div class="mh"><div class="t" id="ndT">Новое обращение</div><button type="button" id="ndX" aria-label="Закрыть">✕</button></div>
+<div class="og">
+<div class="f"><label for="nWay">Способ</label><select id="nWay"></select></div>
+<div class="f"><label for="nWhy">Причина</label><input type="text" id="nWhy" list="nWhyL" maxlength="60" placeholder="ТО, замена масла…"><datalist id="nWhyL"></datalist></div>
+<div class="f"><label for="nResp">Ответственный</label><select id="nResp"></select></div>
+<div class="f"><label for="nCl">Клиент</label><input type="text" id="nCl" maxlength="60" placeholder="Имя"></div>
+<div class="f"><label for="nPh">Телефон</label><input type="tel" id="nPh" maxlength="20" placeholder="+7 7__ ___ __ __"></div>
+<div class="f"><label for="nBrand">Марка</label><select id="nBrand"></select></div>
+<div class="f"><label for="nModel">Модель</label><input type="text" id="nModel" list="nModelL" maxlength="40"><datalist id="nModelL"></datalist></div>
+<div class="f w3"><label for="nDesc">Комментарий</label><input type="text" id="nDesc" maxlength="300" placeholder="Что хочет клиент, когда удобно перезвонить"></div>
+</div>
+<div class="err" id="nErr"></div>
+<div class="foot"><span class="mu" id="nWho"></span><button type="button" class="pri" id="nSend">Сохранить</button></div>
+</div></dialog>
+
+<script>
+/* Вкладка «Обращения»: вся таблица обращений клиентов. Данные хранятся вместе с записью (zapis.json),
+   поэтому всё чтение и изменение идёт через вкладку записи (zApi.ob). */
+function Z(){try{var w=parent.document.getElementById('fz').contentWindow;return w&&w.zApi&&w.zApi.ob||null}catch(e){return null}}
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function pad(n){return (n<10?'0':'')+n}
+function digits(s){return String(s||'').replace(/\D/g,'')}
+function dt(t){var d=new Date(t),y=new Date().getFullYear();return pad(d.getDate())+'.'+pad(d.getMonth()+1)+(d.getFullYear()!==y?'.'+String(d.getFullYear()).slice(2):'')+' '+pad(d.getHours())+':'+pad(d.getMinutes())}
+function hm(t){var d=new Date(t),td=new Date();return (d.toDateString()===td.toDateString()?'':pad(d.getDate())+'.'+pad(d.getMonth()+1)+' ')+pad(d.getHours())+':'+pad(d.getMinutes())}
+function dur(a,b){var m=Math.max(0,Math.round((b-a)/60000));if(m<60)return m+' мин';var h=Math.floor(m/60);if(h<24)return h+' ч'+(m%60?' '+m%60+' мин':'');return Math.floor(h/24)+' дн'+(h%24?' '+h%24+' ч':'')}
+var RES={book:'Записан',cons:'Проконсультирован',other:'Другое'};
+var flt='open',q='',exp=null,arm=null,lim=200,flash=null,lastSig='',err='';
+try{flt=localStorage.getItem('obr-flt')||'open'}catch(e){}
+
+function tag(o){if(o.st==='done')return '<span class="ot done">'+(RES[o.res]||'Закрыто')+'</span>';if(o.st==='later')return '<span class="ot later">Перезвонить '+hm(o.later)+'</span>';if(o.st==='wip')return '<span class="ot wip">Недозвон ×'+(o.tries||[]).length+'</span>';return '<span class="ot new">Новое</span>'}
+/* что видит сотрудник: владелец и «видеть все» — всё; кто отрабатывает — все открытые и закрытые с его участием; кто только создаёт — свои */
+function visible(o,f,me){if(me.owner||f.view)return true;if(f.work)return o.st!=='done'||o.resp===me.id||o.cb===me.id||o.byU===me.id;return o.byU===me.id}
+function mine(o,f,me){return f.work?(o.st!=='done'&&(o.resp===me.id||!o.resp)):o.byU===me.id}
+function filters(f){var r=[['open','Открытые']];if(f.work||f.add)r.push(['mine',f.work?'Мои':'Созданные мной']);r.push(['done','Закрытые'],['all','Все']);return r}
+function match(o,s){if(!s)return true;var d=digits(s);if(d&&d.length>=3&&digits(o.phone).indexOf(d)>=0)return true;if(/^\d+$/.test(s)&&String(o.n)===s)return true;
+  return [o.client,o.brand,o.model,o.why,o.desc,o.by,o.respName,o.way,o.note,o.cbName].join(' ').toLowerCase().indexOf(s.toLowerCase())>=0}
+
+function render(){var z=Z();
+  if(!z||!z.ok()){$('msg').hidden=false;$('msg').textContent=z?'Войдите во вкладке «Запись».':'Загрузка…';$('tw').hidden=true;$('uChip').hidden=true;$('nB').hidden=true;$('flt').innerHTML='';return}
+  var f=z.f(),me=z.me(),L=z.list().filter(function(o){return visible(o,f,me)}),now=Date.now();
+  if(!(f.add||f.work||f.view||me.owner)){$('msg').hidden=false;$('msg').textContent='Обращения вам пока не открыты.';$('tw').hidden=true;return}
+  // шапка
+  var FL=filters(f);if(!FL.some(function(x){return x[0]===flt}))flt='open';
+  var cnt={open:L.filter(function(o){return o.st!=='done'}).length,mine:L.filter(function(o){return mine(o,f,me)}).length};
+  $('flt').innerHTML=FL.map(function(x){return '<button type="button" data-f="'+x[0]+'" class="'+(flt===x[0]?'on':'')+'" aria-pressed="'+(flt===x[0])+'">'+x[1]+(cnt[x[0]]?'<b>'+cnt[x[0]]+'</b>':'')+'</button>'}).join('');
+  $('nB').hidden=!f.add;
+  $('uChip').hidden=false;$('uB').innerHTML='👤<span class="un"> '+esc(me.name)+'</span> ▾';$('uB').title=me.name;$('uRole').textContent=me.name+' · '+me.roleName;
+  // строки
+  var list=L.filter(function(o){if(flt==='open')return o.st!=='done';if(flt==='done')return o.st==='done';if(flt==='mine')return mine(o,f,me);return true}).filter(function(o){return match(o,q.trim())});
+  list.sort(function(a,b){return (b.n||0)-(a.n||0)||b.t-a.t});
+  $('msg').hidden=!!list.length;$('tw').hidden=!list.length;
+  if(!list.length){$('msg').textContent=q.trim()?'Ничего не найдено.':flt==='done'?'Закрытых обращений пока нет.':flt==='all'?'Обращений пока нет.':'Открытых обращений нет.';return}
+  var nc=f.nocli,cols=['№','Дата и время','Способ','Принял','Ответственный','Марка','Модель'].concat(nc?[]:['Клиент','Телефон']).concat(['Причина','Комментарий','Статус','Время']);
+  $('th').innerHTML='<tr>'+cols.map(function(c){return '<th scope="col">'+c+'</th>'}).join('')+'</tr>';
+  var h='',shown=list.slice(0,lim);
+  shown.forEach(function(o){var ph=digits(o.phone),open=o.st!=='done',due=o.st==='later'&&o.later<=now,cls='r'+(exp===o.id?' x':'')+(open&&o.st==='new'?' nw':'')+(due?' due':'')+(flash===o.id?' fl':'');
+    h+='<tr class="'+cls+'" data-id="'+o.id+'" tabindex="0" aria-expanded="'+(exp===o.id)+'"><td class="n">'+(o.n||'')+'</td><td class="dt">'+dt(o.t)+'</td><td>'+esc(o.way)+'</td><td>'+esc(o.by)+'</td><td'+(o.resp?'':' class="mu"')+'>'+(o.resp?esc(o.respName):'кто свободен')+'</td><td>'+esc(o.brand)+'</td><td>'+esc(o.model)+'</td>'
+      +(nc?'':'<td>'+esc(o.client)+'</td><td>'+(ph.length>=10?'<a href="tel:+7'+ph.slice(-10)+'" data-tel>'+esc(o.phone)+'</a>':esc(o.phone))+'</td>')
+      +'<td>'+esc(o.why)+'</td><td class="cm"><div class="c" title="'+esc(o.desc)+'">'+esc(o.desc)+'</div></td><td>'+tag(o)+'</td><td class="mu">'+(open?dur(o.t,now):'за '+dur(o.t,o.ct))+'</td></tr>';
+    if(exp===o.id)h+='<tr class="dx"><td colspan="'+cols.length+'">'+detail(o,f)+'</td></tr>'});
+  $('tb').innerHTML=h;flash=null;
+  $('more').hidden=list.length<=lim;$('more').textContent='Показать ещё ('+(list.length-lim)+')';
+  if(arm){var ci=document.querySelector('#tb [data-c]');if(ci&&!ci.dataset.f){ci.dataset.f=1;ci.focus()}}}
+
+function detail(o,f){var h='<div class="hist">';
+  h+='<div>Создал: '+esc(o.by||'—')+' · '+dt(o.t)+'</div>';
+  (o.tries||[]).forEach(function(x){h+='<div>'+(x.k==='later'?'Перезвонить '+hm(x.at):'Недозвон')+' · '+hm(x.t)+' · '+esc(x.n||'')+(x.c?' — '+esc(x.c):'')+'</div>'});
+  if(o.st==='done')h+='<div><b>'+(RES[o.res]||'Закрыто')+'</b> · '+esc(o.cbName)+' · '+dt(o.ct)+(o.note?' — '+esc(o.note):'')+(o.bkLive?' · <a href="#" data-bk="'+o.bk+'">открыть запись</a>':'')+'</div>';
+  h+='</div>';
+  if(o.canAct){
+    if(arm&&arm.id===o.id){var k=arm.k;h+='<div class="acts">'+(k==='later'?'<select data-l aria-label="Когда перезвонить"><option value="30">через 30 мин</option><option value="60" selected>через 1 ч</option><option value="120">через 2 ч</option><option value="t10">завтра в 10:00</option></select>':'')
+      +'<input type="text" data-c maxlength="200" aria-label="Комментарий" placeholder="'+(k==='other'?'Что сделали (обязательно)':'Комментарий')+'"><button type="button" class="pri" data-ok="'+o.id+'">'+(k==='wip'?'Отметить':k==='later'?'Сохранить':'Закрыть обращение')+'</button><button type="button" data-no>Отмена</button></div>'}
+    else h+='<div class="acts">'+(!o.resp?'<button type="button" data-a="take">Взять себе</button>':'')+(f.book?'<button type="button" class="pri" data-a="book">Записать</button>':'')+'<button type="button" data-a="cons">Проконсультировал</button><button type="button" data-a="wip">Недозвон</button><button type="button" data-a="later">Перезвонить позже</button><button type="button" data-a="other">Другое</button></div>'}
+  else if(o.st!=='done'&&f.work)h+='<div class="mu" style="font-size:13px">Обращение ведёт '+esc(o.respName)+'.</div>';
+  if(err)h+='<div class="err">'+esc(err)+'</div>';
+  return h}
+
+$('flt').addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(!b)return;flt=b.dataset.f;lim=200;try{localStorage.setItem('obr-flt',flt)}catch(x){}render()});
+$('q').addEventListener('input',function(){q=this.value;$('qX').hidden=!q;lim=200;render()});
+$('qX').onclick=function(){$('q').value='';q='';this.hidden=true;render();$('q').focus()};
+$('more').onclick=function(){lim+=200;render()};
+function toggle(id){if(exp===id){exp=null}else{exp=id}arm=null;err='';render()}
+$('tb').addEventListener('click',function(e){var z=Z();if(!z)return;
+  var a=e.target.closest('a');if(a){if(a.dataset.bk){e.preventDefault();z.openBk(a.dataset.bk)}return}
+  var b=e.target.closest('button');
+  if(!b){if(e.target.closest('tr.dx'))return;var tr=e.target.closest('tr.r');if(tr)toggle(tr.dataset.id);return}
+  var id=exp;if(!id)return;
+  if(b.dataset.no!==undefined){arm=null;err='';render();return}
+  if(b.dataset.a==='take'){err=z.act(id,'take');render();return}
+  if(b.dataset.a==='book'){err=z.book(id)||'';render();return}
+  if(b.dataset.a){arm={id:id,k:b.dataset.a};err='';render();return}
+  if(b.dataset.ok){var ci=document.querySelector('#tb [data-c]'),ls=document.querySelector('#tb [data-l]');err=z.act(id,arm.k,ci?ci.value:'',ls?ls.value:'');
+    if(err){render();return}arm=null;render()}});
+$('tb').addEventListener('keydown',function(e){var tr=e.target.closest&&e.target.closest('tr.r');if(tr&&e.target===tr&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggle(tr.dataset.id)}
+  if(e.target.matches&&e.target.matches('[data-c]')&&e.key==='Enter'){var ok=document.querySelector('#tb [data-ok]');if(ok)ok.click()}
+  if(e.key==='Escape'&&arm){arm=null;render()}});
+
+/* новое обращение */
+function opts(a,v){return a.map(function(x){return '<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>'}).join('')}
+var BR={};
+function newDlg(){var z=Z();if(!z||!z.ok()||!z.f().add)return;var L=z.lists(),me=z.me();BR=L.brands;
+  $('nWay').innerHTML=opts(L.way,'Звонок');$('nWhyL').innerHTML=L.why.map(function(x){return '<option value="'+esc(x)+'">'}).join('');
+  $('nResp').innerHTML='<option value="">Кто свободен</option>'+z.workers().map(function(u){return '<option value="'+u.id+'">'+esc(u.name)+'</option>'}).join('');
+  $('nBrand').innerHTML='<option value=""></option>'+opts(Object.keys(BR))+'<option>Другое</option>';$('nModelL').innerHTML='';
+  ['nWhy','nCl','nPh','nModel','nDesc'].forEach(function(id){$(id).value=''});$('nErr').textContent='';
+  var nx=0;z.list().forEach(function(o){if(o.n>nx)nx=o.n});$('ndT').textContent='Новое обращение № '+(nx+1);
+  $('nWho').textContent='Дата и время ставятся сами · принял: '+me.name;
+  if(!$('nd').open)$('nd').showModal();$('nCl').focus()}
+window.obNew=function(){if(Z()&&Z().ok())newDlg();else setTimeout(window.obNew,300)};
+$('nB').onclick=newDlg;
+$('nBrand').onchange=function(){$('nModelL').innerHTML=(BR[this.value]||[]).map(function(x){return '<option value="'+esc(x)+'">'}).join('')};
+$('ndX').onclick=function(){$('nd').close()};
+$('nd').addEventListener('click',function(e){if(e.target===this)this.close()});
+$('nSend').onclick=function(){var z=Z();if(!z)return;var r=z.create({way:$('nWay').value,why:$('nWhy').value,resp:$('nResp').value,client:$('nCl').value,phone:$('nPh').value,brand:$('nBrand').value,model:$('nModel').value,desc:$('nDesc').value});
+  if(r.e){$('nErr').textContent=r.e;return}$('nd').close();q='';$('q').value='';$('qX').hidden=true;if(flt==='done')flt='open';flash=r.id;exp=null;arm=null;render();$('tw').scrollTop=0};
+$('nd').addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.tagName==='INPUT'&&!e.isComposing){e.preventDefault();$('nSend').click()}});
+
+/* меню пользователя и вкладки */
+function uMenuSet(o){$('uMenu').hidden=!o;$('uB').setAttribute('aria-expanded',o?'true':'false')}
+$('uB').onclick=function(e){e.stopPropagation();uMenuSet($('uMenu').hidden)};
+$('uPw').onclick=function(){uMenuSet(false);try{parent.showTab('zapis');parent.document.getElementById('fz').contentWindow.zApi.myPw()}catch(e){}};
+$('uOut').onclick=function(){uMenuSet(false);try{parent.document.getElementById('fz').contentWindow.zApi.logout();parent.showTab('zapis')}catch(e){}};
+document.addEventListener('pointerdown',function(e){if(!e.target.closest('.uchip'))uMenuSet(false)},true);
+document.querySelector('.tabs').addEventListener('click',function(e){var a=e.target.closest('a[data-tab]');if(!a)return;try{if(window.parent!==window&&parent.showTab){e.preventDefault();parent.showTab(a.dataset.tab)}}catch(x){}});
+
+/* обновляем таблицу, когда данные поменялись (здесь, на другом устройстве или в записи), и раз в минуту — время */
+function busy(){var a=document.activeElement;return a&&a.closest&&a.closest('#tb')&&/INPUT|SELECT/.test(a.tagName)}
+setInterval(function(){var z=Z(),s=z?(z.ok()?z.sig():'out'):'';if(s!==lastSig&&!busy()){lastSig=s;render()}},500);
+setInterval(function(){if(!busy())render()},60000);
+window.tabShown=function(){lastSig='';render()};
+render();
+</script>
+</body>
+</html>
