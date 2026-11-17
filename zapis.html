@@ -212,6 +212,8 @@ body.ro .eo{display:none!important}
 .tabs a{padding:5px 12px;border-radius:9px;text-decoration:none;color:var(--mu);font-weight:600;font-size:15px;white-space:nowrap;line-height:1.35}
 .tabs a:hover{color:var(--tx)}
 .tabs a.on{background:var(--tx);color:var(--bg);font-weight:700}
+html:not(.obr-on) .tabs a[data-tab="obr"]{display:none}
+.tabs .obc:not(:empty){display:inline-block;margin-left:6px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
 @media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
 body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-users .pu{display:none!important}
 .me{display:inline-flex;align-items:center;gap:6px;color:var(--mu);font-size:13px;margin-left:4px}
@@ -374,7 +376,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <main>
 <div id="hdr" class="hdr">
 <div class="hrow">
-<div class="ttl"><h1 class="vh">Запись на сервис</h1><nav class="tabs" aria-label="Разделы"><a href="index.html#grafik" data-tab="grafik">График<span class="tl"> смен</span></a><a href="index.html#zapis" class="on" aria-current="page" data-tab="zapis">Запись<span class="tl"> на сервис</span></a></nav><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncSt"></span><button id="menuB" style="display:none" aria-expanded="false" aria-controls="menu">☰ Меню ▸</button><span id="cnt" class="cnt" style="display:none"></span></div>
+<div class="ttl"><h1 class="vh">Запись на сервис</h1><nav class="tabs" aria-label="Разделы"><a href="index.html#grafik" data-tab="grafik">График<span class="tl"> смен</span></a><a href="index.html#obr" data-tab="obr">Обращения<span class="obc"></span></a><a href="index.html#zapis" class="on" aria-current="page" data-tab="zapis">Запись<span class="tl"> на сервис</span></a></nav><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncSt"></span><button id="menuB" style="display:none" aria-expanded="false" aria-controls="menu">☰ Меню ▸</button><span id="cnt" class="cnt" style="display:none"></span></div>
 <div id="top" class="top" style="display:none">
 <div class="bar">
 <button id="prev" aria-label="Предыдущий день">‹</button>
@@ -503,9 +505,25 @@ window.zApi={
   open:function(k){menuOpen=true;applyMenu();collapseMenuSections();var b=document.getElementById(k==='u'?'uToggle':'gToggle');if(b&&getComputedStyle(b).display!=='none')b.click()},
   masterDay:function(id,d){openMD(id,d)},
   logout:function(){doLogout()},
-  myPw:function(){openMyPw()}
+  myPw:function(){openMyPw()},
+  ob:{
+    ok:function(){return !!(KEY&&me())},
+    sig:function(){return KEY&&me()?obSig():''},
+    me:function(){var u=me();return u?{id:u.id,name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',owner:u.role==='owner'}:null},
+    f:function(){return {add:feat('obrAdd')&&canWrite,work:feat('obrWork'),view:feat('obrView'),write:canWrite,book:can('edit')&&canWrite,nocli:noCli()}},
+    count:function(){return obCount()},
+    list:function(){var nc=noCli();return obAll().map(function(o){var x=JSON.parse(JSON.stringify(o));if(nc){x.client='';x.phone=''}x.respName=o.resp?uName(o.resp)||'—':'';x.cbName=uName(o.cb)||o.cbn||'';x.canAct=obCanAct(o);x.bkLive=!!(o.bk&&state.b[o.bk]&&live(state.b[o.bk]));return x})},
+    workers:function(){return obWorkers().map(function(u){return {id:u.id,name:u.name}})},
+    lists:function(){return {way:OB_WAY,why:OB_WHY,res:OB_RES,brands:BRANDS}},
+    create:function(f){return obCreate(f||{})},
+    act:function(id,k,c,lv){return obDo(id,k,c,lv)},
+    book:function(id){return obBook(id)},
+    openBk:function(id){var bk=state.b[id];if(!bk||!live(bk))return;obShell('zapis');goto(bk.date,true);openForm(bk)},
+    logout:function(){doLogout()},
+    myPw:function(){openMyPw()}
+  }
 };
-window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday')}};
+window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),ob:feat('obrAdd')||feat('obrWork')||feat('obrView')}};
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
 var KINDS={me:'механик',el:'электрик'};
 function pad(n){return n<10?'0'+n:''+n}
@@ -925,7 +943,7 @@ function renderCnt(){var el=document.getElementById('cnt'),t=iso(new Date()),L=n
   if(KEY&&me()){var oc=obCount();if(feat('obrAdd')&&canWrite)h+='<button type="button" class="obn" data-obn="1" title="Новое обращение клиента">+ Обращение</button>';if(feat('obrWork')||feat('obrView')||feat('obrAdd'))h+='<button type="button" class="'+(oc?'obb':'obz')+'" data-ob="1" title="Обращения клиентов">☎ '+(feat('obrWork')?'Перезвонить':'Обращения')+(oc?': <b>'+oc+'</b>':'')+'</button>'}
   var pn=canWrite&&KEY&&can('edit')&&feat('move')?pkList().length:0;if(pn)h+='<button type="button" class="pkb" data-pk="1" title="Записи, у которых мастер не на смене — их нужно перенести">⚠ Перенести: <b>'+pn+'</b></button>';
   el.innerHTML=h;el.style.display=appVisible()&&h?'':'none';if(document.getElementById('pkDlg').open)renderPK();if(document.getElementById('obDlg').open&&obTab!=='new')renderOB()}
-document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;if(t.dataset.pk){openPK();return}if(t.dataset.ob){openOB();return}if(t.dataset.obn){openOB('new');return}goto(t.dataset.go,true)});
+document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;if(t.dataset.pk){openPK();return}if(t.dataset.ob){if(!obShell('obr'))openOB();return}if(t.dataset.obn){if(obShell('obr')){try{var fw=parent.document.getElementById('fo').contentWindow;if(fw.obNew)fw.obNew()}catch(x){}}else openOB('new');return}goto(t.dataset.go,true)});
 /* линия текущего времени в сегодняшнем дне, обновляется раз в минуту */
 function updNow(){
   [].forEach.call(document.querySelectorAll('#days .nowl'),function(x){x.remove()});
@@ -1338,6 +1356,26 @@ function obWhen(t){var d=new Date(t),td=new Date();return (d.toDateString()===td
 function obTag(o){if(o.st==='done')return '<span class="ot done">'+OB_RES[o.res]+'</span>';if(o.st==='later')return '<span class="ot later">Перезвонить '+obWhen(o.later)+'</span>';if(o.st==='wip')return '<span class="ot wip">Недозвон ×'+(o.tries||[]).length+'</span>';return '<span class="ot new">Новое</span>'}
 function openOB(tab){if(!(KEY&&me()))return;obTab=tab||(feat('obrWork')?'mine':feat('obrView')?'all':'my');obArm=null;renderOB();var d=document.getElementById('obDlg');if(!d.open)d.showModal()}
 function obSave(o){o.u=now();state.o=state.o||{};state.o[o.id]=o;commit()}
+/* общие действия: ими пользуются и окно в записи, и вкладка «Обращения» */
+function obCreate(f){if(!(KEY&&me()&&feat('obrAdd')&&canWrite))return {e:'Нет прав создавать обращения'};var u=me(),cl=String(f.client||'').trim().slice(0,60),pr=String(f.phone||'').trim(),pd=digits(pr);
+  if(!cl&&pd.length<10)return {e:'Укажите имя клиента или телефон'};if(pr&&pd.length<10)return {e:'Телефон: нужно 10 цифр после +7'};
+  var n=0;obAll().forEach(function(o){if(o.n>n)n=o.n});var o={id:'o'+uid(),n:n+1,t:now(),by:u.name,byU:UID,way:OB_WAY.indexOf(f.way)>=0?f.way:'Звонок',why:String(f.why||'').trim().slice(0,60),resp:(state.users||{})[f.resp]?f.resp:'',client:cl,phone:pd.length>=10?'+7 '+phFmt(pd.slice(-10)):'',brand:String(f.brand||'').slice(0,30),model:String(f.model||'').trim().slice(0,40),desc:String(f.desc||'').trim().slice(0,300),st:'new',tries:[]};
+  obSave(o);return {id:o.id,n:o.n}}
+function obCanAct(o){var u=me();return !!(o&&u&&feat('obrWork')&&canWrite&&obOpen(o)&&(o.resp===UID||!o.resp||u.role==='owner'))}
+function obDo(id,k,c,lv){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))return 'Нет прав или обращение уже закрыто';o=JSON.parse(JSON.stringify(o));c=String(c||'').trim().slice(0,200);
+  if(k==='take'){if(o.resp)return '';o.resp=UID;obSave(o);return ''}
+  if(k==='other'&&!c)return 'Напишите, что сделали';
+  if(!o.resp)o.resp=UID;
+  if(k==='wip'){o.st='wip';o.tries=(o.tries||[]).concat([{t:now(),n:u.name,k:'wip',c:c}])}
+  else if(k==='later'){var v=lv||'60',at;if(v==='t10'){var d=new Date();d.setDate(d.getDate()+1);d.setHours(10,0,0,0);at=d.getTime()}else at=now()+(+v||60)*60000;o.st='later';o.later=at;o.tries=(o.tries||[]).concat([{t:now(),n:u.name,k:'later',at:at,c:c}])}
+  else if(k==='cons'||k==='other'){o.st='done';o.res=k;o.ct=now();o.cb=UID;o.cbn=u.name;o.note=c}
+  else return 'Неизвестное действие';
+  obSave(o);return ''}
+function obShell(k){try{if(window.parent!==window&&parent.showTab&&parent.document.getElementById('fo')){parent.showTab(k);return true}}catch(e){}return false}
+function obBook(id){var o=state.o&&state.o[id];if(!obCanAct(o)||!can('edit'))return 'Нет прав записывать';obShell('zapis');var d0=document.getElementById('obDlg');if(d0.open)d0.close();
+  obPending=o.id;var bm={brand:o.brand==='Другое'?'':o.brand,model:o.model};openForm(null,{date:cur});
+  sv('fClient',o.client||'');if(o.phone)setPhone(o.phone);sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');fillModels();sv('fDesc',[o.why,o.desc].filter(Boolean).join(': '));if(o.way==='WhatsApp'||o.way==='Instagram')setSrc('online');else if(o.way==='Визит')setSrc('visit');else setSrc('call');return ''}
+function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
 function renderOB(){var W=feat('obrWork'),V=feat('obrView'),A=feat('obrAdd'),L=obAll(),h='';
   var tabs=[];if(W)tabs.push(['mine','Мои',L.filter(function(o){return obOpen(o)&&obMine(o)}).length]);if(W||V)tabs.push(['all','Все открытые',L.filter(obOpen).length]);if(A&&!W&&!V)tabs.push(['my','Мои обращения',0]);if(W||V||A)tabs.push(['done','Закрытые',0]);if(A&&canWrite)tabs.push(['new','+ Новое',0]);
   h+='<div class="mh"><div style="flex:1;font-weight:700;font-size:16px">Обращения клиентов</div><button type="button" id="obX" aria-label="Закрыть">✕</button></div><div class="tabs2">'+tabs.map(function(t){return '<button type="button" data-obt="'+t[0]+'" class="'+(obTab===t[0]?'on':'')+'">'+t[1]+(t[2]?' · '+t[2]:'')+'</button>'}).join('')+'</div>';
@@ -1368,26 +1406,17 @@ document.getElementById('obBody').addEventListener('click',function(e){var t=e.t
   if(t.tagName==='A')return;
   if(t.id==='obX'){dlg.close();return}
   if(t.dataset.obt){obTab=t.dataset.obt;obArm=null;renderOB();return}
-  if(t.id==='obSend'){if(!(feat('obrAdd')&&canWrite))return;var cl=fv('obCl').trim(),pd=digits(fv('obPh')),er=document.getElementById('obErr');
-    if(!cl&&pd.length<10){er.textContent='Укажите имя клиента или телефон';return}
-    if(fv('obPh').trim()&&pd.length<10){er.textContent='Телефон: нужно 10 цифр после +7';return}
-    var n=0;obAll().forEach(function(o){if(o.n>n)n=o.n});var o={id:'o'+uid(),n:n+1,t:now(),by:u.name,byU:UID,way:fv('obWay'),why:fv('obWhy').trim(),resp:fv('obResp'),client:cl,phone:pd.length>=10?'+7 '+phFmt(pd.slice(-10)):'',brand:fv('obBrand'),model:fv('obModel').trim(),desc:fv('obDesc').trim(),st:'new',tries:[]};
-    obSave(o);obTab=feat('obrWork')||feat('obrView')?'all':'my';renderOB();return}
+  if(t.id==='obSend'){var r0=obCreate({way:fv('obWay'),why:fv('obWhy'),resp:fv('obResp'),client:fv('obCl'),phone:fv('obPh'),brand:fv('obBrand'),model:fv('obModel'),desc:fv('obDesc')});
+    if(r0.e){document.getElementById('obErr').textContent=r0.e;return}obTab=feat('obrWork')||feat('obrView')?'all':'my';renderOB();return}
   var o=t.dataset.obi?state.o[t.dataset.obi]:t.dataset.obtake?state.o[t.dataset.obtake]:t.dataset.obbook?state.o[t.dataset.obbook]:t.dataset.obok?state.o[t.dataset.obok]:null;
   if(t.dataset.obno!==undefined){obArm=null;renderOB();return}
-  if(!o||!feat('obrWork')||!canWrite)return;
-  o=JSON.parse(JSON.stringify(o));
-  if(t.dataset.obtake){o.resp=UID;obSave(o);renderOB();return}
+  if(!obCanAct(o))return;
+  if(t.dataset.obtake){obDo(o.id,'take');renderOB();return}
   if(t.dataset.oba){obArm={id:o.id,k:t.dataset.oba};renderOB();var ci=document.querySelector('#obBody [data-obc]');if(ci)ci.focus();return}
-  if(t.dataset.obbook){obPending=o.id;dlg.close();var bm={brand:o.brand==='Другое'?'':o.brand,model:o.model};openForm(null,{date:cur});
-    sv('fClient',o.client||'');if(o.phone)setPhone(o.phone);sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');fillModels();sv('fDesc',[o.why,o.desc].filter(Boolean).join(': '));if(o.way==='WhatsApp'||o.way==='Instagram')setSrc('online');else if(o.way==='Визит')setSrc('visit');else setSrc('call');return}
-  if(t.dataset.obok){var k=obArm&&obArm.k,c=(document.querySelector('#obBody [data-obc]')||{}).value||'';c=c.trim();
-    if(k==='other'&&!c){var ci2=document.querySelector('#obBody [data-obc]');ci2.placeholder='Напишите, что сделали';ci2.focus();return}
-    if(!o.resp)o.resp=UID;
-    if(k==='wip'){o.st='wip';o.tries=(o.tries||[]).concat([{t:now(),n:u.name,k:'wip',c:c}])}
-    else if(k==='later'){var v=(document.querySelector('#obBody [data-obl]')||{}).value||'60',at;if(v==='t10'){var d=new Date();d.setDate(d.getDate()+1);d.setHours(10,0,0,0);at=d.getTime()}else at=now()+(+v)*60000;o.st='later';o.later=at;o.tries=(o.tries||[]).concat([{t:now(),n:u.name,k:'later',at:at,c:c}])}
-    else{o.st='done';o.res=k==='cons'?'cons':'other';o.ct=now();o.cb=UID;o.cbn=u.name;o.note=c}
-    obArm=null;obSave(o);renderOB()}});
+  if(t.dataset.obbook){obBook(o.id);return}
+  if(t.dataset.obok){var k=obArm&&obArm.k,ci2=document.querySelector('#obBody [data-obc]'),c=ci2?ci2.value:'';
+    var r1=obDo(o.id,k,c,(document.querySelector('#obBody [data-obl]')||{}).value);if(r1&&k==='other'&&ci2){ci2.placeholder=r1;ci2.focus();return}
+    obArm=null;renderOB()}});
 document.getElementById('obDlg').addEventListener('click',function(e){if(e.target===this)this.close()});
 /* ---------- перенести клиентов ---------- */
 function pkWhy(b){var p=state.cfg.posts[postIdx(b.post)];if(!p)return 'пост удалён';var a=postAvail(p,b.date);
