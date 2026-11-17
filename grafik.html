@@ -189,7 +189,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <div id="menuPanel" class="menu" hidden>
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Токен вводится во вкладке «Запись на сервис»: Меню → Синхронизация GitHub.</div>
 <div class="mlbl">Общее для обеих вкладок</div><div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и посты ▾</button><button id="mToggle" class="eo" aria-expanded="false">Режим работы ▸</button><button id="goUsers" style="display:none">Пользователи ↗</button><button id="goSync">Синхронизация GitHub ↗</button></div>
-<div class="mlbl">График смен</div><div class="mrow"><button id="bkExp" style="display:none" title="Файл со всеми данными графика: сотрудники, смены, правки, режим работы">Скачать копию данных</button><button id="bkImp" style="display:none" title="Заменить график данными из ранее скачанной копии">Загрузить копию…</button><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом Excel (.xlsx) по всем отделам">Скачать график ⭳</button><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
+<div class="mlbl">График смен</div><div class="mrow"><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом Excel (.xlsx) по всем отделам">Скачать график ⭳</button><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
 <div id="setBox" class="eo">
 <div class="set" id="set"></div>
 <div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла. Для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс, праздничные дни Казахстана учитываются автоматически (если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную). Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, праздничные дни РК при этом не учитываются. Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит; выбираются вручную, по умолчанию дежурств нет (у 2/2 их нет вообще). При смене типа графика дежурные дни очищаются. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой, тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой. Если два дежурства приходятся на один день, в строке «На работе» число дежурных покраснеет. Минимум на работе в день задаётся в каждом отделе.</div>
@@ -556,7 +556,6 @@ function applyRole(){if(!EMB){var rs0=document.getElementById('reset');if(rs0)rs
   document.getElementById('mToggle').style.display=r.set?'':'none';document.getElementById('goUsers').style.display=r.role==='owner'?'':'none';document.getElementById('goSync').style.display=r.name?'':'none';if(!r.set&&!modeCol){modeCol=true;applyMode()}
   var uc=document.getElementById('uChip');uc.hidden=!r.name;if(r.name){document.getElementById('uB').innerHTML='👤<span class="un"> '+esc(r.name)+'</span> ▾';document.getElementById('uB').title=r.name;document.getElementById('uRole').textContent=r.name+' · '+(r.roleName||'')}
   var rs=document.getElementById('reset');if(rs)rs.style.display=r.role==='owner'?'':'none';
-  document.getElementById('bkExp').style.display=r.backup?'':'none';document.getElementById('bkImp').style.display=r.backup&&canWrite?'':'none';
   if(!r.graf&&!collapsed){collapsed=true}if(!r.set&&!setCol){setCol=true}
   applySet();updCur()}
 function hexb(h){var a=new Uint8Array(h.length/2),i;for(i=0;i<a.length;i++)a[i]=parseInt(h.substr(i*2,2),16);return a}
@@ -937,15 +936,10 @@ document.getElementById('ghImp').onclick=function(){
   if(!canWrite){stMsg='Чтобы загрузить копию, сначала введите токен';setSt();return}
   document.getElementById('ghFile').click();
 };
-document.getElementById('bkExp').onclick=function(){if(EMB&&!RP().backup)return;document.getElementById('ghExp').click()};
-document.getElementById('bkImp').onclick=function(){if(EMB&&!RP().backup)return;document.getElementById('ghImp').click()};
 document.getElementById('ghFile').onchange=function(ev){
   var f=ev.target.files&&ev.target.files[0];if(!f)return;
   var rd=new FileReader();
   rd.onload=function(){
-    var dd=null;try{dd=JSON.parse(rd.result)}catch(x){}
-    if(dd&&dd.cfg&&dd.cfg.w&&!ev.bkOk){var when=dd.updated?new Date(dd.updated).toLocaleString('ru-RU'):'';
-      zAskRaw('Загрузить копию графика?','<p>Текущий график будет полностью заменён данными из файла «'+esc(f.name)+'»'+(when?', сохранённого '+esc(when):'')+': сотрудники, смены, все правки и режим работы.</p><p>Если нужно, сначала скачайте копию текущего графика.</p>','Загрузить',function(){ev.bkOk=true;rd.onload()});ev.target.value='';return}
     try{
       var d=JSON.parse(rd.result);
       if(!d||!d.cfg||!d.cfg.w)throw 0;
@@ -980,10 +974,9 @@ function zLeft(i,d){var Z=zIndex(),ps=Z.wp[state.w[i].id];if(!ps)return null;var
   ps.forEach(function(p){var c=Z.pd[p.id+'|'+s]||0;if(c&&!zCov(p,d,i))r.push({p:p,n:c})});return r.length?r:null}
 function zPl(n){var a=n%10,b=n%100;return n+' '+(a===1&&b!==11?'клиент':(a>=2&&a<=4&&(b<12||b>14)?'клиента':'клиентов'))}
 var zCb=null;
-function zAsk(i,d,list,cb){document.getElementById('zMt').textContent='Есть записи клиентов';document.getElementById('zMok').textContent='Всё равно поставить';var x=dateOf(d),t=x.getUTCDate()+' '+MN[x.getUTCMonth()];
+function zAsk(i,d,list,cb){var x=dateOf(d),t=x.getUTCDate()+' '+MN[x.getUTCMonth()];
   document.getElementById('zMx').innerHTML='<p>'+t+' на '+list.map(function(o){return esc(o.p.name)}).join(', ')+' записано '+zPl(list.reduce(function(a,o){return a+o.n},0))+'.</p><p>'+esc(state.w[i].name)+' в этот день будет не на смене, а других мастеров поста на смене нет. Клиентов нужно будет перенести во вкладке «Запись на сервис».</p>';
   zCb=cb;var m=document.getElementById('zM');m.hidden=false;document.getElementById('zMno').focus()}
-function zAskRaw(title,html,okText,cb){document.getElementById('zMt').textContent=title;document.getElementById('zMx').innerHTML=html;document.getElementById('zMok').textContent=okText;zCb=cb;document.getElementById('zM').hidden=false;document.getElementById('zMno').focus()}
 function zClose(){document.getElementById('zM').hidden=true;zCb=null}
 document.getElementById('zMno').onclick=zClose;
 document.getElementById('zMok').onclick=function(){var cb=zCb;zClose();if(cb)cb()};
