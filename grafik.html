@@ -1005,7 +1005,7 @@ function renderMode(){var m=GM(),h='';
   h+='<div class="row"><label style="min-width:200px">Рабочий день</label><label>с</label><select data-md="open">'+tOpts(360,720,m.open)+'</select><label>до</label><select data-md="day">'+tOpts(720,1320,m.day)+'</select></div>';
   h+='<div class="row"><label style="min-width:200px">Дежурство до</label><select data-md="duty">'+tOpts(720,1380,m.duty)+'</select></div>';
   h+='<div class="row"><label style="min-width:200px">Обед, запись закрыта</label><label>с</label><select data-md="b0">'+tOpts(600,1080,m.brk[0])+'</select><label>до</label><select data-md="b1">'+tOpts(630,1110,m.brk[1])+'</select></div>';
-  h+='<div class="row"><label style="min-width:200px">Клиентов на одни полчаса</label><input type="number" min="1" max="10" data-md="cap" value="'+m.cap+'" style="width:70px"><label>обычно равно числу консультантов на приёмке</label></div>';
+  if(RP().role==='owner')h+='<div class="row"><label style="min-width:200px">Клиентов на одни полчаса</label><input type="number" min="1" max="10" data-md="cap" value="'+m.cap+'" style="width:70px"><label>обычно равно числу консультантов на приёмке</label></div>';
   h+='<div class="err" id="mdErr" style="color:var(--danger);font-size:13px"></div>';
   h+='<div class="sub" style="margin:0 0 6px">Часы работы задают смены «Р» и «Д» в графике и часы записи клиентов. Шаг записи — 30 минут. Праздники РК учитываются автоматически.</div>';
   var td=isoN(dn(new Date())),list=Object.keys(state.days||{}).filter(function(k){return k>=isoN(dn(new Date())-31)}).sort();
