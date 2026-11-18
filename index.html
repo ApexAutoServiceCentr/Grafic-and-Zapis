@@ -13,9 +13,28 @@ html,body{margin:0;height:100%;overflow:hidden;background:#f6f7f9}
 @media (prefers-color-scheme:dark){html,body{background:#14161a}}
 iframe{position:fixed;top:0;left:0;width:100%;height:100%;border:0;display:block;background:transparent}
 iframe.off{visibility:hidden;pointer-events:none;z-index:-1}
+/* переключатель разделов: стоит на месте, пока страницы под ним сдвигаются */
+:root{--card:#fff;--bd:#e2e5ea;--tx:#1b1f24;--ac:#2563eb;--danger:#dc2626}
+@media (prefers-color-scheme:dark){:root{--card:#1d2026;--bd:#2d323a;--tx:#eceef1;--ac:#6ea0ff;--danger:#f87171}}
+.tsw{position:fixed;z-index:10;display:flex;align-items:center;gap:6px;font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tx);transition:left .2s,top .2s}
+.tsw[hidden]{display:none}
+.tsw .tar{position:relative;width:38px;height:38px;padding:0;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:18px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,transform .1s;font-family:inherit}
+.tsw .tar:hover{background:var(--bd)}.tsw .tar:active{transform:scale(.92)}
+.tsw .tar[hidden]{display:none}
+.tsw .twc{position:relative}
+.tsw .twin{position:relative;height:38px;width:196px;overflow:hidden;border-radius:10px;background:var(--card);border:1px solid var(--bd)}
+.tsw .tlb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:700;white-space:nowrap}
+.tsw .tdots{position:absolute;left:0;right:0;top:100%;margin-top:2px;display:flex;gap:4px;justify-content:center}
+.tsw .tdots i{width:5px;height:4px;border-radius:2px;background:var(--bd);transition:all .3s}.tsw .tdots i.on{width:14px;background:var(--ac)}
+.tsw .obc{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center;font-weight:600}
+.tsw .obc:empty{display:none}
+.tsw .tar .obc{position:absolute;top:-6px;right:-6px;min-width:16px;padding:0 4px;font-size:11px;font-weight:700;line-height:16px}
+@media (max-width:1499px){.tsw .twin{width:150px}}
+@media (max-width:600px){.tsw .twin{width:126px}.tsw .tlb{font-size:14px}.tsw .tar{width:34px}}
 </style>
 </head>
 <body>
+<nav class="tsw" id="tsw" aria-label="Разделы" hidden><button type="button" class="tar" data-dir="-1">‹<span class="obc"></span></button><div class="twc"><div class="twin" id="twin"></div><div class="tdots" id="tdots" aria-hidden="true"></div></div><button type="button" class="tar" data-dir="1">›<span class="obc"></span></button></nav>
 <iframe allow="clipboard-write" id="fg" title="График смен"></iframe>
 <iframe allow="clipboard-write" id="fo" title="Обращения" class="off"></iframe>
 <iframe allow="clipboard-write" id="fz" title="Запись на сервис" class="off"></iframe>
@@ -37,8 +56,8 @@ function showTab(k,d){if(!TABS[k])k='grafik';var first=cur===null;if(k===cur)ret
   if(first||!fo||red||!fn.animate){if(fo)fo.classList.add('off')}
   else{var o={duration:350,easing:'cubic-bezier(.4,0,.2,1)'};fo.style.zIndex=1;fn.style.zIndex=2;
     var a1=fo.animate([{transform:'translateX(0)',opacity:1},{transform:'translateX('+(-30*d)+'%)',opacity:0}],o),a2=fn.animate([{transform:'translateX('+(30*d)+'%)',opacity:0},{transform:'translateX(0)',opacity:1}],o);ANI=[a1,a2];
-    a1.onfinish=function(){if(cur!==prev)fo.classList.add('off');fo.style.zIndex=fn.style.zIndex=''};
-    try{fo.contentWindow.tabOut&&fo.contentWindow.tabOut(d)}catch(e){}try{fn.contentWindow.tabIn&&fn.contentWindow.tabIn(d)}catch(e){}}
+    a1.onfinish=function(){if(cur!==prev)fo.classList.add('off');fo.style.zIndex=fn.style.zIndex=''};}
+  if(window.SW)swLabel(prev,k,first||red?0:d);
   document.title=TABS[k].t;
   try{history.replaceState(null,'','#'+k)}catch(e){location.hash=k}
   try{localStorage.setItem('shell-tab',k)}catch(e){}
@@ -58,10 +77,32 @@ var _show=showTab;window.tabGo=function(k,d){showTab(k,d)};showTab=function(k,d)
 /* у вкладок прячем недоступные; рядом с «Обращениями» — число открытых */
 var vis=null;
 function obUpd(){var a=authSt(),p=a==='in'?perm():{},on=a==='in'&&!!p.ob,ng=a==='in'&&p.tg===false,nz=a==='in'&&p.tz===false,n='';if(on){try{var z=document.getElementById('fz').contentWindow.zApi.ob;n=z.count()||''}catch(e){}}
-  var key=[on,ng,nz,n].join('|');if(key===vis)return;vis=key;['fg','fo','fz'].forEach(function(id){try{var d=document.getElementById(id).contentDocument;if(!d||!d.documentElement)return;var c=d.documentElement.classList;c.toggle('obr-on',on);c.toggle('no-tg',ng);c.toggle('no-tz',nz);[].forEach.call(d.querySelectorAll('.tsw .obc'),function(x){x.textContent=n})}catch(e){}})}
+  var key=[on,ng,nz,n].join('|');if(key===vis)return;vis=key;['fg','fo','fz'].forEach(function(id){try{var d=document.getElementById(id).contentDocument;if(!d||!d.documentElement)return;var c=d.documentElement.classList;c.toggle('obr-on',on);c.toggle('no-tg',ng);c.toggle('no-tz',nz);0}catch(e){}})}
 ['fg','fo','fz'].forEach(function(id){document.getElementById(id).addEventListener('load',function(){vis=null;obUpd()})});
 setInterval(function(){var a=authSt();obUpd();if(a==='out'&&cur!=='zapis'){want=cur;_show('zapis')}else if(a==='in'&&want){var t=want;want=null;showTab(t)}else if(a==='in'&&!okTab(cur))_show(firstTab())},400);
 addEventListener('hashchange',function(){var k=(location.hash||'').replace('#','');if(TABS[k])showTab(k)});
+/* ===== переключатель разделов ===== */
+var NM={grafik:['График смен','График'],obr:['Обращения','Обращения'],zapis:['Запись на сервис','Запись']},SW=document.getElementById('tsw'),obCnt='';
+function swList(){return ORD.filter(function(k){return k===cur||authSt()!=='in'||okTab(k)})}
+function swNb(d){var L=swList(),i=L.indexOf(cur);return L[(i+d+L.length)%L.length]}
+function swLbHtml(k){return NM[k][innerWidth<1500?1:0]+(k==='obr'?'<span class="obc">'+obCnt+'</span>':'')}
+function swLabel(a,b,d){var w=document.getElementById('twin');if(!w)return;var o=w.lastElementChild;w.insertAdjacentHTML('beforeend','<div class="tlb">'+swLbHtml(b)+'</div>');var nl=w.lastElementChild;
+  if(!d||!o||!nl.animate){while(w.children.length>1)w.firstElementChild.remove();swUpd();return}
+  var op={duration:350,easing:'cubic-bezier(.4,0,.2,1)'};var a1=o.animate([{transform:'none'},{transform:'translateX('+(-100*d)+'%)'}],op);nl.animate([{transform:'translateX('+(100*d)+'%)'},{transform:'none'}],op);
+  a1.onfinish=function(){o.remove()};swUpd()}
+function swUpd(){var L=swList(),one=L.length<2;var lb=document.querySelector('#twin .tlb:last-child');if(lb&&!lb.getAnimations().length)lb.innerHTML=swLbHtml(cur);
+  [].forEach.call(SW.querySelectorAll('.tar'),function(b){b.hidden=one;var t=swNb(+b.dataset.dir);b.title=NM[t][0];b.setAttribute('aria-label','Перейти: '+NM[t][0]);b.querySelector('.obc').textContent=(!one&&t==='obr'&&cur!=='obr'&&!(L.length===2&&b.dataset.dir==='-1'))?obCnt:''});
+  document.getElementById('tdots').innerHTML=one?'':L.map(function(k){return '<i class="'+(k===cur?'on':'')+'"></i>'}).join('')}
+SW.addEventListener('click',function(e){var b=e.target.closest('.tar');if(!b)return;var d=+b.dataset.dir;showTab(swNb(d),d)});
+/* ставим переключатель точно на место-заготовку открытой страницы; прячем, если её закрывает окно, отчёт или экран входа */
+function swPlace(){if(ANI.some(function(a){return a.playState==='running'}))return;
+  var f=document.getElementById(TABS[cur].f),ph=null,ok=false,r;try{ph=f.contentDocument&&f.contentDocument.querySelector('.tswph')}catch(e){}
+  if(ph&&authSt()==='in'){r=ph.getBoundingClientRect();if(r.width>0&&r.bottom>0&&r.top<innerHeight){var el=null;try{el=f.contentDocument.elementFromPoint(r.left+r.width/2,r.top+r.height/2)}catch(e){}ok=el===ph}}
+  SW.hidden=!ok;if(ok){SW.style.left=r.left+'px';SW.style.top=r.top+'px'}}
+setInterval(function(){var n='';try{if(authSt()==='in'&&perm().ob)n=String(document.getElementById('fz').contentWindow.zApi.ob.count()||'')}catch(e){}if(n!==obCnt){obCnt=n;var x=document.querySelector('#twin .tlb:last-child .obc');if(x)x.textContent=n}swUpd();swPlace()},250);
+['fg','fo','fz'].forEach(function(id){var f=document.getElementById(id);f.addEventListener('load',function(){try{f.contentWindow.addEventListener('scroll',swPlace,true);f.contentWindow.addEventListener('resize',swPlace)}catch(e){}})});
+addEventListener('resize',function(){swUpd();swPlace()});
+swLabel(null,cur,0);
 </script>
 </body>
 </html>
