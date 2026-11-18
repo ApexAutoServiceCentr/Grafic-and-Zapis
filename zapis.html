@@ -29,7 +29,8 @@ h2{font-size:16px;margin:22px 0 8px}
 #newB{background:var(--tdb);border-color:var(--tdl);color:var(--tdt);font-weight:600}
 #qRes .list{margin:0 0 8px!important}
 #syncSt{margin:0}
-.hdr{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px 0 4px;padding-top:4px;border-bottom:1px solid var(--bd)}
+.hdr{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px 0 4px;padding-top:8px;border-bottom:1px solid var(--bd)}
+@media (max-width:600px){.hdr{padding-top:11.5px}}
 .menu{overflow:auto;padding:4px 0 10px;border-top:1px solid var(--bd)}
 .menu.ov{padding-right:8px}
 *{scrollbar-width:thin;scrollbar-color:rgba(128,128,128,.4) transparent}
@@ -210,19 +211,9 @@ body.ro .eo{display:none!important}
 .dlg{padding:12px}.fg input,.fg select,.fg textarea{padding:7px 9px}
 }
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.tsw{display:inline-flex;align-items:center;gap:6px;flex:none}
-.tsw .tar{position:relative;width:38px;height:38px;padding:0;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:18px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,transform .1s}
-.tsw .tar:hover{background:var(--bd)}.tsw .tar:active{transform:scale(.92)}
-.tsw .tar[hidden]{display:none}
-.tsw .twin{position:relative;height:38px;width:196px;overflow:hidden;border-radius:10px;background:var(--card);border:1px solid var(--bd)}
-.tsw .tlb{position:absolute;inset:0 0 6px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:700;font-size:15px;white-space:nowrap}
-.tsw .tdots{position:absolute;left:0;right:0;bottom:4px;display:flex;gap:4px;justify-content:center}
-.tsw .tdots i{width:5px;height:4px;border-radius:2px;background:var(--bd);transition:all .3s}.tsw .tdots i.on{width:14px;background:var(--ac)}
-.tsw .obc{display:none}
-.tsw .tlb .obc.vis:not(:empty){display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
-.tsw .tar .obc.vis:not(:empty){display:block;position:absolute;top:-6px;right:-6px;min-width:16px;padding:0 4px;border-radius:8px;background:var(--danger);color:#fff;font-size:11px;font-weight:700;line-height:16px;text-align:center}
-@media (max-width:1499px){.tsw .twin{width:150px}}
-@media (max-width:600px){.tsw .twin{width:126px}.tsw .tlb{font-size:14px}.tsw .tar{width:34px}}
+.tswph{flex:none;height:38px;width:284px;opacity:0;pointer-events:auto}
+@media (max-width:1499px){.tswph{width:238px}}
+@media (max-width:600px){.tswph{width:206px}}
 body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-users .pu{display:none!important}
 .me{display:inline-flex;align-items:center;gap:6px;color:var(--mu);font-size:13px;margin-left:4px}
 .me b{color:var(--tx);font-weight:600}
@@ -389,7 +380,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <main>
 <div id="hdr" class="hdr">
 <div class="hrow">
-<div class="ttl"><h1 class="vh">Запись на сервис</h1><nav class="tsw" aria-label="Разделы" data-me="zapis"><button type="button" class="tar" data-dir="-1" aria-label="Предыдущий раздел">‹<span class="obc"></span></button><div class="twin"><div class="tlb"><span class="tn"></span><span class="obc"></span></div><div class="tdots" aria-hidden="true"></div></div><button type="button" class="tar" data-dir="1" aria-label="Следующий раздел">›<span class="obc"></span></button></nav><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncSt"></span><button id="menuB" style="display:none" aria-expanded="false" aria-controls="menu">☰ Меню ▸</button><span id="cnt" class="cnt" style="display:none"></span></div>
+<div class="ttl"><h1 class="vh">Запись на сервис</h1><div class="tswph" aria-hidden="true"></div><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncSt"></span><button id="menuB" style="display:none" aria-expanded="false" aria-controls="menu">☰ Меню ▸</button><span id="cnt" class="cnt" style="display:none"></span></div>
 <div id="top" class="top" style="display:none">
 <div class="bar">
 <button id="prev" aria-label="Предыдущий день">‹</button>
@@ -1840,19 +1831,7 @@ var rzT=null,rzN=innerWidth<600;addEventListener('resize',function(){clearTimeou
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')pull()});
   setInterval(function(){if(document.visibilityState==='visible'&&!dlg.open)pull()},60000);
 })();
-/* переключатель разделов: открытый раздел по центру, стрелки — соседние; переход со сдвигом (анимацию страниц делает общая страница) */
-(function(){var ORD=['grafik','obr','zapis'],NM={grafik:['График смен','График'],obr:['Обращения','Обращения'],zapis:['Запись на сервис','Запись']},nav=document.querySelector('.tsw');if(!nav)return;var me=nav.dataset.me;
-  function list(){var c=document.documentElement.classList;return ORD.filter(function(k){return k===me||(k==='obr'?c.contains('obr-on'):k==='grafik'?!c.contains('no-tg'):!c.contains('no-tz'))})}
-  function nb(d){var L=list(),i=L.indexOf(me);return L[(i+d+L.length)%L.length]}
-  function upd(){var L=list(),i=L.indexOf(me),one=L.length<2,w=innerWidth<1500?1:0;nav.querySelector('.tn').textContent=NM[me][w];
-    [].forEach.call(nav.querySelectorAll('.tar'),function(b){b.hidden=one;var t=nb(+b.dataset.dir);b.title=NM[t][0];b.setAttribute('aria-label','Перейти: '+NM[t][0]);b.querySelector('.obc').classList.toggle('vis',!one&&t==='obr'&&!(L.length===2&&b.dataset.dir==='-1'))});
-    nav.querySelector('.tlb .obc').classList.toggle('vis',me==='obr');
-    nav.querySelector('.tdots').innerHTML=one?'':L.map(function(k){return '<i class="'+(k===me?'on':'')+'"></i>'}).join('')}
-  nav.addEventListener('click',function(e){var b=e.target.closest('.tar');if(!b)return;var d=+b.dataset.dir;try{if(window.parent!==window&&parent.tabGo){parent.tabGo(nb(d),d);return}}catch(x){}location.href='index.html#'+nb(d)});
-  /* въезд названия при переключении */
-  window.tabIn=function(d){upd();var l=nav.querySelector('.tlb');try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;l.animate([{transform:'translateX('+(d>0?100:-100)+'%)'},{transform:'none'}],{duration:350,easing:'cubic-bezier(.4,0,.2,1)'})}catch(x){}};
-  window.tabOut=function(d){var l=nav.querySelector('.tlb');try{l.animate([{transform:'none'},{transform:'translateX('+(d>0?-100:100)+'%)'}],{duration:350,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'}).finished.then(function(a){a.cancel()})}catch(x){}};
-  window.tabsUpd=upd;new MutationObserver(upd).observe(document.documentElement,{attributes:true,attributeFilter:['class']});addEventListener('resize',upd);upd()})();
+/* переключатель разделов рисует общая страница (index.html) поверх этого места: он не двигается при смене раздела */
 
 window.tabShown=function(){sibGraph();if(KEY&&appVisible())rerender();pull()};
 setInterval(function(){if(sib('fg'))sibGraph()},3000);
