@@ -59,6 +59,8 @@ html,body{overflow-anchor:none}
 @media (min-width:600px) and (max-width:1499px){#newB .t{display:none}#newB{padding:8px 14px;font-weight:700}#dPick{width:140px}.top .bar:last-child{flex-basis:150px}}
 .grid.tight .bk.one{font-size:11.5px;line-height:1.02;margin:1px 3px;border-top-width:0;border-bottom-width:0}.grid.tight .bk.one b{font-size:11.5px}.grid.tight .bk.one .stw{font-size:12px}
 .top .bar:last-child{flex:1 1 200px}
+/* есть счётчики: дата и кнопки остаются в первой строке рядом с ними, поиск и пользователь — строкой ниже */
+@media (min-width:600px){.hdr.has-cnt .top{display:contents}.hdr.has-cnt .top .bar:first-child{flex:0 0 auto}.hdr.has-cnt .top .bar:last-child{flex:1 1 100%}}
 #qRes .list{margin:8px 0 0!important;max-height:45vh;overflow:auto}
 .day{padding-top:14px}
 .dh{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;padding:0 2px 8px}
@@ -949,7 +951,7 @@ function renderCnt(){var el=document.getElementById('cnt'),t=iso(new Date()),L=n
   if(feat('cnt'))for(i=0;i<3;i++){d=addDays(t,i);n=0;for(k in state.b){b=state.b[k];if(live(b)&&b.date===d&&st(b)!=='nos')n++}h+='<button type="button" class="'+(n?'':'z')+'" data-go="'+d+'" title="Записано на '+fdate(d)+'">'+L[i]+'<b>'+n+'</b></button>'}
   if(KEY&&me()){var oc=obCount();if(feat('obrAdd')&&canWrite&&me().role!=='owner')h+='<button type="button" class="obn" data-obn="1" title="Новое обращение клиента">+ Обращение</button>';}
   var pn=canWrite&&KEY&&can('edit')&&feat('move')?pkList().length:0;if(pn)h+='<button type="button" class="pkb" data-pk="1" title="Записи, у которых мастер не на смене — их нужно перенести">⚠ Перенести: <b>'+pn+'</b></button>';
-  el.innerHTML=h;el.style.display=appVisible()&&h?'':'none';if(document.getElementById('pkDlg').open)renderPK();if(document.getElementById('obDlg').open&&obTab!=='new')renderOB()}
+  el.innerHTML=h;el.style.display=appVisible()&&h?'':'none';document.getElementById('hdr').classList.toggle('has-cnt',!!(appVisible()&&h));if(document.getElementById('pkDlg').open)renderPK();if(document.getElementById('obDlg').open&&obTab!=='new')renderOB()}
 document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;if(t.dataset.pk){openPK();return}if(t.dataset.ob){if(!obShell('obr'))openOB();return}if(t.dataset.obn){if(obShell('obr')){try{var fw=parent.document.getElementById('fo').contentWindow;if(fw.obNew)fw.obNew()}catch(x){}}else openOB('new');return}goto(t.dataset.go,true)});
 /* линия текущего времени в сегодняшнем дне, обновляется раз в минуту */
 function updNow(){
