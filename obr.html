@@ -47,8 +47,13 @@ a{color:var(--ac)}
 #nB[hidden]{display:none}
 @media (max-width:1799px){#nB .t2{display:none}}
 @media (max-width:1499px){#nB .t{display:none}#nB{padding:8px 14px;font-weight:700}}
-#rB{flex:none}#rB[hidden]{display:none}
-@media (max-width:1499px){#rB .t{display:none}}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--mu);flex:none;cursor:help}
+.dot.g{background:#22c55e}.dot.n{background:var(--mu)}.dot.w{background:#f59e0b}.dot.r{background:var(--danger)}
+#menuB{flex:none}#menuB[hidden],#rB[hidden],.dot[hidden]{display:none}
+.menu{padding:4px 0 10px;margin-bottom:10px;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.menu[hidden]{display:none}
+.mlbl{font-size:12px;color:var(--mu);margin:6px 0 6px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
 .rep{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;padding:16px 20px 24px}
 .rep[hidden]{display:none}
 .rh{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;margin-bottom:14px}
@@ -82,7 +87,7 @@ a{color:var(--ac)}
 .rt tr:last-child td{border-bottom:0}
 @media (max-width:1100px){.kp{grid-template-columns:repeat(3,minmax(0,1fr))}.rg,.rg2{grid-template-columns:1fr}}
 @media (max-width:600px){.kp{grid-template-columns:1fr 1fr}.rep{padding:12px}}
-.qw{position:relative;flex:1 1 220px;max-width:360px;display:flex}
+.qw{position:relative;flex:1 1 140px;max-width:360px;display:flex}
 .qw input{width:100%;padding-right:34px}
 .qw button{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:transparent;padding:4px 8px;color:var(--mu)}
 .uchip{position:relative;flex:none;margin-left:auto}
@@ -179,14 +184,14 @@ td a.tel{color:inherit;text-decoration:none}
 <main>
 <div class="hrow">
 <h1 class="vh">Обращения клиентов</h1>
-<div class="tswph" aria-hidden="true"></div>
+<div class="tswph" aria-hidden="true"></div><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><button type="button" id="menuB" aria-expanded="false" aria-controls="menu" hidden>☰ Меню ▸</button>
 <div class="seg" id="flt" role="group" aria-label="Какие обращения показать"></div>
 <div class="dnav" role="group" aria-label="День"><button type="button" id="dPrev" aria-label="Предыдущий день">‹</button><div class="rng"><span id="dL"></span><button type="button" id="calB" class="cal" aria-label="Выбрать дату" title="Выбрать дату"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button><input type="date" id="dPick" class="dpk" tabindex="-1" aria-hidden="true"></div><button type="button" id="dNext" aria-label="Следующий день">›</button><button type="button" id="dToday">Сегодня</button></div>
 <div class="qw"><input type="text" id="q" placeholder="Поиск: №, имя, телефон, марка, причина…" autocomplete="off" aria-label="Поиск по обращениям"><button type="button" id="qX" aria-label="Очистить поиск" hidden>✕</button></div>
-<button type="button" id="rB" hidden>📊<span class="t"> Отчёт</span></button>
 <button type="button" id="nB" aria-label="Новое обращение" title="Новое обращение" hidden>+<span class="t"><span class="t2"> Новое</span> обращение</span></button>
 <div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
+<div id="menu" class="menu" hidden><div class="mlbl">Обращения</div><div class="tools"><button type="button" id="rB" hidden>📊 Отчёт по обращениям</button></div></div>
 <div id="msg">Загрузка…</div>
 <div class="tw" id="tw" hidden><div id="tb"></div><button type="button" class="more" id="more" hidden>Показать ещё</button></div>
 </main>
@@ -264,7 +269,7 @@ function render(){var z=Z();
   var FL=filters(f,me);if(!FL.some(function(x){return x[0]===flt}))flt='all';
   var cnt={open:L.filter(function(o){return o.st!=='done'}).length};try{(Z().lists().obTypes||Z().lists().types||[]).forEach(function(t){TYK[t.k]=1})}catch(x){}
   $('flt').innerHTML=FL.map(function(x){return '<button type="button" data-f="'+x[0]+'" class="'+(flt===x[0]?'on':'')+'" aria-pressed="'+(flt===x[0])+'">'+x[1]+(cnt[x[0]]?'<b>'+cnt[x[0]]+'</b>':'')+'</button>'}).join('');
-  $('nB').hidden=!f.add;$('rB').hidden=!f.rep;if(rOpen){if(f.rep)renderRep();else closeRep()}
+  $('nB').hidden=!f.add;$('rB').hidden=!f.rep;$('menuB').hidden=!f.rep;if(!f.rep&&menuOpen)setMenu(false);if(rOpen){if(f.rep)renderRep();else closeRep()}
   $('uChip').hidden=false;$('uB').innerHTML='👤<span class="un"> '+esc(me.name)+'</span> ▾';$('uB').title=me.name;$('uRole').textContent=me.name+' · '+me.roleName;
   // строки
   var list=L.filter(function(o){if(flt==='open')return o.st!=='done';if(flt==='done')return o.st==='done'&&myDone(o,f,me);if(flt==='mine')return mine(o,f,me);return true}).filter(function(o){return match(o,q.trim())});
@@ -511,8 +516,14 @@ function renderRep(){var z=Z();if(!z||!z.ok())return;var all=z.list(),r=rRange()
     +ER.map(function(x){return '<tr><td>'+esc(x.n)+'</td><td>'+(x.acc||'—')+'</td><td>'+(x.done||'—')+'</td><td>'+(x.done?x.book:'—')+'</td><td>'+(x.done?pct(x.book,x.done):'—')+'</td><td>'+(x.nr||'—')+'</td><td>'+(x.tc?dur(0,x.tt/x.tc):'—')+'</td></tr>'}).join('')+'</tbody></table></div>':'<div class="none">Нет данных</div>')+'</div>';
   h+='<div class="rc"><h3>По маркам</h3>'+hbars(group(L.filter(function(o){return o.brand}),function(o){return o.brand},6),0)+'</div></div>';
   $('rBody').innerHTML=h}
-function openRep(){var z=Z();if(!z||!z.f().rep)return;rOpen=true;$('rep').hidden=false;renderRep();$('rX').focus()}
-function closeRep(){rOpen=false;$('rep').hidden=true;$('rB').focus()}
+/* меню вкладки (пока в нём отчёт); индикатор синхронизации — тот же, что во вкладке записи: данные обращений хранятся вместе с записью */
+var menuOpen=false;
+function setMenu(o){menuOpen=o;$('menu').hidden=!o;$('menuB').setAttribute('aria-expanded',o?'true':'false');$('menuB').textContent=o?'☰ Меню ▾':'☰ Меню ▸'}
+$('menuB').onclick=function(){setMenu(!menuOpen)};
+document.addEventListener('mousedown',function(e){if(menuOpen&&!e.target.closest('#menu,#menuB,#rep'))setMenu(false)});
+setInterval(function(){try{var zd=parent.document.getElementById('fz').contentDocument.getElementById('syncDot'),d=$('syncDot');if(zd&&(d.className!==zd.className||d.title!==zd.title)){d.className=zd.className;d.title=zd.title;d.setAttribute('aria-label',zd.getAttribute('aria-label')||zd.title)}$('syncDot').hidden=!(Z()&&Z().ok())}catch(e){}},500);
+function openRep(){setMenu(false);var z=Z();if(!z||!z.f().rep)return;rOpen=true;$('rep').hidden=false;renderRep();$('rX').focus()}
+function closeRep(){rOpen=false;$('rep').hidden=true;$('menuB').focus()}
 $('rB').onclick=openRep;$('rX').onclick=closeRep;
 document.addEventListener('keydown',function(e){if(rOpen&&e.key==='Escape'&&!$('nd').open)closeRep()});
 $('rPer').addEventListener('click',function(e){var b=e.target.closest('button[data-p]');if(!b)return;var r=rRange();rp.per=b.dataset.p;if(rp.per==='cust'){rp.a=r[0];rp.b=r[1]}else{rp.a=isoOf(Date.now())}renderRep()});
