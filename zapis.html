@@ -1349,7 +1349,7 @@ document.getElementById('msgS').addEventListener('click',function(e){var b=e.tar
 /* ---------- обращения клиентов (вместо таблицы «Обзвон сервис») ---------- */
 var OB_WAY=['Звонок','WhatsApp','Визит','Instagram','Почта','Другое'];
 var OB_WHY=['ТО','Замена масла','Диагностика','Вопрос по сервису','Запчасти','Шиномонтаж','Ремонт','Гарантия','Другое'];
-var OB_TY=TYPES.concat([{k:'zc',n:'Запчасти'},{k:'dr',n:'Другое'}]);
+var OB_TY=(function(){var r=[];TYPES.forEach(function(t){r.push(t);if(t.k==='ak')r.push({k:'zc',n:'Запчасти'})});r.push({k:'dr',n:'Другое'});return r})();
 var OB_RES={book:'Записан',cons:'Проконсультирован',other:'Другое'};
 var obTab='mine',obArm=null,obPending=null;
 function obAll(){var r=[],k,o=state.o||{};for(k in o)if(!o[k].del)r.push(o[k]);return r}
