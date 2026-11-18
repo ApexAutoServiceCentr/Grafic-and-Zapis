@@ -105,6 +105,9 @@ a{color:var(--ac)}
 .umenu button{text-align:left}
 #msg{color:var(--mu);padding:30px 0;text-align:center}
 .tw{flex:1;min-height:0;overflow:auto;position:relative}
+/* ползунок прокрутки — у самого края экрана, как в графике и записи */
+.tw{--pr:max(12px,env(safe-area-inset-right,0px));margin-right:calc(-1 * var(--pr));padding-right:var(--pr);margin-bottom:-12px;padding-bottom:12px}
+@media (min-width:1000px){.tw{--pr:20px}}
 .day{margin-bottom:18px}
 .dh{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;padding:0 2px 8px}
 .dh b{font-size:16px}
