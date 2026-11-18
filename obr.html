@@ -178,6 +178,7 @@ td a.tel{color:inherit;text-decoration:none}
 .foot{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
 .foot .mu{font-size:13px}
 .foot button{margin-left:auto}
+.gor[hidden],.gol[hidden],[data-go][hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -191,7 +192,7 @@ td a.tel{color:inherit;text-decoration:none}
 <button type="button" id="nB" aria-label="Новое обращение" title="Новое обращение" hidden>+<span class="t"><span class="t2"> Новое</span> обращение</span></button>
 <div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
-<div id="menu" class="menu" hidden><div class="mlbl">Обращения</div><div class="tools"><button type="button" id="rB" hidden>📊 Отчёт по обращениям</button></div></div>
+<div id="menu" class="menu" hidden><div class="mlbl gol">Общее</div><div class="tools gor"><button type="button" data-go="grafik:s" data-need="any">Сотрудники и посты ↗</button><button type="button" data-go="grafik:m" data-need="set">Режим работы ↗</button><button type="button" data-go="zapis:u" data-need="owner">Пользователи ↗</button><button type="button" data-go="zapis:g" data-need="any">Синхронизация GitHub ↗</button></div><div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-go="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-go="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl">Обращения</div><div class="tools"><button type="button" id="rB" hidden>📊 Отчёт по обращениям</button></div><div class="mlbl gol">Запись на сервис</div><div class="tools gor"><button type="button" data-go="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-go="zapis:ld" data-need="load">Загрузка ↗</button><button type="button" data-go="zapis:st" data-need="stats">Статистика ↗</button></div></div>
 <div id="msg">Загрузка…</div>
 <div class="tw" id="tw" hidden><div id="tb"></div><button type="button" class="more" id="more" hidden>Показать ещё</button></div>
 </main>
@@ -269,7 +270,7 @@ function render(){var z=Z();
   var FL=filters(f,me);if(!FL.some(function(x){return x[0]===flt}))flt='all';
   var cnt={open:L.filter(function(o){return o.st!=='done'}).length};try{(Z().lists().obTypes||Z().lists().types||[]).forEach(function(t){TYK[t.k]=1})}catch(x){}
   $('flt').innerHTML=FL.map(function(x){return '<button type="button" data-f="'+x[0]+'" class="'+(flt===x[0]?'on':'')+'" aria-pressed="'+(flt===x[0])+'">'+x[1]+(cnt[x[0]]?'<b>'+cnt[x[0]]+'</b>':'')+'</button>'}).join('');
-  $('nB').hidden=!f.add;$('rB').hidden=!f.rep;$('menuB').hidden=!f.rep;if(!f.rep&&menuOpen)setMenu(false);if(rOpen){if(f.rep)renderRep();else closeRep()}
+  $('nB').hidden=!f.add;$('rB').hidden=!f.rep;if(rOpen){if(f.rep)renderRep();else closeRep()}
   $('uChip').hidden=false;$('uB').innerHTML='👤<span class="un"> '+esc(me.name)+'</span> ▾';$('uB').title=me.name;$('uRole').textContent=me.name+' · '+me.roleName;
   // строки
   var list=L.filter(function(o){if(flt==='open')return o.st!=='done';if(flt==='done')return o.st==='done'&&myDone(o,f,me);if(flt==='mine')return mine(o,f,me);return true}).filter(function(o){return match(o,q.trim())});
@@ -521,7 +522,7 @@ var menuOpen=false;
 function setMenu(o){menuOpen=o;$('menu').hidden=!o;$('menuB').setAttribute('aria-expanded',o?'true':'false');$('menuB').textContent=o?'☰ Меню ▾':'☰ Меню ▸'}
 $('menuB').onclick=function(){setMenu(!menuOpen)};
 document.addEventListener('mousedown',function(e){if(menuOpen&&!e.target.closest('#menu,#menuB,#rep'))setMenu(false)});
-setInterval(function(){try{var zd=parent.document.getElementById('fz').contentDocument.getElementById('syncDot'),d=$('syncDot');if(zd&&(d.className!==zd.className||d.title!==zd.title)){d.className=zd.className;d.title=zd.title;d.setAttribute('aria-label',zd.getAttribute('aria-label')||zd.title)}$('syncDot').hidden=!(Z()&&Z().ok())}catch(e){}},500);
+setInterval(function(){try{var zd=parent.document.getElementById('fz').contentDocument.getElementById('syncDot'),d=$('syncDot');if(zd&&(d.className!==zd.className||d.title!==zd.title)){d.className=zd.className;d.title=zd.title;d.setAttribute('aria-label',zd.getAttribute('aria-label')||zd.title)}$('syncDot').hidden=!(Z()&&Z().ok());$('menuB').hidden=!(Z()&&Z().ok())||![].some.call($('menu').querySelectorAll('button'),function(b){return !b.hidden});if($('menuB').hidden&&menuOpen)setMenu(false)}catch(e){}},500);
 function openRep(){setMenu(false);var z=Z();if(!z||!z.f().rep)return;rOpen=true;$('rep').hidden=false;renderRep();$('rX').focus()}
 function closeRep(){rOpen=false;$('rep').hidden=true;$('menuB').focus()}
 $('rB').onclick=openRep;$('rX').onclick=closeRep;
@@ -564,6 +565,18 @@ $('rCsv').onclick=function(){var z=Z();if(!z)return;var r=rRange(),L=z.list().fi
   var blob=xlsx('Обращения',hd,rows,[6,11,7,12,16,16,12,14,6,18,17,18,40,12,17,16,10,10]),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Обращения_'+r[0]+(r[1]!==r[0]?'_'+r[1]:'')+'.xlsx';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
 window.tabShown=function(){lastSig='';render()};
 render();
+/* единое меню: в каждом разделе видны пункты всех разделов; чужие (со стрелкой ↗) переключают раздел и открывают нужный пункт там */
+(function(){function zw(){try{return parent.document.getElementById('fz').contentWindow}catch(e){return null}}
+  function fw(k){try{return parent.document.getElementById({grafik:'fg',obr:'fo',zapis:'fz'}[k]).contentWindow}catch(e){return null}}
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(!b)return;var q=b.dataset.go.split(':'),t=q[0],a=q[1],w=fw(t);if(!w)return;
+    try{if(typeof setMenu==='function')setMenu(false);else if(typeof menuSet==='function')menuSet(false)}catch(x){}
+    try{parent.showTab(t)}catch(x){}
+    setTimeout(function(){try{if(t==='grafik'){if(a==='exp'){w.document.getElementById('expB').click()}else w.openSec(a)}else if(t==='zapis')w.zApi.open(a);else if(t==='obr')w.openRep()}catch(x){}},60)});
+  function upd(){var z=zw(),p={};try{p=(z&&z.permFor&&z.permFor())||{}}catch(e){}
+    [].forEach.call(document.querySelectorAll('[data-go]'),function(b){var n=b.dataset.need,t=b.dataset.go.split(':')[0],okT=t==='obr'?!!p.ob:t==='grafik'?p.tg!==false:p.tz!==false;
+      b.hidden=!p.role||!okT||!(n==='any'||(n==='owner'?p.role==='owner':!!p[n]))});
+    [].forEach.call(document.querySelectorAll('.gor'),function(r){var lb=r.previousElementSibling,vis=[].some.call(r.children,function(c){return !c.hidden&&getComputedStyle(c).display!=='none'});r.hidden=!vis;if(lb&&lb.classList.contains('gol'))lb.hidden=!vis})}
+  setInterval(upd,1000);upd()})();
 </script>
 </body>
 </html>
