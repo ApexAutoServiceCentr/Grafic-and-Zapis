@@ -174,7 +174,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 .zmb p{margin:0 0 6px;line-height:1.45}
 .zmb .bt{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
 .zmb .bt .go{background:var(--danger);border-color:var(--danger);color:#fff}
-.gor[hidden],.gol[hidden],[data-go][hidden]{display:none!important}
+.gor[hidden],.gol[hidden],[data-mgo][hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -193,7 +193,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Токен вводится во вкладке «Запись на сервис»: Меню → Синхронизация GitHub.</div>
 <div class="mlbl">Общее</div><div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и посты ▾</button><button id="mToggle" class="eo" aria-expanded="false">Режим работы ▸</button><button id="goUsers" style="display:none">Пользователи ↗</button><button id="goSync">Синхронизация GitHub ↗</button></div>
 <div class="mlbl">График смен</div><div class="mrow"><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом Excel (.xlsx) по всем отделам">Скачать график ⭳</button><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
-<div class="mlbl gol">Обращения</div><div class="mrow gor"><button type="button" data-go="obr:rep" data-need="rep">Отчёт по обращениям ↗</button></div><div class="mlbl gol">Запись на сервис</div><div class="mrow gor"><button type="button" data-go="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-go="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button><button type="button" data-go="zapis:zr" data-need="zrep">Отчёт по записям ↗</button></div>
+<div class="mlbl gol">Обращения</div><div class="mrow gor"><button type="button" data-mgo="obr:rep" data-need="rep">Отчёт по обращениям ↗</button></div><div class="mlbl gol">Запись на сервис</div><div class="mrow gor"><button type="button" data-mgo="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-mgo="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button><button type="button" data-mgo="zapis:zr" data-need="zrep">Отчёт по записям ↗</button></div>
 <div id="setBox" class="eo">
 <div class="set" id="set"></div>
 <div class="sub" style="margin-top:8px">Дата — первый рабочий день цикла. Для 5/2 «по календарю» дата не нужна: рабочие дни Пн–Пт, выходные Сб–Вс, праздничные дни Казахстана учитываются автоматически (если праздник выпал на субботу или воскресенье, выходным становится ближайший рабочий день; Курбан-айт заложен только на 2026 год, в другие годы отмечайте его вручную). Для 5/2 можно выбрать «Со сдвигом выходных»: это цикл «5 рабочих, потом 2 выходных» от даты первого рабочего дня, праздничные дни РК при этом не учитываются. Цифры «Дежурные дни» — номера дней рабочего блока, в которые сотрудник дежурит; выбираются вручную, по умолчанию дежурств нет (у 2/2 их нет вообще). При смене типа графика дежурные дни очищаются. Сдвиг даты переносит цикл только этого сотрудника. Для 3/3 команды задаются датой: у второй команды первый рабочий день на 3 дня позже, чем у первой, тогда рабочие и выходные дни команд не пересекаются. Сотрудники с одинаковым началом цикла считаются одной сменой. Если два дежурства приходятся на один день, в строке «На работе» число дежурных покраснеет. Минимум на работе в день задаётся в каждом отделе.</div>
@@ -1075,12 +1075,12 @@ addEventListener('resize',alignHdr);alignHdr();new ResizeObserver(alignHdr).obse
 /* единое меню: в каждом разделе видны пункты всех разделов; чужие (со стрелкой ↗) переключают раздел и открывают нужный пункт там */
 (function(){function zw(){try{return parent.document.getElementById('fz').contentWindow}catch(e){return null}}
   function fw(k){try{return parent.document.getElementById({grafik:'fg',obr:'fo',zapis:'fz'}[k]).contentWindow}catch(e){return null}}
-  document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(!b)return;var q=b.dataset.go.split(':'),t=q[0],a=q[1],w=fw(t);if(!w)return;
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-mgo]');if(!b)return;var q=b.dataset.mgo.split(':'),t=q[0],a=q[1],w=fw(t);if(!w)return;
     try{if(typeof setMenu==='function')setMenu(false);else if(typeof menuSet==='function')menuSet(false)}catch(x){}
     try{parent.showTab(t)}catch(x){}
     setTimeout(function(){try{if(t==='grafik'){if(a==='exp'){w.document.getElementById('expB').click()}else w.openSec(a)}else if(t==='zapis')w.zApi.open(a);else if(t==='obr')w.openRep()}catch(x){}},60)});
   function upd(){var z=zw(),p={};try{p=(z&&z.permFor&&z.permFor())||{}}catch(e){}
-    [].forEach.call(document.querySelectorAll('[data-go]'),function(b){var n=b.dataset.need,t=b.dataset.go.split(':')[0],okT=t==='obr'?!!p.ob:t==='grafik'?p.tg!==false:p.tz!==false;
+    [].forEach.call(document.querySelectorAll('[data-mgo]'),function(b){var n=b.dataset.need,t=b.dataset.mgo.split(':')[0],okT=t==='obr'?!!p.ob:t==='grafik'?p.tg!==false:p.tz!==false;
       b.hidden=!p.role||!okT||!(n==='any'||(n==='owner'?p.role==='owner':!!p[n]))});
     [].forEach.call(document.querySelectorAll('.gor'),function(r){var lb=r.previousElementSibling,vis=[].some.call(r.children,function(c){return !c.hidden&&getComputedStyle(c).display!=='none'});r.hidden=!vis;if(lb&&lb.classList.contains('gol'))lb.hidden=!vis})}
   setInterval(upd,1000);upd()})();
