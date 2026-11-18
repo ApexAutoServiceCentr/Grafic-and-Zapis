@@ -150,13 +150,19 @@ body.ro:not(.ed) .eg{display:none!important}
 .cell.flash{animation:blinkc 1.4s ease-in-out 1}
 th.flash{animation:blinkbg 1.4s ease-in-out 1}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.tabs{display:inline-flex;flex:none;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:3px;gap:2px}
-.tabs a{padding:5px 12px;border-radius:9px;text-decoration:none;color:var(--mu);font-weight:600;font-size:15px;white-space:nowrap;line-height:1.35}
-.tabs a:hover{color:var(--tx)}
-.tabs a.on{background:var(--tx);color:var(--bg);font-weight:700}
-html:not(.obr-on) .tabs a[data-tab="obr"],html.no-tg .tabs a[data-tab="grafik"],html.no-tz .tabs a[data-tab="zapis"]{display:none}
-.tabs .obc:not(:empty){display:inline-block;margin-left:6px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
-@media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
+.tsw{display:inline-flex;align-items:center;gap:6px;flex:none}
+.tsw .tar{position:relative;width:38px;height:38px;padding:0;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:18px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,transform .1s}
+.tsw .tar:hover{background:var(--bd)}.tsw .tar:active{transform:scale(.92)}
+.tsw .tar[hidden]{display:none}
+.tsw .twin{position:relative;height:38px;width:196px;overflow:hidden;border-radius:10px;background:var(--card);border:1px solid var(--bd)}
+.tsw .tlb{position:absolute;inset:0 0 6px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:700;font-size:15px;white-space:nowrap}
+.tsw .tdots{position:absolute;left:0;right:0;bottom:4px;display:flex;gap:4px;justify-content:center}
+.tsw .tdots i{width:5px;height:4px;border-radius:2px;background:var(--bd);transition:all .3s}.tsw .tdots i.on{width:14px;background:var(--ac)}
+.tsw .obc{display:none}
+.tsw .tlb .obc.vis:not(:empty){display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
+.tsw .tar .obc.vis:not(:empty){display:block;position:absolute;top:-6px;right:-6px;min-width:16px;padding:0 4px;border-radius:8px;background:var(--danger);color:#fff;font-size:11px;font-weight:700;line-height:16px;text-align:center}
+@media (max-width:1499px){.tsw .twin{width:150px}}
+@media (max-width:600px){.tsw .twin{width:126px}.tsw .tlb{font-size:14px}.tsw .tar{width:34px}}
 @media (min-width:1500px){main{max-width:1240px}}
 #dFilter{max-width:165px}
 .dfw{position:relative;flex:none}
@@ -182,7 +188,7 @@ html:not(.obr-on) .tabs a[data-tab="obr"],html.no-tg .tabs a[data-tab="grafik"],
 <body>
 <main>
 <div id="top">
-<div class="ttlw"><div class="ttl"><h1 class="vh">График смен</h1><nav class="tabs" aria-label="Разделы"><a href="index.html#grafik" class="on" aria-current="page" data-tab="grafik">График<span class="tl"> смен</span></a><a href="index.html#obr" data-tab="obr">Обращения<span class="obc"></span></a><a href="index.html#zapis" data-tab="zapis">Запись<span class="tl"> на сервис</span></a></nav><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span><button id="menuB" aria-expanded="false" aria-haspopup="true">☰ Меню ▸</button>
+<div class="ttlw"><div class="ttl"><h1 class="vh">График смен</h1><nav class="tsw" aria-label="Разделы" data-me="grafik"><button type="button" class="tar" data-dir="-1" aria-label="Предыдущий раздел">‹<span class="obc"></span></button><div class="twin"><div class="tlb"><span class="tn"></span><span class="obc"></span></div><div class="tdots" aria-hidden="true"></div></div><button type="button" class="tar" data-dir="1" aria-label="Следующий раздел">›<span class="obc"></span></button></nav><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span><button id="menuB" aria-expanded="false" aria-haspopup="true">☰ Меню ▸</button>
 <button id="m-toggle">Вид: неделя ⇄</button>
 <button id="prev" aria-label="Назад">‹</button>
 <div class="rng"><span id="rng"></span><button type="button" id="calB" class="cal" aria-label="Выбрать дату" title="Выбрать дату"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button><input type="date" id="dPick" class="dpk" tabindex="-1" aria-hidden="true"></div>
@@ -1052,8 +1058,20 @@ document.getElementById('uPw').onclick=function(){uMenuSet(false);var z=zw();try
 document.getElementById('uOut').onclick=function(){uMenuSet(false);var z=zw();try{z.zApi.logout();parent.showTab('zapis')}catch(e){}};
 document.addEventListener('pointerdown',function(e){if(!e.target.closest('.uchip'))uMenuSet(false)},true);
 /* вкладки: внутри общей страницы переключаем без перезагрузки */
-var tabsEl=document.querySelector('.tabs');if(tabsEl)tabsEl.addEventListener('click',function(e){var a=e.target.closest('a[data-tab]');if(!a)return;
-  try{if(window.parent!==window&&parent.showTab){e.preventDefault();parent.showTab(a.dataset.tab)}}catch(x){}});
+/* переключатель разделов: открытый раздел по центру, стрелки — соседние; переход со сдвигом (анимацию страниц делает общая страница) */
+(function(){var ORD=['grafik','obr','zapis'],NM={grafik:['График смен','График'],obr:['Обращения','Обращения'],zapis:['Запись на сервис','Запись']},nav=document.querySelector('.tsw');if(!nav)return;var me=nav.dataset.me;
+  function list(){var c=document.documentElement.classList;return ORD.filter(function(k){return k===me||(k==='obr'?c.contains('obr-on'):k==='grafik'?!c.contains('no-tg'):!c.contains('no-tz'))})}
+  function nb(d){var L=list(),i=L.indexOf(me);return L[(i+d+L.length)%L.length]}
+  function upd(){var L=list(),i=L.indexOf(me),one=L.length<2,w=innerWidth<1500?1:0;nav.querySelector('.tn').textContent=NM[me][w];
+    [].forEach.call(nav.querySelectorAll('.tar'),function(b){b.hidden=one;var t=nb(+b.dataset.dir);b.title=NM[t][0];b.setAttribute('aria-label','Перейти: '+NM[t][0]);b.querySelector('.obc').classList.toggle('vis',!one&&t==='obr'&&!(L.length===2&&b.dataset.dir==='-1'))});
+    nav.querySelector('.tlb .obc').classList.toggle('vis',me==='obr');
+    nav.querySelector('.tdots').innerHTML=one?'':L.map(function(k){return '<i class="'+(k===me?'on':'')+'"></i>'}).join('')}
+  nav.addEventListener('click',function(e){var b=e.target.closest('.tar');if(!b)return;var d=+b.dataset.dir;try{if(window.parent!==window&&parent.tabGo){parent.tabGo(nb(d),d);return}}catch(x){}location.href='index.html#'+nb(d)});
+  /* въезд названия при переключении */
+  window.tabIn=function(d){upd();var l=nav.querySelector('.tlb');try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;l.animate([{transform:'translateX('+(d>0?100:-100)+'%)'},{transform:'none'}],{duration:350,easing:'cubic-bezier(.4,0,.2,1)'})}catch(x){}};
+  window.tabOut=function(d){var l=nav.querySelector('.tlb');try{l.animate([{transform:'none'},{transform:'translateX('+(d>0?-100:100)+'%)'}],{duration:350,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'}).finished.then(function(a){a.cancel()})}catch(x){}};
+  window.tabsUpd=upd;new MutationObserver(upd).observe(document.documentElement,{attributes:true,attributeFilter:['class']});addEventListener('resize',upd);upd()})();
+
 window.tabShown=function(){reToken();rpS=JSON.stringify(RP());applyRole();applyUI();render();pull();zLoad()};
 /* токен и репозиторий вводятся во вкладке записи — подхватываем их без перезагрузки */
 function reToken(){var t='';try{t=localStorage.getItem('shift-gh-token')||''}catch(e){}if(t===token)return;token=t;canWrite=!!token;remoteReady=false;remoteSha=null;conn='connecting';stMsg='';setSt();renderSet();applyUI();render();pull()}
