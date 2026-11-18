@@ -151,7 +151,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 .tabs a{padding:5px 12px;border-radius:9px;text-decoration:none;color:var(--mu);font-weight:600;font-size:15px;white-space:nowrap;line-height:1.35}
 .tabs a:hover{color:var(--tx)}
 .tabs a.on{background:var(--tx);color:var(--bg);font-weight:700}
-html:not(.obr-on) .tabs a[data-tab="obr"]{display:none}
+html:not(.obr-on) .tabs a[data-tab="obr"],html.no-tg .tabs a[data-tab="grafik"],html.no-tz .tabs a[data-tab="zapis"]{display:none}
 .tabs .obc:not(:empty){display:inline-block;margin-left:6px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
 @media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
 @media (min-width:1500px){main{max-width:1240px}}
