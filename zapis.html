@@ -291,11 +291,31 @@ body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-us
 .mdd .sugg .sub{margin:0;width:100%}
 body.nocli .f.cli{display:none!important}
 body.no-load .ldr{display:none!important}
-.ld .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.lrep{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;padding:16px 20px 24px}
+.lrep[hidden]{display:none}
+.lrh{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;margin-bottom:14px}
+.lrh h2{font-size:18px;margin:0 6px 0 0}
+.lrnav{display:flex;align-items:center;gap:8px;font-weight:600;white-space:nowrap}
+.lrnow{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.lrnow[hidden]{display:none}
+.lkp{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.lkp>div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px}
+.lkp small{display:block;color:var(--mu);font-size:13px}.lkp b{font-size:22px;margin-right:6px}.lkp i{font-style:normal;font-size:12px;color:var(--mu)}
+.lrc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:12px;min-width:0}
+.lrc h3{margin:0 0 10px;font-size:14px}
+.lrg{display:grid;grid-template-columns:1.6fr 1fr;gap:12px}
+.lhb{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}
+.lhb>span:first-child{width:150px;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
+.lhb .tr{flex:1;height:10px;background:var(--bd);border-radius:5px;overflow:hidden}.lhb .tr i{display:block;height:100%}
+.lhb>b{min-width:80px;text-align:right;font-weight:600;white-space:nowrap}
+@media (max-width:1100px){.lkp{grid-template-columns:repeat(3,minmax(0,1fr))}.lrg{grid-template-columns:1fr}}
+@media (max-width:600px){.lkp{grid-template-columns:1fr 1fr}.lrep{padding:12px}}
 .ld .mt{background:var(--bg);border-radius:8px;padding:6px 12px}
 .ld .mt small{display:block;font-size:12px;color:var(--mu)}
 .ld .mt b{font-size:16px}
-.ld table{width:100%;border-collapse:separate;border-spacing:4px;table-layout:fixed;min-width:560px}
+.ld table{width:100%;border-collapse:separate;border-spacing:4px;table-layout:fixed;min-width:640px}
+.ld td small{display:block;font-size:11px;opacity:.8}
+.ld th.wk,.ld td.wk{width:78px}
 .ld .tw{overflow-x:auto}
 .ld th{font-weight:600;font-size:12px;color:var(--mu);text-align:center}
 .ld th.p,.ld td.p{text-align:left;width:96px}
@@ -402,7 +422,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <div id="setBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="uBox" class="pu" style="display:none;margin-bottom:12px"><div class="set" id="usr"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
-<div id="ldBox" style="display:none;margin-bottom:12px"><div class="set" id="load"></div></div>
+<div id="ldBox" style="display:none"></div>
 <div id="msBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="msgS"></div></div>
 <div id="stBox" style="display:none;margin-bottom:12px"><div class="set" id="stat"></div></div>
 <div class="leg">
@@ -468,6 +488,9 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 </form></dialog>
 <div id="tip" role="tooltip"></div>
 
+<div id="ldRep" class="lrep" role="dialog" aria-modal="true" aria-labelledby="ldTi" hidden>
+<div class="lrh"><h2 id="ldTi">Отчёт загрузки цеха</h2><div class="lrnav"><button type="button" id="ldP" aria-label="Предыдущая неделя">‹</button><span id="ldL"></span><button type="button" id="ldN" aria-label="Следующая неделя">›</button></div><button type="button" id="ldT" class="lrnow">Эта неделя</button><span style="flex:1"></span><button type="button" id="ldX" aria-label="Закрыть отчёт">✕</button></div>
+<div id="load"></div></div>
 <script>
 var DN=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],DNF=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
 var MN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
@@ -910,7 +933,7 @@ var cur=iso(new Date()),RS=null,RE=null,needScroll=true,nar=false,RH=36;
 /* высота строки подбирается так, чтобы день целиком помещался на экране (от 30 до 44 пикселей) */
 function calcRH(){var h=document.getElementById('hdr'),mn=document.getElementById('menu'),qr=document.getElementById('qRes'),hh=h?h.offsetHeight-mn.offsetHeight-qr.offsetHeight:120,g=document.querySelector('#days .gh'),gh=g?g.offsetHeight:72,d=document.querySelector('#days .dh'),dh=d?d.offsetHeight+16:44,n=slots().length||20;
   return Math.max(28,Math.min(44,Math.floor((innerHeight-hh-dh-gh-10)/n)))}
-function rerender(){render();if(stOpen)renderStat();if(ldOpen)renderLoad();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
+function rerender(){render();if(stOpen)renderStat();if(lrOpen)renderLoad();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
 function appVisible(){return document.getElementById('app').style.display!=='none'}
 function secOf(d){return document.querySelector('#days .day[data-d="'+d+'"]')}
 function headRng(){var dd=parseIso(cur);document.getElementById('rng').textContent=(nar||innerWidth<1500?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()].slice(0,3)+' '+dd.getFullYear():innerWidth<1800?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()]+' '+dd.getFullYear():fdate(cur))+(cur===iso(new Date())?' · сегодня':'');document.getElementById('dPick').value=cur}
@@ -1778,8 +1801,18 @@ function closeGh(){if(ghOpen){ghOpen=false;document.getElementById('ghBox').styl
 document.getElementById('stToggle').onclick=function(){stOpen=!stOpen;if(stOpen){if(setOpen){setOpen=false;applySetBox()}closeGh();if(ldOpen){ldOpen=false;applyLdBox()}}applyStBox()};
 /* ---------- загрузка на неделю ---------- */
 var ldOpen=false,ldMon=null;
-function applyLdBox(){var t=document.getElementById('ldToggle');document.getElementById('ldBox').style.display=ldOpen?'':'none';t.textContent='Отчёт загрузки цеха '+(ldOpen?'▾':'▸');t.setAttribute('aria-expanded',ldOpen);if(ldOpen)renderLoad();fitMenu()}
-document.getElementById('ldToggle').onclick=function(){var o=!ldOpen;if(o){collapseMenuSections()}ldOpen=o;applyLdBox()};
+/* отчёт загрузки цеха открывается поверх страницы, как отчёт по обращениям */
+var lrOpen=false;
+function applyLdBox(){var t=document.getElementById('ldToggle');t.textContent='Отчёт загрузки цеха';t.setAttribute('aria-expanded','false')}
+function openLoad(){lrOpen=true;menuOpen=false;applyMenu();document.getElementById('ldRep').hidden=false;renderLoad();document.getElementById('ldX').focus()}
+function closeLoad(){lrOpen=false;document.getElementById('ldRep').hidden=true}
+document.getElementById('ldToggle').onclick=openLoad;
+document.getElementById('ldX').onclick=closeLoad;
+document.addEventListener('keydown',function(e){if(lrOpen&&e.key==='Escape'&&!document.querySelector('dialog[open]'))closeLoad()});
+document.getElementById('ldP').onclick=function(){ldMon=addDays(ldMon,-7);renderLoad()};
+document.getElementById('ldN').onclick=function(){ldMon=addDays(ldMon,7);renderLoad()};
+document.getElementById('ldT').onclick=function(){ldMon=null;renderLoad()};
+applyLdBox();
 function ldMonday(s){var d=parseIso(s),w=(d.getDay()+6)%7;return addDays(s,-w)}
 /* рабочие минуты поста за день (без обеда) и сколько из них занято */
 function ldCell(p,D){var a=postAvail(p,D),c=CF(),br=c.brk||[];
@@ -1788,23 +1821,40 @@ function ldCell(p,D){var a=postAvail(p,D),c=CF(),br=c.brk||[];
   var busy=0;dayList(D).forEach(function(b){if(b.post!==p.id||st(b)==='nos')return;var s0=Math.max(b.start,c.open),e0=Math.min(b.start+b.len,end),m;if(e0<=s0)return;for(m=s0;m<e0;m+=30)if(br.indexOf(m)<0)busy+=Math.min(30,e0-m)});
   busy=Math.min(busy,work);return{off:false,work:work,busy:busy}}
 function ldH(m){var h=m/60;return (Math.round(h*2)/2).toString().replace('.',',')+' ч'}
+/* ближайшее свободное время: первые полчаса без записи на любом посту, начиная с текущего момента (на 21 день вперёд) */
+function ldNextFree(){var c=CF(),br=c.brk||[],now=new Date(),t=iso(now),nm=now.getHours()*60+now.getMinutes(),d,D,best;
+  for(d=0;d<21;d++){D=addDays(t,d);best=null;var L=dayList(D);
+    state.cfg.posts.forEach(function(p){var a=postAvail(p,D);if(!a.free&&!a.open)return;var end=a.free?MD().day:a.end,m=c.open;if(d===0)m=Math.max(m,Math.ceil(nm/30)*30);
+      for(;m+30<=end;m+=30){if(br.indexOf(m)>=0)continue;var busy=L.some(function(b){return b.post===p.id&&st(b)!=='nos'&&b.start<m+30&&b.start+b.len>m});if(!busy){if(!best||m<best.m)best={D:D,m:m,p:p};break}}});
+    if(best)return best}return null}
+function hhmm(m){return Math.floor(m/60)+':'+('0'+m%60).slice(-2)}
 function renderLoad(){if(!ldMon)ldMon=ldMonday(iso(new Date()));var P=state.cfg.posts,days=[],i,t=iso(new Date());for(i=0;i<7;i++)days.push(addDays(ldMon,i));
-  var a=parseIso(days[0]),b=parseIso(days[6]),tw=0,tb=0,dayT=days.map(function(){return{w:0,b:0}}),rows='';
-  P.forEach(function(p){rows+='<tr><td class="p">'+esc(p.name)+'</td>';days.forEach(function(D,j){var c=ldCell(p,D);
-    if(c.off){rows+='<td class="off c" data-ld="'+D+'" title="'+esc(c.why||'мастера нет на смене')+'">закрыт</td>';return}
-    var pc=c.work?Math.round(c.busy/c.work*100):0;tw+=c.work;tb+=c.busy;dayT[j].w+=c.work;dayT[j].b+=c.busy;
-    rows+='<td class="c '+(pc>=80?'l3':pc>=50?'l2':'l1')+'" data-ld="'+D+'" title="Занято '+ldH(c.busy)+' из '+ldH(c.work)+'">'+pc+'%<br>'+(c.work-c.busy?ldH(c.work-c.busy):'0')+'</td>'});rows+='</tr>'});
+  var a=parseIso(days[0]),b=parseIso(days[6]),tw=0,tb=0,dayT=days.map(function(){return{w:0,b:0,n:0}}),rows='',nb=0,nos=0,past=0,TY={};
+  document.getElementById('ldL').textContent=a.getDate()+(a.getMonth()!==b.getMonth()?' '+MN[a.getMonth()]:'')+' – '+b.getDate()+' '+MN[b.getMonth()]+' '+b.getFullYear();
+  document.getElementById('ldT').hidden=ldMon===ldMonday(t);
+  days.forEach(function(D,j){dayList(D).forEach(function(x){if(st(x)==='nos'){nos++;return}nb++;dayT[j].n++;var k=x.type||'—';TY[k]=(TY[k]||0)+(x.len||0);if(D<=t)past++})});
+  P.forEach(function(p){var pw=0,pb=0,cells='';days.forEach(function(D,j){var c=ldCell(p,D),n=dayList(D).filter(function(x){return x.post===p.id&&st(x)!=='nos'}).length;
+    if(c.off){cells+='<td class="off c" data-ld="'+D+'" title="'+esc(c.why||'мастера нет на смене')+'">закрыт</td>';return}
+    var pc=c.work?Math.round(c.busy/c.work*100):0;tw+=c.work;tb+=c.busy;pw+=c.work;pb+=c.busy;dayT[j].w+=c.work;dayT[j].b+=c.busy;
+    cells+='<td class="c '+(pc>=80?'l3':pc>=50?'l2':'l1')+'" data-ld="'+D+'" title="Занято '+ldH(c.busy)+' из '+ldH(c.work)+', записей: '+n+'">'+pc+'%<small>своб. '+(c.work-c.busy?ldH(c.work-c.busy):'0')+(n?' · '+n+' зап.':'')+'</small></td>'});
+    var pp=pw?Math.round(pb/pw*100):null;rows+='<tr><td class="p">'+esc(p.name)+'</td>'+cells+'<td class="wk '+(pp==null?'off':pp>=80?'l3':pp>=50?'l2':'l1')+'">'+(pp==null?'—':pp+'%')+'</td></tr>'});
   var best=-1,bv=101;dayT.forEach(function(x,j){if(!x.w||days[j]<t)return;var v=x.b/x.w*100;if(v<bv){bv=v;best=j}});
-  var h='<div class="ld"><div class="top"><button type="button" id="ldP" aria-label="Предыдущая неделя">‹</button><b>'+a.getDate()+(a.getMonth()!==b.getMonth()?' '+MN[a.getMonth()]:'')+' – '+b.getDate()+' '+MN[b.getMonth()]+' '+b.getFullYear()+'</b><button type="button" id="ldN" aria-label="Следующая неделя">›</button>'+(ldMon!==ldMonday(t)?'<button type="button" id="ldT">Эта неделя</button>':'')+'<span style="flex:1"></span>';
-  h+='<div class="mt"><small>Занято</small><b>'+(tw?Math.round(tb/tw*100):0)+'%</b></div><div class="mt"><small>Свободно</small><b>'+ldH(tw-tb)+'</b></div>'+(best>=0?'<div class="mt"><small>Самый свободный</small><b>'+DN[parseIso(days[best]).getDay()]+' '+parseIso(days[best]).getDate()+'</b></div>':'')+'</div>';
-  h+='<div class="tw"><table><tr><th class="p">Пост</th>'+days.map(function(D){var x=parseIso(D),cd=G.ok&&cDay(D);return '<th class="'+(D===t?'td':'')+'"'+(cd?' title="'+esc(cd.n||'')+'"':'')+'>'+DN[x.getDay()]+' '+x.getDate()+(cd&&cd.t==='short'?'*':'')+'</th>'}).join('')+'</tr>'+rows;
-  h+='<tr class="tot"><td class="p">Всего</td>'+dayT.map(function(x){return '<td>'+(x.w?Math.round(x.b/x.w*100)+'%':'—')+'</td>'}).join('')+'</tr></table></div>';
-  h+='<div class="lg"><span><i style="background:rgba(29,158,117,.35)"></i>до 50% — есть место</span><span><i style="background:rgba(239,159,39,.35)"></i>50–79%</span><span><i style="background:rgba(226,75,74,.35)"></i>от 80% — почти занято</span><span><i style="background:var(--bg);border:1px solid var(--bd)"></i>мастера нет на смене</span><span>Нажмите на клетку, чтобы открыть день</span></div></div>';
+  var nf=ldNextFree(),nfs=nf?(nf.D===t?'сегодня':nf.D===addDays(t,1)?'завтра':DN[parseIso(nf.D).getDay()]+' '+parseIso(nf.D).getDate()+' '+MN[parseIso(nf.D).getMonth()])+' '+hhmm(nf.m):'нет на 3 недели';
+  var h='<div class="lkp"><div><small>Занятость за неделю</small><b>'+(tw?Math.round(tb/tw*100):0)+'%</b><i>'+ldH(tb)+' из '+ldH(tw)+'</i></div>'
+    +'<div><small>Свободно</small><b>'+ldH(tw-tb)+'</b><i>можно записать</i></div>'
+    +'<div><small>Записей</small><b>'+nb+'</b><i>за неделю</i></div>'
+    +'<div><small>Не приехали</small><b style="color:'+(nos?'var(--danger)':'inherit')+'">'+nos+'</b><i>'+(nb+nos?Math.round(nos*100/(nb+nos))+'% от записей':'')+'</i></div>'
+    +'<div><small>Самый свободный день</small><b>'+(best>=0?DN[parseIso(days[best]).getDay()]+' '+parseIso(days[best]).getDate():'—')+'</b><i>'+(best>=0?Math.round(bv)+'% занято':'')+'</i></div>'
+    +'<div'+(nf?' class="c" data-ld="'+nf.D+'" style="cursor:pointer"':'')+'><small>Ближайшее свободное время</small><b style="font-size:18px">'+esc(nfs)+'</b><i>'+(nf?esc(nf.p.name):'')+'</i></div></div>';
+  h+='<div class="lrc ld"><h3>Загрузка постов по дням</h3><div class="tw"><table><tr><th class="p">Пост</th>'+days.map(function(D){var x=parseIso(D),cd=G.ok&&cDay(D);return '<th class="'+(D===t?'td':'')+'"'+(cd?' title="'+esc(cd.n||'')+'"':'')+'>'+DN[x.getDay()]+' '+x.getDate()+(cd&&cd.t==='short'?'*':'')+'</th>'}).join('')+'<th class="wk">Неделя</th></tr>'+rows;
+  h+='<tr class="tot"><td class="p">Всего</td>'+dayT.map(function(x){return '<td>'+(x.w?Math.round(x.b/x.w*100)+'%':'—')+(x.n?'<small>'+x.n+' зап.</small>':'')+'</td>'}).join('')+'<td class="wk">'+(tw?Math.round(tb/tw*100)+'%':'—')+'</td></tr></table></div>';
+  h+='<div class="lg"><span><i style="background:rgba(29,158,117,.35)"></i>до 50% — есть место</span><span><i style="background:rgba(239,159,39,.35)"></i>50–79%</span><span><i style="background:rgba(226,75,74,.35)"></i>от 80% — почти занято</span><span><i style="background:var(--bg);border:1px solid var(--bd)"></i>мастера нет на смене</span><span>Нажмите на клетку, чтобы открыть этот день в записи</span></div></div>';
+  var tk=Object.keys(TY).sort(function(x,y){return TY[y]-TY[x]}),tm=tk.length?TY[tk[0]]:1,ts=tk.reduce(function(s,k){return s+TY[k]},0);
+  h+='<div class="lrg"><div class="lrc"><h3>Чем занят цех · часы по видам работ</h3>'+(tk.length?tk.map(function(k){return '<div class="lhb"><span>'+esc(TN[k]||'Без вида работ')+'</span><div class="tr"><i style="width:'+Math.round(TY[k]*100/tm)+'%;background:var(--'+k+',var(--ac))"></i></div><b>'+ldH(TY[k])+' · '+Math.round(TY[k]*100/ts)+'%</b></div>'}).join(''):'<div class="sub" style="margin:0">Записей на этой неделе нет</div>')+'</div>';
+  var dmax=Math.max.apply(null,dayT.map(function(x){return x.n}).concat([1]));
+  h+='<div class="lrc"><h3>Записей по дням</h3>'+days.map(function(D,j){var x=parseIso(D);return '<div class="lhb"><span>'+DN[x.getDay()]+' '+x.getDate()+(D===t?' · сегодня':'')+'</span><div class="tr"><i style="width:'+Math.round(dayT[j].n*100/dmax)+'%;background:var(--ac)"></i></div><b>'+dayT[j].n+'</b></div>'}).join('')+'</div></div>';
   document.getElementById('load').innerHTML=h}
-document.getElementById('load').addEventListener('click',function(e){var t=e.target.closest('button,td[data-ld]');if(!t)return;
-  if(t.id==='ldP'||t.id==='ldN'){ldMon=addDays(ldMon,t.id==='ldP'?-7:7);renderLoad();return}
-  if(t.id==='ldT'){ldMon=null;renderLoad();return}
-  if(t.dataset.ld){menuOpen=false;applyMenu();goto(t.dataset.ld,true)}});
+document.getElementById('load').addEventListener('click',function(e){var t=e.target.closest('[data-ld]');if(!t)return;closeLoad();goto(t.dataset.ld,true)});
 function collapseMenuSections(){closeU();if(msOpen){msOpen=false;applyMsBox()}if(ldOpen){ldOpen=false;applyLdBox()}if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
 document.getElementById('menu').addEventListener('mousedown',function(e){var t=e.target;
   if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('#stBox')||t.closest('#ldBox')||t.closest('#msBox')||t.closest('#uBox')||t.closest('button,input,select,textarea,a,label'))return;
