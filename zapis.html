@@ -486,10 +486,10 @@ var ROLE_ORDER=['adm','sc','war','mc','head','dir','ozch','spk','atz','mech','ow
 var UID=null;
 /* Функции, открытые пока только части ролей. Чтобы открыть функцию другим, добавьте их роли в список:
    adm, sc, war, mc, head, dir, mech, owner */
-var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],obrAdd:['owner'],obrWork:['owner'],obrView:['owner'],tabG:ROLE_ORDER.filter(function(r){return r!=='atz'}),tabZ:ROLE_ORDER.filter(function(r){return r!=='atz'})};
+var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],obrAdd:['owner'],obrWork:['owner'],obrView:['owner'],obrRep:['owner'],tabG:ROLE_ORDER.filter(function(r){return r!=='atz'}),tabZ:ROLE_ORDER.filter(function(r){return r!=='atz'})};
 /* какие вкладки видит роль: «Обращения» по умолчанию — у тех, кому открыта хоть одна функция обращений */
 var TAB_L=[['tabG','График смен',''],['tabO','Обращения',''],['tabZ','Запись на сервис','']];
-var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Загрузка на неделю','',''],['stats','Статистика','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['obrAdd','Создавать обращения','кнопка «+ Обращение»',''],['obrWork','Отрабатывать обращения','перезванивать, записывать, закрывать; можно назначить ответственным',''],['obrView','Видеть все обращения','мониторинг: открытые и закрытые всех сотрудников','']];
+var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Загрузка на неделю','',''],['stats','Статистика','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['obrAdd','Создавать обращения','кнопка «+ Обращение»',''],['obrWork','Отрабатывать обращения','перезванивать, записывать, закрывать; можно назначить ответственным',''],['obrView','Видеть все обращения','мониторинг: открытые и закрытые всех сотрудников',''],['obrRep','Отчёт по обращениям','кнопка «Отчёт» во вкладке «Обращения»','']];
 function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];if(a)return a;if(k==='tabO'){var r=[];['obrAdd','obrWork','obrView'].forEach(function(x){featRoles(x).forEach(function(y){if(r.indexOf(y)<0)r.push(y)})});return r}return FEAT[k]||[]}
 function featNeed(k,r){var n=(FEAT_L.filter(function(x){return x[0]===k})[0]||[])[3];if(!n)return true;if(n==='mday')return featRoles('mday').indexOf(r)>=0;return roleBase(r).indexOf(n)>=0}
 /* владелец может сам выключить у себя функцию или вкладку (список acc.off); «Запись» у владельца всегда открыта — там вход и настройки */
@@ -522,7 +522,7 @@ window.zApi={
     ok:function(){return !!(KEY&&me())},
     sig:function(){return KEY&&me()?obSig():''},
     me:function(){var u=me();return u?{id:u.id,name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',owner:u.role==='owner'}:null},
-    f:function(){return {tab:feat('tabO'),add:feat('obrAdd')&&canWrite,work:feat('obrWork'),view:feat('obrView'),write:canWrite,book:can('edit')&&canWrite,nocli:noCli(),noph:noCli()&&me().role!=='atz'}},
+    f:function(){return {rep:feat('obrRep'),tab:feat('tabO'),add:feat('obrAdd')&&canWrite,work:feat('obrWork'),view:feat('obrView'),write:canWrite,book:can('edit')&&canWrite,nocli:noCli(),noph:noCli()&&me().role!=='atz'}},
     count:function(){return obCount()},
     list:function(){var nc=noCli(),np=nc&&me().role!=='atz';return obAll().map(function(o){var x=JSON.parse(JSON.stringify(o));if(nc)x.client='';if(np)x.phone='';x.respName=o.resp?uName(o.resp)||'—':'';x.cbName=uName(o.cb)||o.cbn||'';x.canAct=obCanAct(o);x.bkLive=!!(o.bk&&state.b[o.bk]&&live(state.b[o.bk]));return x})},
     workers:function(){return obWorkers().map(function(u){return {id:u.id,name:u.name}})},
@@ -1397,7 +1397,7 @@ function obBanUpd(){var el=document.getElementById('obBan'),o=obPending&&state.o
   document.getElementById('obBanT').innerHTML='<b>Запись по обращению № '+(o.n||'')+'</b>'+esc([noCli()?'':o.client,noCli()?'':o.phone,car,o.why].filter(Boolean).map(function(x){return ' · '+x}).join(''))+'<span class="obh"> — дважды нажмите на свободное время, данные клиента подставятся сами</span>';el.hidden=false}
 setInterval(obBanUpd,1500);
 var _openForm=openForm;openForm=function(b,pre){_openForm(b,pre);if(!b&&obPending&&state.o&&state.o[obPending]&&state.o[obPending].st!=='done'&&canWrite&&can('edit'))obFill(state.o[obPending])};
-function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),feat('tabO'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
+function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),feat('obrRep'),feat('tabO'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
 function renderOB(){var W=feat('obrWork'),V=feat('obrView'),A=feat('obrAdd'),L=obAll(),h='';
   var tabs=[];if(W)tabs.push(['mine','Мои',L.filter(function(o){return obOpen(o)&&obMine(o)}).length]);if(W||V)tabs.push(['all','Все открытые',L.filter(obOpen).length]);if(A&&!W&&!V)tabs.push(['my','Мои обращения',0]);if(W||V||A)tabs.push(['done','Закрытые',0]);if(A&&canWrite)tabs.push(['new','+ Новое',0]);
   h+='<div class="mh"><div style="flex:1;font-weight:700;font-size:16px">Обращения клиентов</div><button type="button" id="obX" aria-label="Закрыть">✕</button></div><div class="tabs2">'+tabs.map(function(t){return '<button type="button" data-obt="'+t[0]+'" class="'+(obTab===t[0]?'on':'')+'">'+t[1]+(t[2]?' · '+t[2]:'')+'</button>'}).join('')+'</div>';
