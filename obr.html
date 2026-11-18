@@ -28,19 +28,9 @@ button:disabled{opacity:.5;cursor:default}
 input,select,textarea{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);min-width:0}
 a{color:var(--ac)}
 .hrow{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;padding-bottom:12px}
-.tsw{display:inline-flex;align-items:center;gap:6px;flex:none}
-.tsw .tar{position:relative;width:38px;height:38px;padding:0;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:18px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,transform .1s}
-.tsw .tar:hover{background:var(--bd)}.tsw .tar:active{transform:scale(.92)}
-.tsw .tar[hidden]{display:none}
-.tsw .twin{position:relative;height:38px;width:196px;overflow:hidden;border-radius:10px;background:var(--card);border:1px solid var(--bd)}
-.tsw .tlb{position:absolute;inset:0 0 6px;display:flex;align-items:center;justify-content:center;gap:7px;font-weight:700;font-size:15px;white-space:nowrap}
-.tsw .tdots{position:absolute;left:0;right:0;bottom:4px;display:flex;gap:4px;justify-content:center}
-.tsw .tdots i{width:5px;height:4px;border-radius:2px;background:var(--bd);transition:all .3s}.tsw .tdots i.on{width:14px;background:var(--ac)}
-.tsw .obc{display:none}
-.tsw .tlb .obc.vis:not(:empty){display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
-.tsw .tar .obc.vis:not(:empty){display:block;position:absolute;top:-6px;right:-6px;min-width:16px;padding:0 4px;border-radius:8px;background:var(--danger);color:#fff;font-size:11px;font-weight:700;line-height:16px;text-align:center}
-@media (max-width:1499px){.tsw .twin{width:150px}}
-@media (max-width:600px){.tsw .twin{width:126px}.tsw .tlb{font-size:14px}.tsw .tar{width:34px}}
+.tswph{flex:none;height:38px;width:284px;opacity:0;pointer-events:auto}
+@media (max-width:1499px){.tswph{width:238px}}
+@media (max-width:600px){.tswph{width:206px}}
 .seg{display:inline-flex;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:3px;gap:2px;flex:none}
 .seg button{border:0;padding:5px 11px;border-radius:9px;background:transparent;color:var(--mu);font-weight:600;white-space:nowrap}
 .seg button.on{background:var(--ac);color:#fff}
@@ -189,7 +179,7 @@ td a.tel{color:inherit;text-decoration:none}
 <main>
 <div class="hrow">
 <h1 class="vh">Обращения клиентов</h1>
-<nav class="tsw" aria-label="Разделы" data-me="obr"><button type="button" class="tar" data-dir="-1" aria-label="Предыдущий раздел">‹<span class="obc"></span></button><div class="twin"><div class="tlb"><span class="tn"></span><span class="obc"></span></div><div class="tdots" aria-hidden="true"></div></div><button type="button" class="tar" data-dir="1" aria-label="Следующий раздел">›<span class="obc"></span></button></nav>
+<div class="tswph" aria-hidden="true"></div>
 <div class="seg" id="flt" role="group" aria-label="Какие обращения показать"></div>
 <div class="dnav" role="group" aria-label="День"><button type="button" id="dPrev" aria-label="Предыдущий день">‹</button><div class="rng"><span id="dL"></span><button type="button" id="calB" class="cal" aria-label="Выбрать дату" title="Выбрать дату"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button><input type="date" id="dPick" class="dpk" tabindex="-1" aria-hidden="true"></div><button type="button" id="dNext" aria-label="Следующий день">›</button><button type="button" id="dToday">Сегодня</button></div>
 <div class="qw"><input type="text" id="q" placeholder="Поиск: №, имя, телефон, марка, причина…" autocomplete="off" aria-label="Поиск по обращениям"><button type="button" id="qX" aria-label="Очистить поиск" hidden>✕</button></div>
@@ -462,19 +452,7 @@ $('uB').onclick=function(e){e.stopPropagation();uMenuSet($('uMenu').hidden)};
 $('uPw').onclick=function(){uMenuSet(false);try{parent.showTab('zapis');parent.document.getElementById('fz').contentWindow.zApi.myPw()}catch(e){}};
 $('uOut').onclick=function(){uMenuSet(false);try{parent.document.getElementById('fz').contentWindow.zApi.logout();parent.showTab('zapis')}catch(e){}};
 document.addEventListener('pointerdown',function(e){if(!e.target.closest('.uchip'))uMenuSet(false)},true);
-/* переключатель разделов: открытый раздел по центру, стрелки — соседние; переход со сдвигом (анимацию страниц делает общая страница) */
-(function(){var ORD=['grafik','obr','zapis'],NM={grafik:['График смен','График'],obr:['Обращения','Обращения'],zapis:['Запись на сервис','Запись']},nav=document.querySelector('.tsw');if(!nav)return;var me=nav.dataset.me;
-  function list(){var c=document.documentElement.classList;return ORD.filter(function(k){return k===me||(k==='obr'?c.contains('obr-on'):k==='grafik'?!c.contains('no-tg'):!c.contains('no-tz'))})}
-  function nb(d){var L=list(),i=L.indexOf(me);return L[(i+d+L.length)%L.length]}
-  function upd(){var L=list(),i=L.indexOf(me),one=L.length<2,w=innerWidth<1500?1:0;nav.querySelector('.tn').textContent=NM[me][w];
-    [].forEach.call(nav.querySelectorAll('.tar'),function(b){b.hidden=one;var t=nb(+b.dataset.dir);b.title=NM[t][0];b.setAttribute('aria-label','Перейти: '+NM[t][0]);b.querySelector('.obc').classList.toggle('vis',!one&&t==='obr'&&!(L.length===2&&b.dataset.dir==='-1'))});
-    nav.querySelector('.tlb .obc').classList.toggle('vis',me==='obr');
-    nav.querySelector('.tdots').innerHTML=one?'':L.map(function(k){return '<i class="'+(k===me?'on':'')+'"></i>'}).join('')}
-  nav.addEventListener('click',function(e){var b=e.target.closest('.tar');if(!b)return;var d=+b.dataset.dir;try{if(window.parent!==window&&parent.tabGo){parent.tabGo(nb(d),d);return}}catch(x){}location.href='index.html#'+nb(d)});
-  /* въезд названия при переключении */
-  window.tabIn=function(d){upd();var l=nav.querySelector('.tlb');try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;l.animate([{transform:'translateX('+(d>0?100:-100)+'%)'},{transform:'none'}],{duration:350,easing:'cubic-bezier(.4,0,.2,1)'})}catch(x){}};
-  window.tabOut=function(d){var l=nav.querySelector('.tlb');try{l.animate([{transform:'none'},{transform:'translateX('+(d>0?-100:100)+'%)'}],{duration:350,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'}).finished.then(function(a){a.cancel()})}catch(x){}};
-  window.tabsUpd=upd;new MutationObserver(upd).observe(document.documentElement,{attributes:true,attributeFilter:['class']});addEventListener('resize',upd);upd()})();
+/* переключатель разделов рисует общая страница (index.html) поверх этого места: он не двигается при смене раздела */
 
 
 /* обновляем таблицу, когда данные поменялись (здесь, на другом устройстве или в записи), и раз в минуту — время */
