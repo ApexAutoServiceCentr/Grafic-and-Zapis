@@ -32,7 +32,7 @@ a{color:var(--ac)}
 .tabs a{padding:5px 12px;border-radius:9px;text-decoration:none;color:var(--mu);font-weight:600;font-size:15px;white-space:nowrap;line-height:1.35}
 .tabs a:hover{color:var(--tx)}
 .tabs a.on{background:var(--tx);color:var(--bg);font-weight:700}
-html:not(.obr-on) .tabs a[data-tab="obr"]{display:none}
+html:not(.obr-on) .tabs a[data-tab="obr"],html.no-tg .tabs a[data-tab="grafik"],html.no-tz .tabs a[data-tab="zapis"]{display:none}
 .tabs .obc:not(:empty){display:inline-block;margin-left:6px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
 @media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
 .seg{display:inline-flex;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:3px;gap:2px;flex:none}
@@ -110,7 +110,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .cbl div.cur{font-weight:700;color:var(--ac)}
 .ph{display:flex;align-items:center;border:1px solid var(--bd);border-radius:10px;background:var(--bg);cursor:text}.ph:focus-within{outline:2px solid var(--ac);outline-offset:-1px}.ph .pre{padding-left:10px;font-weight:600;font-size:16px;color:var(--tx);user-select:all}.ph input{flex:1;min-width:0;border:none!important;background:transparent;outline:none;padding-left:6px}
 td a.tel{color:inherit;text-decoration:none}
-.del{margin-left:auto;color:var(--danger)!important;border-color:var(--danger)!important;background:transparent!important}
+.dxi{position:sticky;left:14px;max-width:calc(100vw - 80px)}
+.del{color:var(--danger)!important;border-color:var(--danger)!important;background:transparent!important}
 .og .w2{grid-column:span 2}
 .foot{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
 .foot .mu{font-size:13px}
@@ -165,24 +166,26 @@ var TYK={},delArm=null;
 
 function tag(o){if(o.st==='done')return '<span class="ot done">'+(RES[o.res]||'Закрыто')+'</span>';var nr=(o.tries||[]).filter(function(x){return x.k==='wip'||x.nr}).length;if(o.st==='later')return '<span class="ot later">'+(nr?'Недозвон ×'+nr+' · п':'П')+'ерезвонить '+hm(o.later)+'</span>';if(o.st==='wip')return '<span class="ot wip">Недозвон ×'+nr+'</span>';return '<span class="ot new">Новое</span>'}
 /* что видит сотрудник: владелец и «видеть все» — всё; кто отрабатывает — все открытые и закрытые с его участием; кто только создаёт — свои */
-function visible(o,f,me){if(me.owner||f.view)return true;if(f.work)return o.st!=='done'||o.resp===me.id||o.cb===me.id||o.byU===me.id;return o.byU===me.id}
+/* «Все» и «Открытые» — все обращения; «Закрытые» — свои (кто принял, вёл или закрыл); владельцу и «видеть все» — все закрытые */
+function visible(o,f,me){return true}
+function myDone(o,f,me){return me.owner||f.view||o.resp===me.id||o.cb===me.id||o.byU===me.id}
 function mine(o,f,me){return f.work?(o.st!=='done'&&(o.resp===me.id||!o.resp)):o.byU===me.id}
-function filters(f){return [['all','Все'],['open','Открытые'],['done','Закрытые']]}
+function filters(f,me){var r=[['all','Все'],['open','Открытые']];if(!me||me.role!=='atz')r.push(['done','Закрытые']);return r}
 function match(o,s){if(!s)return true;var d=digits(s);if(d&&d.length>=3&&digits(o.phone).indexOf(d)>=0)return true;if(/^\d+$/.test(s)&&String(o.n)===s)return true;
   return [o.client,o.brand,o.model,o.year,o.why,o.desc,o.by,o.respName,o.way,o.note,o.cbName].join(' ').toLowerCase().indexOf(s.toLowerCase())>=0}
 
 function render(){var z=Z();
   if(!z||!z.ok()){$('msg').hidden=false;$('msg').textContent=z?'Войдите во вкладке «Запись».':'Загрузка…';$('tw').hidden=true;$('uChip').hidden=true;$('nB').hidden=true;$('flt').innerHTML='';return}
   var f=z.f(),me=z.me(),L=z.list().filter(function(o){return visible(o,f,me)}),now=Date.now();
-  if(!(f.add||f.work||f.view||me.owner)){$('msg').hidden=false;$('msg').textContent='Обращения вам пока не открыты.';$('tw').hidden=true;return}
+  if(!(f.tab||me.owner)){$('msg').hidden=false;$('msg').textContent='Обращения вам пока не открыты.';$('tw').hidden=true;return}
   // шапка
-  var FL=filters(f);if(!FL.some(function(x){return x[0]===flt}))flt='all';
+  var FL=filters(f,me);if(!FL.some(function(x){return x[0]===flt}))flt='all';
   var cnt={open:L.filter(function(o){return o.st!=='done'}).length};try{(Z().lists().obTypes||Z().lists().types||[]).forEach(function(t){TYK[t.k]=1})}catch(x){}
   $('flt').innerHTML=FL.map(function(x){return '<button type="button" data-f="'+x[0]+'" class="'+(flt===x[0]?'on':'')+'" aria-pressed="'+(flt===x[0])+'">'+x[1]+(cnt[x[0]]?'<b>'+cnt[x[0]]+'</b>':'')+'</button>'}).join('');
   $('nB').hidden=!f.add;
   $('uChip').hidden=false;$('uB').innerHTML='👤<span class="un"> '+esc(me.name)+'</span> ▾';$('uB').title=me.name;$('uRole').textContent=me.name+' · '+me.roleName;
   // строки
-  var list=L.filter(function(o){if(flt==='open')return o.st!=='done';if(flt==='done')return o.st==='done';if(flt==='mine')return mine(o,f,me);return true}).filter(function(o){return match(o,q.trim())});
+  var list=L.filter(function(o){if(flt==='open')return o.st!=='done';if(flt==='done')return o.st==='done'&&myDone(o,f,me);if(flt==='mine')return mine(o,f,me);return true}).filter(function(o){return match(o,q.trim())});
   list.sort(function(a,b){return (b.n||0)-(a.n||0)||b.t-a.t});
   $('msg').hidden=!!list.length;$('tw').hidden=!list.length;
   if(!list.length){$('msg').textContent=q.trim()?'Ничего не найдено.':flt==='done'?'Закрытых обращений пока нет.':flt==='all'?'Обращений пока нет.':'Открытых обращений нет.';return}
@@ -193,7 +196,7 @@ function render(){var z=Z();
     h+='<tr class="'+cls+'" data-id="'+o.id+'" tabindex="0" aria-expanded="'+(exp===o.id)+'"><td class="n">'+(o.n||'')+'</td><td class="dt">'+dt(o.t)+'</td><td>'+esc(o.way)+'</td><td'+(o.resp?'':' class="mu"')+'>'+(o.resp?esc(o.respName):'—')+'</td><td>'+esc(o.brand)+'</td><td>'+esc(o.model)+'</td><td>'+esc(o.year||'')+'</td>'
       +(nc?'':'<td>'+esc(o.client)+'</td><td>'+(ph.length>=10?'<a class="tel" href="tel:+7'+ph.slice(-10)+'" data-tel>'+esc(o.phone)+'</a>':esc(o.phone))+'</td>')
       +'<td>'+(o.why?(TYK[o.wk]?'<span class="wk '+o.wk+'">'+esc(o.why)+'</span>':esc(o.why)):'')+'</td><td class="cm"><div class="c" title="'+esc(o.desc)+'">'+esc(o.desc)+'</div></td><td>'+tag(o)+'</td><td class="mu">'+(open?dur(o.t,now):'за '+dur(o.t,o.ct))+'</td></tr>';
-    if(exp===o.id)h+='<tr class="dx"><td colspan="'+cols.length+'">'+detail(o,f)+'</td></tr>'});
+    if(exp===o.id)h+='<tr class="dx"><td colspan="'+cols.length+'"><div class="dxi">'+detail(o,f)+'</div></td></tr>'});
   $('tb').innerHTML=h;flash=null;
   $('more').hidden=list.length<=lim;$('more').textContent='Показать ещё ('+(list.length-lim)+')';
   if($('lSel'))enhanceSelect('lSel');
@@ -210,7 +213,7 @@ function detail(o,f){var h='<div class="hist">';
       +'<input type="text" data-c maxlength="200" aria-label="Комментарий" placeholder="'+(k==='other'?'Что сделали (обязательно)':'Комментарий')+'"><button type="button" class="pri" data-ok="'+o.id+'">'+(k==='later'?'Сохранить':'Закрыть обращение')+'</button><button type="button" data-no>Отмена</button></div>'}
     else h+='<div class="acts">'+(f.book?'<button type="button" class="pri" data-a="book">Записать</button>':'')+'<button type="button" data-a="cons">Проконсультирован</button><button type="button" data-a="later">Перезвонить</button><button type="button" data-a="other">Другое</button></div>'}
   else if(o.st!=='done'&&f.work)h+='<div class="mu" style="font-size:13px">Обращение ведёт '+esc(o.respName)+'.</div>';
-  var me=Z()&&Z().me();if(me&&me.owner&&f.write)h+=delArm===o.id?'<div class="acts" style="margin-top:8px;justify-content:flex-end"><span>Удалить обращение № '+(o.n||'')+'? Восстановить будет нельзя.</span><button type="button" class="del" style="margin-left:0" data-delok>Да, удалить</button><button type="button" data-delno>Отмена</button></div>':'<div class="acts" style="margin-top:8px"><button type="button" class="del" data-del>Удалить обращение</button></div>';
+  var me=Z()&&Z().me();if(me&&me.owner&&f.write)h+=delArm===o.id?'<div class="acts" style="margin-top:8px"><span>Удалить обращение № '+(o.n||'')+'? Восстановить будет нельзя.</span><button type="button" class="del" style="margin-left:0" data-delok>Да, удалить</button><button type="button" data-delno>Отмена</button></div>':'<div class="acts" style="margin-top:8px"><button type="button" class="del" data-del>Удалить обращение</button></div>';
   if(err)h+='<div class="err">'+esc(err)+'</div>';
   return h}
 
