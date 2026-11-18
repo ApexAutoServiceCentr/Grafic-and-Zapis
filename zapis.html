@@ -370,6 +370,11 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 .obd .oacts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center}
 .obd .oacts button{padding:4px 9px;font-size:13px}
 .obd .oacts input,.obd .oacts select{padding:4px 8px;font-size:13px;width:auto}
+.obban{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;border-radius:12px;background:var(--card);border:1px solid var(--ac);box-shadow:0 8px 24px rgba(0,0,0,.3);font-size:14px}
+.obban[hidden]{display:none}
+.obban .obh{color:var(--mu)}
+.obban button{padding:5px 10px;font-size:13px;flex:none}
+@media (max-width:700px){.obban .obh{display:none}}
 </style>
 </head>
 <body class="ro">
@@ -422,6 +427,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 
 <div id="app" style="display:none">
 <div id="days"></div>
+<div id="obBan" class="obban" role="status" hidden><span id="obBanT"></span><button type="button" id="obBanX">Отменить</button></div>
 </div>
 </main>
 
@@ -430,7 +436,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <dialog id="pkDlg" class="mdd"><div class="dlg" id="pkBody"></div></dialog>
 <dialog id="mdDlg" class="mdd"><div class="dlg" id="mdBody"></div></dialog>
 <div id="printArea"></div>
-<dialog id="dlg" onclose="setTimeout(function(){obPending=null},0)"><form method="dialog" class="dlg" id="frm" autocomplete="off">
+<dialog id="dlg"><form method="dialog" class="dlg" id="frm" autocomplete="off">
 <h3 id="fTitle">Новая запись</h3>
 <div class="fg">
 <div class="f"><label for="fDate">Дата</label><input type="date" id="fDate" required></div>
@@ -517,7 +523,7 @@ window.zApi={
     lists:function(){return {way:OB_WAY,why:OB_WHY,res:OB_RES,brands:BRANDS,types:TYPES,obTypes:OB_TY}},
     del:function(id){return obDel(id)},
     create:function(f){return obCreate(f||{})},
-    act:function(id,k,c,lv){return obDo(id,k,c,lv)},
+    act:function(id,k,c,lv,nr){return obDo(id,k,c,lv,nr)},
     book:function(id){return obBook(id)},
     openBk:function(id){var bk=state.b[id];if(!bk||!live(bk))return;obShell('zapis');goto(bk.date,true);openForm(bk)},
     logout:function(){doLogout()},
@@ -1273,7 +1279,7 @@ document.getElementById('fSave').onclick=function(){
   d.id=id;d.u=now();d.ub=u.name;d.ui=UID;d.c=old.c||d.u;
   d.h=(old.h||[]).concat([edId?{t:d.u,u:UID,n:u.name,a:'e',ch:ch}:{t:d.u,u:UID,n:u.name,a:'c'}]).slice(-60);
   state.b[id]=d;
-  if(obPending&&!edId&&state.o&&state.o[obPending]){var ob1=JSON.parse(JSON.stringify(state.o[obPending]));if(ob1.st!=='done'){ob1.st='done';ob1.res='book';ob1.ct=now();ob1.cb=UID;ob1.cbn=u.name;ob1.bk=id;if(!ob1.resp)ob1.resp=UID;ob1.u=now();state.o[ob1.id]=ob1}}obPending=null;
+  if(obPending&&!edId&&state.o&&state.o[obPending]){var ob1=JSON.parse(JSON.stringify(state.o[obPending]));if(ob1.st!=='done'){ob1.st='done';ob1.res='book';ob1.ct=now();ob1.cb=UID;ob1.cbn=u.name;ob1.bk=id;if(!ob1.resp)ob1.resp=UID;ob1.u=now();state.o[ob1.id]=ob1}}obPending=null;obBanUpd();
   try{localStorage.removeItem('zap-by')}catch(x){}
   var jump=d.date!==(old.date||cur);
   dlg.close();commit();if(jump)goto(d.date,true);
@@ -1343,7 +1349,7 @@ document.getElementById('msgS').addEventListener('click',function(e){var b=e.tar
 /* ---------- обращения клиентов (вместо таблицы «Обзвон сервис») ---------- */
 var OB_WAY=['Звонок','WhatsApp','Визит','Instagram','Почта','Другое'];
 var OB_WHY=['ТО','Замена масла','Диагностика','Вопрос по сервису','Запчасти','Шиномонтаж','Ремонт','Гарантия','Другое'];
-var OB_TY=TYPES.concat([{k:'df',n:'Дефектовка после ДТП'},{k:'zc',n:'Запчасти'},{k:'dr',n:'Другое'}]);
+var OB_TY=TYPES.concat([{k:'zc',n:'Запчасти'},{k:'dr',n:'Другое'}]);
 var OB_RES={book:'Записан',cons:'Проконсультирован',other:'Другое'};
 var obTab='mine',obArm=null,obPending=null;
 function obAll(){var r=[],k,o=state.o||{};for(k in o)if(!o[k].del)r.push(o[k]);return r}
@@ -1364,20 +1370,27 @@ function obCreate(f){if(!(KEY&&me()&&feat('obrAdd')&&canWrite))return {e:'Нет
   var n=0;obAll().forEach(function(o){if(o.n>n)n=o.n});var o={id:'o'+uid(),n:n+1,t:now(),by:u.name,byU:UID,way:OB_WAY.indexOf(f.way)>=0?f.way:'Звонок',why:String(f.why||'').trim().slice(0,60),wk:OB_TY.some(function(t){return t.k===f.wk})?f.wk:'',year:/^\d{4}$/.test(String(f.year||''))?String(f.year):'',resp:'',client:cl,phone:pd.length>=10?'+7 '+phFmt(pd.slice(-10)):'',brand:String(f.brand||'').slice(0,30),model:String(f.model||'').trim().slice(0,40),desc:String(f.desc||'').trim().slice(0,300),st:'new',tries:[]};
   obSave(o);return {id:o.id,n:o.n}}
 function obCanAct(o){var u=me();return !!(o&&u&&feat('obrWork')&&canWrite&&obOpen(o)&&(o.resp===UID||!o.resp||u.role==='owner'))}
-function obDo(id,k,c,lv){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))return 'Нет прав или обращение уже закрыто';o=JSON.parse(JSON.stringify(o));c=String(c||'').trim().slice(0,200);
+function obDo(id,k,c,lv,nr){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))return 'Нет прав или обращение уже закрыто';o=JSON.parse(JSON.stringify(o));c=String(c||'').trim().slice(0,200);
   if(k==='take'){if(o.resp)return '';o.resp=UID;obSave(o);return ''}
   if(k==='other'&&!c)return 'Напишите, что сделали';
   if(!o.resp)o.resp=UID;
   if(k==='wip'){o.st='wip';o.tries=(o.tries||[]).concat([{t:now(),n:u.name,k:'wip',c:c}])}
-  else if(k==='later'){var v=lv||'60',at;if(v==='t10'){var d=new Date();d.setDate(d.getDate()+1);d.setHours(10,0,0,0);at=d.getTime()}else at=now()+(+v||60)*60000;o.st='later';o.later=at;o.tries=(o.tries||[]).concat([{t:now(),n:u.name,k:'later',at:at,c:c}])}
+  else if(k==='later'){var v=lv||'60',at;if(nr)nr=true;if(v==='t10'){var d=new Date();d.setDate(d.getDate()+1);d.setHours(10,0,0,0);at=d.getTime()}else at=now()+(+v||60)*60000;o.st='later';o.later=at;o.tries=(o.tries||[]).concat([nr?{t:now(),n:u.name,k:'later',nr:true,at:at,c:c}:{t:now(),n:u.name,k:'later',at:at,c:c}])}
   else if(k==='cons'||k==='other'){o.st='done';o.res=k;o.ct=now();o.cb=UID;o.cbn=u.name;o.note=c}
   else return 'Неизвестное действие';
   obSave(o);return ''}
 function obDel(id){var u=me(),o=state.o&&state.o[id];if(!u||u.role!=='owner'||!canWrite)return 'Удалять может только владелец';if(!o)return '';o=JSON.parse(JSON.stringify(o));o.del=true;obSave(o);return ''}
 function obShell(k){try{if(window.parent!==window&&parent.showTab&&parent.document.getElementById('fo')){parent.showTab(k);return true}}catch(e){}return false}
-function obBook(id){var o=state.o&&state.o[id];if(!obCanAct(o)||!can('edit'))return 'Нет прав записывать';obShell('zapis');var d0=document.getElementById('obDlg');if(d0.open)d0.close();
-  obPending=o.id;var bm={brand:o.brand==='Другое'?'':o.brand,model:o.model};openForm(null,{date:cur});
-  sv('fClient',o.client||'');if(o.phone)setPhone(o.phone);sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');fillModels();var tyOk=TYPES.some(function(x){return x.k===o.wk});if(tyOk){setType(o.wk);tonClose()}if(o.year)sv('fYear',o.year);sv('fDesc',tyOk?(o.desc||''):[o.why,o.desc].filter(Boolean).join(': '));if(o.way==='WhatsApp'||o.way==='Instagram')setSrc('online');else if(o.way==='Визит')setSrc('visit');else setSrc('call');return ''}
+/* «Записать» из обращения: переходим в таблицу записи, внизу — плашка с клиентом; карточка открывается, когда выберут время */
+function obBook(id){var o=state.o&&state.o[id];if(!obCanAct(o)||!can('edit'))return 'Нет прав записывать';var d0=document.getElementById('obDlg');if(d0.open)d0.close();
+  obPending=o.id;obBanUpd();obShell('zapis');return ''}
+function obFill(o){var bm={brand:o.brand==='Другое'?'':o.brand,model:o.model};
+  sv('fClient',o.client||'');if(o.phone)setPhone(o.phone);sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');fillModels();var tyOk=TYPES.some(function(x){return x.k===o.wk});if(tyOk){setType(o.wk);tonClose()}if(o.year)sv('fYear',o.year);sv('fDesc',tyOk?(o.desc||''):[o.why,o.desc].filter(Boolean).join(': '));if(o.way==='WhatsApp'||o.way==='Instagram')setSrc('online');else if(o.way==='Визит')setSrc('visit');else setSrc('call')}
+function obBanUpd(){var el=document.getElementById('obBan'),o=obPending&&state.o&&state.o[obPending];if(o&&(o.del||o.st==='done'||!(KEY&&me()))){obPending=null;o=null}
+  if(!o){el.hidden=true;return}var car=[o.brand,o.model,o.year].filter(Boolean).join(' ');
+  document.getElementById('obBanT').innerHTML='<b>Запись по обращению № '+(o.n||'')+'</b>'+esc([noCli()?'':o.client,noCli()?'':o.phone,car,o.why].filter(Boolean).map(function(x){return ' · '+x}).join(''))+'<span class="obh"> — дважды нажмите на свободное время, данные клиента подставятся сами</span>';el.hidden=false}
+setInterval(obBanUpd,1500);
+var _openForm=openForm;openForm=function(b,pre){_openForm(b,pre);if(!b&&obPending&&state.o&&state.o[obPending]&&state.o[obPending].st!=='done'&&canWrite&&can('edit'))obFill(state.o[obPending])};
 function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
 function renderOB(){var W=feat('obrWork'),V=feat('obrView'),A=feat('obrAdd'),L=obAll(),h='';
   var tabs=[];if(W)tabs.push(['mine','Мои',L.filter(function(o){return obOpen(o)&&obMine(o)}).length]);if(W||V)tabs.push(['all','Все открытые',L.filter(obOpen).length]);if(A&&!W&&!V)tabs.push(['my','Мои обращения',0]);if(W||V||A)tabs.push(['done','Закрытые',0]);if(A&&canWrite)tabs.push(['new','+ Новое',0]);
@@ -1421,6 +1434,7 @@ document.getElementById('obBody').addEventListener('click',function(e){var t=e.t
     var r1=obDo(o.id,k,c,(document.querySelector('#obBody [data-obl]')||{}).value);if(r1&&k==='other'&&ci2){ci2.placeholder=r1;ci2.focus();return}
     obArm=null;renderOB()}});
 document.getElementById('obDlg').addEventListener('click',function(e){if(e.target===this)this.close()});
+document.getElementById('obBanX').onclick=function(){obPending=null;obBanUpd()};
 /* ---------- перенести клиентов ---------- */
 function pkWhy(b){var p=state.cfg.posts[postIdx(b.post)];if(!p)return 'пост удалён';var a=postAvail(p,b.date);
   if(a.free)return '';if(!a.open)return a.why;if(b.start+b.len>a.end)return a.short?'Сокращённый день: мастер до '+fm(a.end):'После '+fm(a.end)+' никто не дежурит';return ''}
