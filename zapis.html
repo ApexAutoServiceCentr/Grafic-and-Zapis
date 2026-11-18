@@ -214,7 +214,7 @@ body.ro .eo{display:none!important}
 .tabs a{padding:5px 12px;border-radius:9px;text-decoration:none;color:var(--mu);font-weight:600;font-size:15px;white-space:nowrap;line-height:1.35}
 .tabs a:hover{color:var(--tx)}
 .tabs a.on{background:var(--tx);color:var(--bg);font-weight:700}
-html:not(.obr-on) .tabs a[data-tab="obr"]{display:none}
+html:not(.obr-on) .tabs a[data-tab="obr"],html.no-tg .tabs a[data-tab="grafik"],html.no-tz .tabs a[data-tab="zapis"]{display:none}
 .tabs .obc:not(:empty){display:inline-block;margin-left:6px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-size:12px;line-height:18px;text-align:center}
 @media (max-width:1499px){.tabs .tl{display:none}.tabs a{padding:5px 10px}}
 body.no-edit .pe,body.no-del .pdl,body.no-stats .ps,body.no-set .pset,body.no-users .pu{display:none!important}
@@ -486,9 +486,11 @@ var ROLE_ORDER=['adm','sc','war','mc','head','dir','ozch','spk','atz','mech','ow
 var UID=null;
 /* Функции, открытые пока только части ролей. Чтобы открыть функцию другим, добавьте их роли в список:
    adm, sc, war, mc, head, dir, mech, owner */
-var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],obrAdd:['owner'],obrWork:['owner'],obrView:['owner']};
+var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],obrAdd:['owner'],obrWork:['owner'],obrView:['owner'],tabG:ROLE_ORDER.filter(function(r){return r!=='atz'}),tabZ:ROLE_ORDER.filter(function(r){return r!=='atz'})};
+/* какие вкладки видит роль: «Обращения» по умолчанию — у тех, кому открыта хоть одна функция обращений */
+var TAB_L=[['tabG','График смен',''],['tabO','Обращения',''],['tabZ','Запись на сервис','']];
 var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Загрузка на неделю','',''],['stats','Статистика','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['obrAdd','Создавать обращения','кнопка «+ Обращение»',''],['obrWork','Отрабатывать обращения','перезванивать, записывать, закрывать; можно назначить ответственным',''],['obrView','Видеть все обращения','мониторинг: открытые и закрытые всех сотрудников','']];
-function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];return a||FEAT[k]||[]}
+function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];if(a)return a;if(k==='tabO'){var r=[];['obrAdd','obrWork','obrView'].forEach(function(x){featRoles(x).forEach(function(y){if(r.indexOf(y)<0)r.push(y)})});return r}return FEAT[k]||[]}
 function featNeed(k,r){var n=(FEAT_L.filter(function(x){return x[0]===k})[0]||[])[3];if(!n)return true;if(n==='mday')return featRoles('mday').indexOf(r)>=0;return roleBase(r).indexOf(n)>=0}
 function feat(k){var u=me();if(!u)return false;if(u.role==='owner')return true;return featRoles(k).indexOf(u.role)>=0&&featNeed(k,u.role)}
 function me(){var u=UID&&state.users&&state.users[UID];return u&&!u.del?u:null}
@@ -518,7 +520,7 @@ window.zApi={
     ok:function(){return !!(KEY&&me())},
     sig:function(){return KEY&&me()?obSig():''},
     me:function(){var u=me();return u?{id:u.id,name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',owner:u.role==='owner'}:null},
-    f:function(){return {add:feat('obrAdd')&&canWrite,work:feat('obrWork'),view:feat('obrView'),write:canWrite,book:can('edit')&&canWrite,nocli:noCli()}},
+    f:function(){return {tab:feat('tabO'),add:feat('obrAdd')&&canWrite,work:feat('obrWork'),view:feat('obrView'),write:canWrite,book:can('edit')&&canWrite,nocli:noCli()}},
     count:function(){return obCount()},
     list:function(){var nc=noCli();return obAll().map(function(o){var x=JSON.parse(JSON.stringify(o));if(nc){x.client='';x.phone=''}x.respName=o.resp?uName(o.resp)||'—':'';x.cbName=uName(o.cb)||o.cbn||'';x.canAct=obCanAct(o);x.bkLive=!!(o.bk&&state.b[o.bk]&&live(state.b[o.bk]));return x})},
     workers:function(){return obWorkers().map(function(u){return {id:u.id,name:u.name}})},
@@ -532,7 +534,7 @@ window.zApi={
     myPw:function(){openMyPw()}
   }
 };
-window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),ob:feat('obrAdd')||feat('obrWork')||feat('obrView')}};
+window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),ob:feat('tabO'),tg:feat('tabG'),tz:feat('tabZ')}};
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
 var KINDS={me:'механик',el:'электрик'};
 function pad(n){return n<10?'0'+n:''+n}
@@ -1393,7 +1395,7 @@ function obBanUpd(){var el=document.getElementById('obBan'),o=obPending&&state.o
   document.getElementById('obBanT').innerHTML='<b>Запись по обращению № '+(o.n||'')+'</b>'+esc([noCli()?'':o.client,noCli()?'':o.phone,car,o.why].filter(Boolean).map(function(x){return ' · '+x}).join(''))+'<span class="obh"> — дважды нажмите на свободное время, данные клиента подставятся сами</span>';el.hidden=false}
 setInterval(obBanUpd,1500);
 var _openForm=openForm;openForm=function(b,pre){_openForm(b,pre);if(!b&&obPending&&state.o&&state.o[obPending]&&state.o[obPending].st!=='done'&&canWrite&&can('edit'))obFill(state.o[obPending])};
-function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
+function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),feat('tabO'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
 function renderOB(){var W=feat('obrWork'),V=feat('obrView'),A=feat('obrAdd'),L=obAll(),h='';
   var tabs=[];if(W)tabs.push(['mine','Мои',L.filter(function(o){return obOpen(o)&&obMine(o)}).length]);if(W||V)tabs.push(['all','Все открытые',L.filter(obOpen).length]);if(A&&!W&&!V)tabs.push(['my','Мои обращения',0]);if(W||V||A)tabs.push(['done','Закрытые',0]);if(A&&canWrite)tabs.push(['new','+ Новое',0]);
   h+='<div class="mh"><div style="flex:1;font-weight:700;font-size:16px">Обращения клиентов</div><button type="button" id="obX" aria-label="Закрыть">✕</button></div><div class="tabs2">'+tabs.map(function(t){return '<button type="button" data-obt="'+t[0]+'" class="'+(obTab===t[0]?'on':'')+'">'+t[1]+(t[2]?' · '+t[2]:'')+'</button>'}).join('')+'</div>';
@@ -1669,9 +1671,12 @@ document.getElementById('usr').addEventListener('click',async function(e){var t=
 /* ---------- доступ к функциям (только владелец) ---------- */
 var usrOpen=false,accOpen=false,ACC_R=['adm','sc','war','mc','head','dir','ozch','spk','atz','mech'];
 var ACC_S={adm:'Адм. сервиса',sc:'Консуль&shy;тант',war:'Гарант. инженер',mc:'Мастер цеха',head:'Руково&shy;дитель',dir:'Дирек&shy;тор',ozch:'ОЗЧ',spk:'СПК',atz:'АТЗ',mech:'Меха&shy;ники'};
-function accGet(){var a=state.cfg.acc?JSON.parse(JSON.stringify(state.cfg.acc)):{};a.base=a.base||{};a.feat=a.feat||{};ACC_R.forEach(function(r){if(!a.base[r])a.base[r]=roleBase(r).slice()});FEAT_L.forEach(function(f){if(!a.feat[f[0]])a.feat[f[0]]=featRoles(f[0]).filter(function(r){return r!=='owner'})});return a}
+function accGet(){var a=state.cfg.acc?JSON.parse(JSON.stringify(state.cfg.acc)):{};a.base=a.base||{};a.feat=a.feat||{};ACC_R.forEach(function(r){if(!a.base[r])a.base[r]=roleBase(r).slice()});FEAT_L.concat(TAB_L).forEach(function(f){if(!a.feat[f[0]])a.feat[f[0]]=featRoles(f[0]).filter(function(r){return r!=='owner'})});return a}
 function accHtml(){var a=accGet(),hd='<tr><th class="f">'+'%s'+'</th>'+ACC_R.map(function(r){return '<th>'+ACC_S[r]+'</th>'}).join('')+'</tr>';
   var h='<details class="acc" id="accD"'+(accOpen?' open':'')+'><summary>Доступ к функциям</summary><div class="sub" style="margin:4px 0 0">Отметьте, что можно каждой роли. Владельцу открыто всё всегда. Сохраняется сразу и действует на всех устройствах.</div>';
+  h+='<h4>Вкладки</h4><div class="tw"><table>'+hd.replace('%s','Вкладка');
+  TAB_L.forEach(function(f){h+='<tr><td class="f">'+f[1]+'</td>'+ACC_R.map(function(r){return '<td><input type="checkbox" data-af="'+f[0]+'" data-r="'+r+'"'+(a.feat[f[0]].indexOf(r)>=0?' checked':'')+' aria-label="'+esc(ROLES[r].n+': вкладка '+f[1])+'"></td>'}).join('')+'</tr>'});
+  h+='</table></div><div class="sub" style="margin:4px 0 0">Что делать во вкладке «Обращения», задаётся ниже в «Новых функциях». Вход в программу всегда на экране записи, после входа сотрудник попадает в открытую ему вкладку.</div>';
   h+='<h4>Основные права</h4><div class="tw"><table>'+hd.replace('%s','Право');
   BASE_P.forEach(function(p){h+='<tr><td class="f">'+p[1]+(p[2]?'<small>'+p[2]+'</small>':'')+'</td>'+ACC_R.map(function(r){return '<td><input type="checkbox" data-ab="'+p[0]+'" data-r="'+r+'"'+(a.base[r].indexOf(p[0])>=0?' checked':'')+' aria-label="'+esc(ROLES[r].n+': '+p[1])+'"></td>'}).join('')+'</tr>'});
   h+='</table></div><div class="sub" style="margin:4px 0 0">Осторожно: без права «Создавать и менять записи» роль не сможет записывать клиентов. Менять записи и график на устройстве можно только с введённым токеном GitHub.</div>';
