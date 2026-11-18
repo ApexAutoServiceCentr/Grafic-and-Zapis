@@ -514,7 +514,8 @@ window.zApi={
     count:function(){return obCount()},
     list:function(){var nc=noCli();return obAll().map(function(o){var x=JSON.parse(JSON.stringify(o));if(nc){x.client='';x.phone=''}x.respName=o.resp?uName(o.resp)||'—':'';x.cbName=uName(o.cb)||o.cbn||'';x.canAct=obCanAct(o);x.bkLive=!!(o.bk&&state.b[o.bk]&&live(state.b[o.bk]));return x})},
     workers:function(){return obWorkers().map(function(u){return {id:u.id,name:u.name}})},
-    lists:function(){return {way:OB_WAY,why:OB_WHY,res:OB_RES,brands:BRANDS}},
+    lists:function(){return {way:OB_WAY,why:OB_WHY,res:OB_RES,brands:BRANDS,types:TYPES}},
+    del:function(id){return obDel(id)},
     create:function(f){return obCreate(f||{})},
     act:function(id,k,c,lv){return obDo(id,k,c,lv)},
     book:function(id){return obBook(id)},
@@ -1340,7 +1341,7 @@ document.getElementById('msgS').addEventListener('click',function(e){var b=e.tar
   if(b.id==='msgR'){state.cfg.msg2=null;state.cfg.svc=null;cfgTouch();renderMs();msSaved()}});
 
 /* ---------- обращения клиентов (вместо таблицы «Обзвон сервис») ---------- */
-var OB_WAY=['Звонок','WhatsApp','Звонок на мобильный','Визит','Instagram','Почта','Другое'];
+var OB_WAY=['Звонок','WhatsApp','Визит','Instagram','Почта','Другое'];
 var OB_WHY=['ТО','Замена масла','Диагностика','Вопрос по сервису','Запчасти','Шиномонтаж','Ремонт','Гарантия','Другое'];
 var OB_RES={book:'Записан',cons:'Проконсультирован',other:'Другое'};
 var obTab='mine',obArm=null,obPending=null;
@@ -1359,7 +1360,7 @@ function obSave(o){o.u=now();state.o=state.o||{};state.o[o.id]=o;commit()}
 /* общие действия: ими пользуются и окно в записи, и вкладка «Обращения» */
 function obCreate(f){if(!(KEY&&me()&&feat('obrAdd')&&canWrite))return {e:'Нет прав создавать обращения'};var u=me(),cl=String(f.client||'').trim().slice(0,60),pr=String(f.phone||'').trim(),pd=digits(pr);
   if(!cl&&pd.length<10)return {e:'Укажите имя клиента или телефон'};if(pr&&pd.length<10)return {e:'Телефон: нужно 10 цифр после +7'};
-  var n=0;obAll().forEach(function(o){if(o.n>n)n=o.n});var o={id:'o'+uid(),n:n+1,t:now(),by:u.name,byU:UID,way:OB_WAY.indexOf(f.way)>=0?f.way:'Звонок',why:String(f.why||'').trim().slice(0,60),resp:(state.users||{})[f.resp]?f.resp:'',client:cl,phone:pd.length>=10?'+7 '+phFmt(pd.slice(-10)):'',brand:String(f.brand||'').slice(0,30),model:String(f.model||'').trim().slice(0,40),desc:String(f.desc||'').trim().slice(0,300),st:'new',tries:[]};
+  var n=0;obAll().forEach(function(o){if(o.n>n)n=o.n});var o={id:'o'+uid(),n:n+1,t:now(),by:u.name,byU:UID,way:OB_WAY.indexOf(f.way)>=0?f.way:'Звонок',why:String(f.why||'').trim().slice(0,60),wk:TYPES.some(function(t){return t.k===f.wk})?f.wk:'',ton:f.wk==='to'&&/^\d{1,2}$/.test(String(f.ton))?String(f.ton):'',resp:'',client:cl,phone:pd.length>=10?'+7 '+phFmt(pd.slice(-10)):'',brand:String(f.brand||'').slice(0,30),model:String(f.model||'').trim().slice(0,40),desc:String(f.desc||'').trim().slice(0,300),st:'new',tries:[]};
   obSave(o);return {id:o.id,n:o.n}}
 function obCanAct(o){var u=me();return !!(o&&u&&feat('obrWork')&&canWrite&&obOpen(o)&&(o.resp===UID||!o.resp||u.role==='owner'))}
 function obDo(id,k,c,lv){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))return 'Нет прав или обращение уже закрыто';o=JSON.parse(JSON.stringify(o));c=String(c||'').trim().slice(0,200);
@@ -1371,10 +1372,11 @@ function obDo(id,k,c,lv){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))retur
   else if(k==='cons'||k==='other'){o.st='done';o.res=k;o.ct=now();o.cb=UID;o.cbn=u.name;o.note=c}
   else return 'Неизвестное действие';
   obSave(o);return ''}
+function obDel(id){var u=me(),o=state.o&&state.o[id];if(!u||u.role!=='owner'||!canWrite)return 'Удалять может только владелец';if(!o)return '';o=JSON.parse(JSON.stringify(o));o.del=true;obSave(o);return ''}
 function obShell(k){try{if(window.parent!==window&&parent.showTab&&parent.document.getElementById('fo')){parent.showTab(k);return true}}catch(e){}return false}
 function obBook(id){var o=state.o&&state.o[id];if(!obCanAct(o)||!can('edit'))return 'Нет прав записывать';obShell('zapis');var d0=document.getElementById('obDlg');if(d0.open)d0.close();
   obPending=o.id;var bm={brand:o.brand==='Другое'?'':o.brand,model:o.model};openForm(null,{date:cur});
-  sv('fClient',o.client||'');if(o.phone)setPhone(o.phone);sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');fillModels();sv('fDesc',[o.why,o.desc].filter(Boolean).join(': '));if(o.way==='WhatsApp'||o.way==='Instagram')setSrc('online');else if(o.way==='Визит')setSrc('visit');else setSrc('call');return ''}
+  sv('fClient',o.client||'');if(o.phone)setPhone(o.phone);sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');fillModels();if(o.wk){setType(o.wk);if(o.wk==='to'&&o.ton!==''&&o.ton!=null){sv('fTon',o.ton);tonLabel()}tonClose()}sv('fDesc',o.wk?(o.desc||''):[o.why,o.desc].filter(Boolean).join(': '));if(o.way==='WhatsApp'||o.way==='Instagram')setSrc('online');else if(o.way==='Визит')setSrc('visit');else setSrc('call');return ''}
 function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
 function renderOB(){var W=feat('obrWork'),V=feat('obrView'),A=feat('obrAdd'),L=obAll(),h='';
   var tabs=[];if(W)tabs.push(['mine','Мои',L.filter(function(o){return obOpen(o)&&obMine(o)}).length]);if(W||V)tabs.push(['all','Все открытые',L.filter(obOpen).length]);if(A&&!W&&!V)tabs.push(['my','Мои обращения',0]);if(W||V||A)tabs.push(['done','Закрытые',0]);if(A&&canWrite)tabs.push(['new','+ Новое',0]);
@@ -1395,7 +1397,7 @@ function renderOB(){var W=feat('obrWork'),V=feat('obrView'),A=feat('obrAdd'),L=o
   }
   document.getElementById('obBody').innerHTML=h;if(obTab==='new'){var b0=document.getElementById('obBrand');if(b0)obModels()}}
 function obForm(){var ws=obWorkers(),opt=function(a,v){return a.map(function(x){return '<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>'}).join('')};
-  return '<div class="og"><div class="f"><label for="obWay">Способ</label><select id="obWay">'+opt(OB_WAY,'Звонок')+'</select></div><div class="f"><label for="obWhy">Причина</label><input type="text" id="obWhy" list="obWhyL" maxlength="60" placeholder="ТО, замена масла…"><datalist id="obWhyL">'+OB_WHY.map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist></div><div class="f"><label for="obResp">Ответственный</label><select id="obResp"><option value="">Кто свободен</option>'+ws.map(function(u){return '<option value="'+u.id+'">'+esc(u.name)+'</option>'}).join('')+'</select></div>'
+  return '<div class="og"><div class="f"><label for="obWay">Способ</label><select id="obWay">'+opt(OB_WAY,'Звонок')+'</select></div><div class="f"><label for="obWhy">Причина</label><input type="text" id="obWhy" list="obWhyL" maxlength="60" placeholder="ТО, замена масла…"><datalist id="obWhyL">'+OB_WHY.map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist></div>'
    +'<div class="f"><label for="obCl">Клиент</label><input type="text" id="obCl" maxlength="60" placeholder="Имя"></div><div class="f"><label for="obPh">Телефон</label><input type="tel" id="obPh" maxlength="20" placeholder="+7 7__ ___ __ __"></div><div class="f"><label for="obBrand">Марка</label><select id="obBrand"><option value=""></option>'+Object.keys(BRANDS).map(function(b){return '<option>'+esc(b)+'</option>'}).join('')+'<option>Другое</option></select></div>'
    +'<div class="f"><label for="obModel">Модель</label><input type="text" id="obModel" list="obModelL" maxlength="40"><datalist id="obModelL"></datalist></div><div class="f w3"><label for="obDesc">Комментарий</label><input type="text" id="obDesc" maxlength="300" placeholder="Что хочет клиент, когда удобно перезвонить"></div></div>'
    +'<div class="err" id="obErr"></div><div class="row" style="justify-content:space-between;display:flex;gap:8px;align-items:center;margin-top:8px"><span class="sub" style="margin:0">Дата и время ставятся сами · принял: '+esc(me().name)+'</span><button type="button" class="pri" id="obSend">Отправить</button></div>'}
@@ -1406,7 +1408,7 @@ document.getElementById('obBody').addEventListener('click',function(e){var t=e.t
   if(t.tagName==='A')return;
   if(t.id==='obX'){dlg.close();return}
   if(t.dataset.obt){obTab=t.dataset.obt;obArm=null;renderOB();return}
-  if(t.id==='obSend'){var r0=obCreate({way:fv('obWay'),why:fv('obWhy'),resp:fv('obResp'),client:fv('obCl'),phone:fv('obPh'),brand:fv('obBrand'),model:fv('obModel'),desc:fv('obDesc')});
+  if(t.id==='obSend'){var r0=obCreate({way:fv('obWay'),why:fv('obWhy'),client:fv('obCl'),phone:fv('obPh'),brand:fv('obBrand'),model:fv('obModel'),desc:fv('obDesc')});
     if(r0.e){document.getElementById('obErr').textContent=r0.e;return}obTab=feat('obrWork')||feat('obrView')?'all':'my';renderOB();return}
   var o=t.dataset.obi?state.o[t.dataset.obi]:t.dataset.obtake?state.o[t.dataset.obtake]:t.dataset.obbook?state.o[t.dataset.obbook]:t.dataset.obok?state.o[t.dataset.obok]:null;
   if(t.dataset.obno!==undefined){obArm=null;renderOB();return}
