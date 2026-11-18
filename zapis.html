@@ -293,6 +293,16 @@ body.nocli .f.cli{display:none!important}
 body.no-load .ldr{display:none!important}
 .lrep{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;padding:16px 20px 24px}
 .lrep[hidden]{display:none}
+.zseg{display:inline-flex;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:3px;gap:2px}
+.zseg button{border:0;padding:5px 11px;border-radius:9px;background:transparent;color:var(--mu);font-weight:600;white-space:nowrap}
+.zseg button.on{background:var(--ac);color:#fff}
+.lrnav[hidden]{display:none}.lrnav input{padding:6px 8px}
+.zg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.zbar{flex:1;height:10px;background:var(--bd);border-radius:5px;overflow:hidden;display:flex}.zbar i{display:block;height:100%}
+.zt{width:100%;border-collapse:collapse;font-size:13px}.zt th,.zt td{padding:7px 8px;border-bottom:1px solid var(--bd);text-align:right;white-space:nowrap}.zt th{color:var(--mu);font-size:12px;font-weight:600}.zt th:first-child,.zt td:first-child{text-align:left}.zt tr:last-child td{border-bottom:0}
+.zhm{display:grid;gap:3px;font-size:11px;color:var(--mu)}.zhm i{display:block;height:22px;border-radius:4px}.zhm span{text-align:center;align-self:center}
+.znote{font-size:12px;color:var(--mu);margin-top:8px}
+@media (max-width:1100px){.zg3{grid-template-columns:1fr}}
 .lrh{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;margin-bottom:14px}
 .lrh h2{font-size:18px;margin:0 6px 0 0}
 .lrnav{display:flex;align-items:center;gap:8px;font-weight:600;white-space:nowrap}
@@ -348,7 +358,7 @@ body.nocli .msgb{display:none!important}
 .mchips button{padding:3px 8px;font-size:12px}
 .msgT{width:100%;min-height:80px;font:inherit}
 .mprev{white-space:pre-wrap;background:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:6px}
-body:not(.f-wa) #fMsgW,body:not(.f-tpl) #msToggle,body:not(.f-tpl) #msBox,body:not(.f-load) #ldToggle,body:not(.f-load) #ldBox,body:not(.f-stats) #stToggle,body:not(.f-stats) #stBox,body:not(.f-row) .mlbl.ldr,body:not(.f-row) .tools.ldr{display:none!important}
+body:not(.f-wa) #fMsgW,body:not(.f-tpl) #msToggle,body:not(.f-tpl) #msBox,body:not(.f-zrep) #zrToggle,body:not(.f-load) #ldToggle,body:not(.f-load) #ldBox,body:not(.f-stats) #stToggle,body:not(.f-stats) #stBox,body:not(.f-row) .mlbl.ldr,body:not(.f-row) .tools.ldr{display:none!important}
 body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 .acc{margin-top:12px;border-top:1px solid var(--bd);padding-top:8px}
 .acc summary{cursor:pointer;font-weight:700;user-select:none}
@@ -418,7 +428,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Введите токен в разделе «Синхронизация GitHub».</div>
 <div class="mlbl">Общее</div><div class="tools"><button id="goStaff" class="pset">Сотрудники и посты ↗</button><button id="goMode" class="pset">Режим работы ↗</button><button id="uToggle" class="pu" aria-expanded="false">Пользователи ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button></div>
 <div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-go="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-go="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl gol">Обращения</div><div class="tools gor"><button type="button" data-go="obr:rep" data-need="rep">Отчёт по обращениям ↗</button></div>
-<div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="msToggle" class="pset" aria-expanded="false">Шаблоны сообщений ▸</button><button id="ldToggle" class="ldr" aria-expanded="false">Отчёт загрузки цеха ▸</button><button id="stToggle" class="ps" aria-expanded="false" style="display:none!important">Статистика ▸</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
+<div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="msToggle" class="pset" aria-expanded="false">Шаблоны сообщений ▸</button><button id="ldToggle" class="ldr" aria-expanded="false">Отчёт загрузки цеха ▸</button><button id="zrToggle" type="button">Отчёт по записям</button><button id="stToggle" class="ps" aria-expanded="false" style="display:none!important">Статистика ▸</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
 <div id="setBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="uBox" class="pu" style="display:none;margin-bottom:12px"><div class="set" id="usr"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
@@ -491,6 +501,13 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <div id="ldRep" class="lrep" role="dialog" aria-modal="true" aria-labelledby="ldTi" hidden>
 <div class="lrh"><h2 id="ldTi">Отчёт загрузки цеха</h2><div class="lrnav"><button type="button" id="ldP" aria-label="Предыдущая неделя">‹</button><span id="ldL"></span><button type="button" id="ldN" aria-label="Следующая неделя">›</button></div><button type="button" id="ldT" class="lrnow">Эта неделя</button><span style="flex:1"></span><button type="button" id="ldX" aria-label="Закрыть отчёт">✕</button></div>
 <div id="load"></div></div>
+<div id="zrRep" class="lrep" role="dialog" aria-modal="true" aria-labelledby="zrTi" hidden>
+<div class="lrh"><h2 id="zrTi">Отчёт по записям</h2><div class="zseg" id="zrPer" role="group" aria-label="Период"><button type="button" data-p="day">Сегодня</button><button type="button" data-p="week" class="on">Неделя</button><button type="button" data-p="month">Месяц</button><button type="button" data-p="cust">Свой период</button></div>
+<div class="lrnav" id="zrNav"><button type="button" id="zrP" aria-label="Предыдущий период">‹</button><span id="zrL"></span><button type="button" id="zrN" aria-label="Следующий период">›</button></div>
+<div class="lrnav" id="zrCust" hidden><label class="vh" for="zrFrom">С</label><input type="date" id="zrFrom"><span class="sub" style="margin:0">—</span><label class="vh" for="zrTo">По</label><input type="date" id="zrTo"></div>
+<div class="zseg" id="zrBy" role="group" aria-label="Как считать"><button type="button" data-b="visit" class="on">по дате визита</button><button type="button" data-b="made">по дате создания</button></div>
+<span style="flex:1"></span><button type="button" id="zrX2">Скачать в Excel</button><button type="button" id="zrX" aria-label="Закрыть отчёт">✕</button></div>
+<div id="zrBody"></div></div>
 <script>
 var DN=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],DNF=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
 var MN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
@@ -508,10 +525,10 @@ var ROLE_ORDER=['adm','sc','war','mc','head','dir','ozch','spk','atz','mech','ow
 var UID=null;
 /* Функции, открытые пока только части ролей. Чтобы открыть функцию другим, добавьте их роли в список:
    adm, sc, war, mc, head, dir, mech, owner */
-var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],obrAdd:['owner'],obrWork:['owner'],obrView:['owner'],obrRep:['owner'],tabG:ROLE_ORDER.filter(function(r){return r!=='atz'}),tabZ:ROLE_ORDER.filter(function(r){return r!=='atz'})};
+var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],obrAdd:['owner'],obrWork:['owner'],obrView:['owner'],obrRep:['owner'],zrep:['owner'],tabG:ROLE_ORDER.filter(function(r){return r!=='atz'}),tabZ:ROLE_ORDER.filter(function(r){return r!=='atz'})};
 /* какие вкладки видит роль: «Обращения» по умолчанию — у тех, кому открыта хоть одна функция обращений */
 var TAB_L=[['tabG','График смен',''],['tabO','Обращения',''],['tabZ','Запись на сервис','']];
-var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Отчёт загрузки цеха','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['obrAdd','Создавать обращения','кнопка «+ Обращение»',''],['obrWork','Отрабатывать обращения','перезванивать, записывать, закрывать; можно назначить ответственным',''],['obrView','Видеть все обращения','мониторинг: открытые и закрытые всех сотрудников',''],['obrRep','Отчёт по обращениям','кнопка «Отчёт» во вкладке «Обращения»','']];
+var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Отчёт загрузки цеха','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['obrAdd','Создавать обращения','кнопка «+ Обращение»',''],['obrWork','Отрабатывать обращения','перезванивать, записывать, закрывать; можно назначить ответственным',''],['obrView','Видеть все обращения','мониторинг: открытые и закрытые всех сотрудников',''],['obrRep','Отчёт по обращениям','кнопка «Отчёт» во вкладке «Обращения»',''],['zrep','Отчёт по записям','в меню, раздел «Запись на сервис»','']];
 function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];if(a)return a;if(k==='tabO'){var r=[];['obrAdd','obrWork','obrView'].forEach(function(x){featRoles(x).forEach(function(y){if(r.indexOf(y)<0)r.push(y)})});return r}return FEAT[k]||[]}
 function featNeed(k,r){var n=(FEAT_L.filter(function(x){return x[0]===k})[0]||[])[3];if(!n)return true;if(n==='mday')return featRoles('mday').indexOf(r)>=0;return roleBase(r).indexOf(n)>=0}
 /* владелец может сам выключить у себя функцию или вкладку (список acc.off); «Запись» у владельца всегда открыта — там вход и настройки */
@@ -536,7 +553,7 @@ window.zApi={
   add:function(k){if(!this.can('set'))return 'Нет прав';var c=state.cfg;c.posts.push({id:'p'+uid(),name:'Пост '+(c.posts.length+1),kind:KINDS[k]?k:'me',emp:[]});cfgTouch();return ''},
   up:function(i){if(!this.can('set'))return 'Нет прав';var c=state.cfg;if(i<1||i>=c.posts.length)return '';var x=c.posts[i];c.posts[i]=c.posts[i-1];c.posts[i-1]=x;cfgTouch();return ''},
   del:function(i){if(!this.can('set'))return 'Нет прав';var c=state.cfg,p=c.posts[i];if(!p)return '';if(futureOn(p.id))return 'На «'+p.name+'» есть записи на сегодня или позже. Сначала перенесите их на другие посты.';if(c.posts.length<=1)return 'Должен остаться хотя бы один пост';c.posts.splice(i,1);cfgTouch();return ''},
-  open:function(k){menuOpen=true;applyMenu();collapseMenuSections();var b=document.getElementById({u:'uToggle',g:'gToggle',ms:'msToggle',ld:'ldToggle',st:'stToggle'}[k]||'gToggle');if(b&&getComputedStyle(b).display!=='none')b.click()},
+  open:function(k){menuOpen=true;applyMenu();collapseMenuSections();var b=document.getElementById({u:'uToggle',g:'gToggle',ms:'msToggle',ld:'ldToggle',st:'stToggle',zr:'zrToggle'}[k]||'gToggle');if(b&&getComputedStyle(b).display!=='none')b.click()},
   masterDay:function(id,d){openMD(id,d)},
   logout:function(){doLogout()},
   myPw:function(){openMyPw()},
@@ -561,7 +578,7 @@ window.zApi={
     myPw:function(){openMyPw()}
   }
 };
-window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),ob:feat('tabO'),tg:feat('tabG'),tz:feat('tabZ'),tpl:feat('tpl'),load:feat('load'),stats:can('stats'),rep:feat('obrRep')}};
+window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),ob:feat('tabO'),tg:feat('tabG'),tz:feat('tabZ'),tpl:feat('tpl'),load:feat('load'),stats:can('stats'),rep:feat('obrRep'),zrep:feat('zrep')}};
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
 var KINDS={me:'механик',el:'электрик'};
 function pad(n){return n<10?'0'+n:''+n}
@@ -869,7 +886,7 @@ async function syncNow(){
 }
 function commit(){dirty=true;cacheLocal();schedSync();rerender()}
 function applyPerm(){var B=document.body.classList,w=canWrite&&KEY;
-  ['wa','tpl','load','stats','mday','move'].forEach(function(k){B.toggle('f-'+k,feat(k))});if(typeof renderCnt==='function'&&appVisible())renderCnt();B.toggle('f-row',feat('load')||feat('stats')||(feat('tpl')&&w&&can('set')));
+  ['wa','tpl','load','stats','mday','move','zrep'].forEach(function(k){B.toggle('f-'+k,feat(k))});if(typeof renderCnt==='function'&&appVisible())renderCnt();B.toggle('f-row',feat('load')||feat('stats')||(feat('tpl')&&w&&can('set')));
   B.toggle('no-load',!(can('edit')||can('stats')));if(typeof ldOpen!=='undefined'&&ldOpen&&!(can('edit')||can('stats'))){ldOpen=false;applyLdBox()}
   B.toggle('no-edit',!(w&&can('edit')));B.toggle('no-del',!(w&&can('del')));B.toggle('no-stats',!can('stats'));B.toggle('no-set',!(w&&can('set')));B.toggle('no-users',!(w&&can('users')));
   var rn=document.getElementById('roNote');if(rn)rn.style.display=KEY&&!canWrite&&(can('edit')||can('set')||can('users'))?'':'none';
@@ -933,7 +950,7 @@ var cur=iso(new Date()),RS=null,RE=null,needScroll=true,nar=false,RH=36;
 /* высота строки подбирается так, чтобы день целиком помещался на экране (от 30 до 44 пикселей) */
 function calcRH(){var h=document.getElementById('hdr'),mn=document.getElementById('menu'),qr=document.getElementById('qRes'),hh=h?h.offsetHeight-mn.offsetHeight-qr.offsetHeight:120,g=document.querySelector('#days .gh'),gh=g?g.offsetHeight:72,d=document.querySelector('#days .dh'),dh=d?d.offsetHeight+16:44,n=slots().length||20;
   return Math.max(28,Math.min(44,Math.floor((innerHeight-hh-dh-gh-10)/n)))}
-function rerender(){render();if(stOpen)renderStat();if(lrOpen)renderLoad();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
+function rerender(){render();if(stOpen)renderStat();if(lrOpen)renderLoad();if(zrOpen)renderZr();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
 function appVisible(){return document.getElementById('app').style.display!=='none'}
 function secOf(d){return document.querySelector('#days .day[data-d="'+d+'"]')}
 function headRng(){var dd=parseIso(cur);document.getElementById('rng').textContent=(nar||innerWidth<1500?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()].slice(0,3)+' '+dd.getFullYear():innerWidth<1800?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()]+' '+dd.getFullYear():fdate(cur))+(cur===iso(new Date())?' · сегодня':'');document.getElementById('dPick').value=cur}
@@ -1801,6 +1818,105 @@ function closeGh(){if(ghOpen){ghOpen=false;document.getElementById('ghBox').styl
 document.getElementById('stToggle').onclick=function(){stOpen=!stOpen;if(stOpen){if(setOpen){setOpen=false;applySetBox()}closeGh();if(ldOpen){ldOpen=false;applyLdBox()}}applyStBox()};
 /* ---------- загрузка на неделю ---------- */
 var ldOpen=false,ldMon=null;
+/* выгрузка в Excel (.xlsx) — тот же сборщик файла, что в отчёте по обращениям */
+var CRCT=(function(){var t=[],c,n,k;for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
+function zipStore(files){var enc=new TextEncoder(),parts=[],cd=[],off=0;
+  function u16(v){return [v&255,(v>>>8)&255]}function u32(v){return [v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255]}
+  files.forEach(function(f){var nm=enc.encode(f[0]),d=enc.encode(f[1]),cr=crc32(d);
+    var lh=[].concat(u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(cr),u32(d.length),u32(d.length),u16(nm.length),u16(0));
+    parts.push(new Uint8Array(lh),nm,d);
+    cd.push(new Uint8Array([].concat(u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(cr),u32(d.length),u32(d.length),u16(nm.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(off))),nm);
+    off+=lh.length+nm.length+d.length});
+  var cs=cd.reduce(function(a,x){return a+x.length},0);
+  return new Blob(parts.concat(cd,[new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cs),u32(off),u16(0)))]),{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+function xEsc(v){return String(v).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]}).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'')}
+function colName(i){var s='';i++;while(i){var m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s}
+function xlsx(sheet,head,rows,widths){
+  var x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>'
+    +widths.map(function(w,i){return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>'}).join('')+'</cols><sheetData>';
+  [head].concat(rows).forEach(function(r,ri){x+='<row r="'+(ri+1)+'">'+r.map(function(v,ci){var ref=colName(ci)+(ri+1),st=ri?'':' s="1"';if(v===''||v==null)return ri?'':'<c r="'+ref+'"'+st+'/>';
+    if(ri&&typeof v==='number')return '<c r="'+ref+'"><v>'+v+'</v></c>';return '<c r="'+ref+'" t="inlineStr"'+st+'><is><t xml:space="preserve">'+xEsc(v)+'</t></is></c>'}).join('')+'</row>'});
+  x+='</sheetData><autoFilter ref="A1:'+colName(head.length-1)+(rows.length+1)+'"/></worksheet>';
+  return zipStore([
+    ['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
+    ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+    ['xl/workbook.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+xEsc(sheet)+'" sheetId="1" r:id="rId1"/></sheets><definedNames><definedName name="_xlnm._FilterDatabase" localSheetId="0" hidden="1">\''+xEsc(sheet)+'\'!$A$1:$'+colName(head.length-1)+'$'+(rows.length+1)+'</definedName></definedNames></workbook>'],
+    ['xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+    ['xl/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE2E8F0"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'],
+    ['xl/worksheets/sheet1.xml',x]])}
+function xlsxDownload(sheet,hd,rows,w,name){var blob=xlsx(sheet,hd,rows,w),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}
+/* ===== Отчёт по записям ===== */
+var zr={per:'week',a:null,b:null,by:'visit'},zrOpen=false;
+var ZMN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+function zrRange(){var td=iso(new Date());if(!zr.a){zr.a=td;zr.b=td}
+  if(zr.per==='day')return [zr.a,zr.a];
+  if(zr.per==='week'){var a=ldMonday(zr.a);return [a,addDays(a,6)]}
+  if(zr.per==='month'){var m=parseIso(zr.a);return [iso(new Date(m.getFullYear(),m.getMonth(),1)),iso(new Date(m.getFullYear(),m.getMonth()+1,0))]}
+  return zr.a<=zr.b?[zr.a,zr.b]:[zr.b,zr.a]}
+function zrLbl(r){var a=parseIso(r[0]),b=parseIso(r[1]);if(zr.per==='day')return DN[a.getDay()]+', '+a.getDate()+' '+MN[a.getMonth()]+' '+a.getFullYear();if(zr.per==='month')return ZMN[a.getMonth()]+' '+a.getFullYear();
+  return a.getDate()+(a.getMonth()!==b.getMonth()?' '+MN[a.getMonth()]:'')+(a.getFullYear()!==b.getFullYear()?' '+a.getFullYear():'')+' – '+b.getDate()+' '+MN[b.getMonth()]+' '+b.getFullYear()}
+function zrDay(b){return zr.by==='made'?(b.c?iso(new Date(b.c)):null):b.date}
+function zrPct(n,t){return t?Math.round(n*100/t)+'%':'—'}
+function zrList(r){var L=[],k,b,d;for(k in state.b){b=state.b[k];if(!live(b))continue;d=zrDay(b);if(d&&d>=r[0]&&d<=r[1])L.push(b)}return L}
+function zrDays(a,b){return Math.round((parseIso(b)-parseIso(a))/864e5)}
+function renderZr(){var r=zrRange(),L=zrList(r),n=L.length,t=iso(new Date());
+  document.getElementById('zrL').textContent=zrLbl(r);document.getElementById('zrCust').hidden=zr.per!=='cust';document.getElementById('zrNav').hidden=zr.per==='cust';
+  [].forEach.call(document.querySelectorAll('#zrPer button'),function(x){x.classList.toggle('on',x.dataset.p===zr.per)});[].forEach.call(document.querySelectorAll('#zrBy button'),function(x){x.classList.toggle('on',x.dataset.b===zr.by)});
+  if(zr.per==='cust'){document.getElementById('zrFrom').value=r[0];document.getElementById('zrTo').value=r[1]}
+  document.getElementById('zrN').disabled=zr.by==='made'&&r[1]>=t;
+  // сравнение с прошлым периодом той же длины (идущий период — с тем же числом дней)
+  var len=zrDays(r[0],r[1])+1,el=zr.by==='made'&&r[1]>t?Math.max(1,zrDays(r[0],t)+1):len,ps=zr.per==='month'?(function(){var m=parseIso(r[0]);return iso(new Date(m.getFullYear(),m.getMonth()-1,1))})():addDays(r[0],-len),pn=zrList([ps,addDays(ps,el-1)]).length,df=n-pn;
+  var done=0,nos=0,wait=0,wn=0,lead=[],sameDay=0,rep=0,first={},k,b;
+  for(k in state.b){b=state.b[k];if(!live(b))continue;var ph=String(b.phone||'').replace(/\D/g,'').slice(-10);if(ph.length===10&&(!first[ph]||b.date<first[ph]))first[ph]=b.date}
+  var obk={};for(k in (state.o||{})){if(state.o[k].bk)obk[state.o[k].bk]=1}
+  var TY={},BR={},E={},HM={},LB=[0,0,0,0,0],LBn=[0,0,0,0,0];
+  L.forEach(function(b){var s=st(b),ph=String(b.phone||'').replace(/\D/g,'').slice(-10);if(s==='done')done++;else if(s==='nos')nos++;else if(b.date>=t)wait++;if(b.wn)wn++;
+    if(ph.length===10&&first[ph]<b.date)rep++;
+    var ld=null;if(b.c){ld=Math.max(0,zrDays(iso(new Date(b.c)),b.date));lead.push(ld);var bi=ld===0?0:ld===1?1:ld<=3?2:ld<=7?3:4;LB[bi]++;if(s==='nos')LBn[bi]++;if(ld===0)sameDay++}
+    var ty=b.type||'—';TY[ty]=TY[ty]||[0,0];TY[ty][0]++;if(s==='nos')TY[ty][1]++;
+    var bm=splitCar(b).brand||'Не указана';BR[bm]=(BR[bm]||0)+1;
+    var who=b.by||'—',e=E[who]=E[who]||{n:who,c:0,d:0,x:0,w:0,o:0,m:0};e.c++;if(s==='done')e.d++;if(s==='nos')e.x++;if(b.wn)e.w++;if(obk[b.id])e.o++;
+    e.m+=(b.h||[]).filter(function(h){var c=h.ch||{};return c.date||c.start||c.post}).length;
+    var wd=(parseIso(b.date).getDay()+6)%7,hh=Math.floor(b.start/60);HM[wd+'_'+hh]=(HM[wd+'_'+hh]||0)+1});
+  var avg=lead.length?lead.reduce(function(a,c){return a+c},0)/lead.length:null,past=done+nos;
+  var h='<div class="lkp"><div><small>Всего записей</small><b>'+n+'</b><i>'+(pn||n?(df>0?'+'+df:df<0?'−'+(-df):'столько же')+' к прошлому периоду':'')+'</i></div>'
+   +'<div><small>Приехали</small><b style="color:var(--ok)">'+done+'</b><i>'+zrPct(done,n)+'</i></div>'
+   +'<div><small>Не приехали</small><b style="color:'+(nos?'var(--danger)':'inherit')+'">'+nos+'</b><i>'+zrPct(nos,n)+(wait?' · ещё ждём '+wait:'')+'</i></div>'
+   +'<div><small>Клиент предупреждён</small><b>'+wn+'</b><i>'+zrPct(wn,n)+' записей</i></div>'
+   +'<div><small>Повторные клиенты</small><b>'+rep+'</b><i>'+zrPct(rep,n)+' уже были у нас</i></div>'
+   +'<div><small>Записываются заранее</small><b>'+(avg==null?'—':(Math.round(avg*10)/10).toString().replace('.',',')+' дн')+'</b><i>'+(lead.length?'в среднем · день в день '+zrPct(sameDay,lead.length):'')+'</i></div></div>';
+  h+='<div class="zg3">';
+  var tk=Object.keys(TY).sort(function(a,c){return TY[c][0]-TY[a][0]}),tm=tk.length?TY[tk[0]][0]:1;
+  h+='<div class="lrc"><h3>По видам работ <span class="sub" style="font-weight:400;margin:0">· красным — «не приехал»</span></h3>'+(tk.length?tk.map(function(k){var v=TY[k];return '<div class="lhb"><span>'+esc(k==='eq'?'Доп. оборудование':(TN[k]||'Без вида работ'))+'</span><div class="zbar" style="max-width:none"><i style="width:'+Math.round((v[0]-v[1])*100/tm)+'%;background:var(--'+k+',var(--ac))"></i><i style="width:'+Math.round(v[1]*100/tm)+'%;background:var(--danger)"></i></div><b>'+v[0]+(v[1]?' · '+v[1]+' н/п':'')+'</b></div>'}).join(''):'<div class="sub" style="margin:0">Записей нет</div>')+'</div>';
+  var LBL=['День в день','За 1 день','За 2–3 дня','За 4–7 дней','Больше недели'],lm=Math.max.apply(null,LB.concat([1])),early=LB[3]+LB[4],earlyN=LBn[3]+LBn[4],lateN=LBn[0]+LBn[1]+LBn[2],late=LB[0]+LB[1]+LB[2];
+  h+='<div class="lrc"><h3>Насколько заранее записываются</h3>'+LBL.map(function(l,i){return '<div class="lhb"><span>'+l+'</span><div class="zbar"><i style="width:'+Math.round(LB[i]*100/lm)+'%;background:var(--ac)"></i></div><b>'+LB[i]+' · '+zrPct(LB[i],lead.length)+'</b></div>'}).join('')
+    +(early&&late?'<div class="znote">«Не приехал»: при записи за 4+ дней — '+zrPct(earlyN,early)+', ближе к дате — '+zrPct(lateN,late)+'</div>':'')+'</div>';
+  var c=CF(),h0=Math.floor(c.open/60),h1=Math.ceil(c.close/60),hrs=[],x;for(x=h0;x<h1;x++)hrs.push(x);var hmx=1;for(k in HM)if(HM[k]>hmx)hmx=HM[k];
+  var dn=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],used=dn.filter(function(_,i){return hrs.some(function(hh){return HM[i+'_'+hh]})||i<6});
+  h+='<div class="lrc"><h3>Популярное время визита</h3><div class="zhm" style="grid-template-columns:30px repeat('+hrs.length+',minmax(0,1fr))"><span></span>'+hrs.map(function(hh){return '<span>'+hh+'</span>'}).join('')
+    +dn.map(function(d,i){if(used.indexOf(d)<0)return '';return '<span>'+d+'</span>'+hrs.map(function(hh){var v=HM[i+'_'+hh]||0;return '<i title="'+d+' '+hh+':00 — '+v+' зап." style="background:'+(v?'color-mix(in srgb, var(--ac) '+Math.round(20+v*80/hmx)+'%, var(--bg))':'var(--bg)')+'"></i>'}).join('')}).join('')
+    +'</div><div class="znote">Ярче — больше записей на это время</div></div></div>';
+  var ER=Object.keys(E).map(function(k){return E[k]}).sort(function(a,c){return c.c-a.c});
+  var bk=Object.keys(BR).sort(function(a,c){return BR[c]-BR[a]});if(bk.length>6){var rest=bk.slice(5).reduce(function(s,k){return s+BR[k]},0);bk=bk.slice(0,5);BR['Остальные']=rest;bk.push('Остальные')}var bmx=bk.length?Math.max.apply(null,bk.map(function(k){return BR[k]})):1;
+  h+='<div class="lrg"><div class="lrc"><h3>По сотрудникам <span class="sub" style="font-weight:400;margin:0">· кто записывал</span></h3>'+(ER.length?'<div style="overflow-x:auto"><table class="zt"><tr><th>Сотрудник</th><th>Записей</th><th>Приехали</th><th>Не приехали</th><th>Предупредил</th><th>Из обращений</th><th>Переносов</th></tr>'
+    +ER.map(function(e){return '<tr><td>'+esc(e.n)+'</td><td>'+e.c+'</td><td>'+(e.d||'—')+'</td><td>'+(e.x?e.x+' · '+zrPct(e.x,e.c):'—')+'</td><td>'+zrPct(e.w,e.c)+'</td><td>'+(e.o||'—')+'</td><td>'+(e.m||'—')+'</td></tr>'}).join('')+'</table></div>':'<div class="sub" style="margin:0">Записей нет</div>')+'</div>';
+  h+='<div class="lrc"><h3>По маркам</h3>'+(bk.length?bk.map(function(k){return '<div class="lhb"><span>'+esc(k)+'</span><div class="zbar"><i style="width:'+Math.round(BR[k]*100/bmx)+'%;background:var(--ac)"></i></div><b>'+BR[k]+' · '+zrPct(BR[k],n)+'</b></div>'}).join(''):'<div class="sub" style="margin:0">Записей нет</div>')+'</div></div>';
+  document.getElementById('zrBody').innerHTML=h}
+function openZr(){zrOpen=true;menuOpen=false;applyMenu();document.getElementById('zrRep').hidden=false;renderZr();document.getElementById('zrX').focus()}
+function closeZr(){zrOpen=false;document.getElementById('zrRep').hidden=true}
+document.getElementById('zrToggle').onclick=openZr;document.getElementById('zrX').onclick=closeZr;
+document.addEventListener('keydown',function(e){if(zrOpen&&e.key==='Escape'&&!document.querySelector('dialog[open]'))closeZr()});
+document.getElementById('zrPer').addEventListener('click',function(e){var b=e.target.closest('button[data-p]');if(!b)return;var r=zrRange();zr.per=b.dataset.p;if(zr.per==='cust'){zr.a=r[0];zr.b=r[1]}else zr.a=iso(new Date());renderZr()});
+document.getElementById('zrBy').addEventListener('click',function(e){var b=e.target.closest('button[data-b]');if(!b)return;zr.by=b.dataset.b;renderZr()});
+function zrShift(d){var r=zrRange();if(zr.per==='day')zr.a=addDays(zr.a,d);else if(zr.per==='week')zr.a=addDays(r[0],7*d);else if(zr.per==='month'){var m=parseIso(r[0]);zr.a=iso(new Date(m.getFullYear(),m.getMonth()+d,1))}renderZr()}
+document.getElementById('zrP').onclick=function(){zrShift(-1)};document.getElementById('zrN').onclick=function(){zrShift(1)};
+document.getElementById('zrFrom').onchange=function(){if(this.value){zr.a=this.value;renderZr()}};document.getElementById('zrTo').onchange=function(){if(this.value){zr.b=this.value;renderZr()}};
+document.getElementById('zrX2').onclick=function(){var r=zrRange(),L=zrList(r).sort(function(a,b){return (a.date+String(a.start+10000)).localeCompare(b.date+String(b.start+10000))});
+  var P={};state.cfg.posts.forEach(function(p){P[p.id]=p.name});
+  var hd=['Дата визита','Время','Пост','Клиент','Телефон','Марка','Модель','Год','Госномер','Вид работ','Статус','Источник','Кто записал','Создана','Предупреждён','Комментарий'];
+  var rows=L.map(function(b){var cm=splitCar(b),c=b.c?new Date(b.c):null;return [b.date.split('-').reverse().join('.'),hhmm(b.start),P[b.post]||'',noCli()?'':(b.client||''),noCli()?'':(b.phone||''),cm.brand||'',cm.model||'',b.year?+b.year||b.year:'',b.plate||'',tName(b)||'',SN[st(b)]||'',SRC[b.src]||'',b.by||'',c?('0'+c.getDate()).slice(-2)+'.'+('0'+(c.getMonth()+1)).slice(-2)+'.'+c.getFullYear():'',b.wn?'да':'',b.desc||'']});
+  xlsxDownload('Записи',hd,rows,[11,7,10,18,17,12,14,6,11,16,12,10,16,11,11,40],'Записи_'+r[0]+(r[1]!==r[0]?'_'+r[1]:'')+'.xlsx')};
 /* отчёт загрузки цеха открывается поверх страницы, как отчёт по обращениям */
 var lrOpen=false;
 function applyLdBox(){var t=document.getElementById('ldToggle');t.textContent='Отчёт загрузки цеха';t.setAttribute('aria-expanded','false')}
