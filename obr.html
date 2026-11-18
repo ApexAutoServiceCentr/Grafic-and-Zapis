@@ -39,6 +39,13 @@ html:not(.obr-on) .tabs a[data-tab="obr"],html.no-tg .tabs a[data-tab="grafik"],
 .seg button{border:0;padding:5px 11px;border-radius:9px;background:transparent;color:var(--mu);font-weight:600;white-space:nowrap}
 .seg button.on{background:var(--ac);color:#fff}
 .seg button b{font-weight:700;margin-left:4px;opacity:.85}
+.dnav{display:flex;align-items:center;gap:8px;flex:none}
+.dnav .rng{display:flex;align-items:center;gap:2px;position:relative;font-weight:600;white-space:nowrap;min-width:150px;justify-content:center}
+.rng .cal{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;color:var(--mu);border-radius:8px;flex:none}
+.rng .cal[hidden]{display:none}
+.rng .cal:hover{color:var(--tx);background:var(--bd)}
+.rng .dpk{position:absolute;right:0;bottom:0;width:32px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
+@media (max-width:600px){.dnav{flex:1 1 100%;gap:6px}.dnav .rng{min-width:0;flex:1;font-size:14px}.dnav button{padding:8px 10px}.dnav .sd{display:none}}
 .qw{position:relative;flex:1 1 220px;max-width:360px;display:flex}
 .qw input{width:100%;padding-right:34px}
 .qw button{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:transparent;padding:4px 8px;color:var(--mu)}
@@ -129,6 +136,7 @@ td a.tel{color:inherit;text-decoration:none}
 <h1 class="vh">Обращения клиентов</h1>
 <nav class="tabs" aria-label="Разделы"><a href="index.html#grafik" data-tab="grafik">График<span class="tl"> смен</span></a><a href="index.html#obr" class="on" aria-current="page" data-tab="obr">Обращения<span class="obc"></span></a><a href="index.html#zapis" data-tab="zapis">Запись<span class="tl"> на сервис</span></a></nav>
 <div class="seg" id="flt" role="group" aria-label="Какие обращения показать"></div>
+<div class="dnav" role="group" aria-label="День"><button type="button" id="dPrev" aria-label="Предыдущий день">‹</button><div class="rng"><span id="dL"></span><button type="button" id="calB" class="cal" aria-label="Выбрать дату" title="Выбрать дату"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button><button type="button" id="dAll" class="cal" aria-label="Показать все дни" title="Все дни" hidden>✕</button><input type="date" id="dPick" class="dpk" tabindex="-1" aria-hidden="true"></div><button type="button" id="dNext" aria-label="Следующий день">›</button><button type="button" id="dToday">Сегодня</button></div>
 <div class="qw"><input type="text" id="q" placeholder="Поиск: №, имя, телефон, марка, причина…" autocomplete="off" aria-label="Поиск по обращениям"><button type="button" id="qX" aria-label="Очистить поиск" hidden>✕</button></div>
 <button type="button" class="pri" id="nB" hidden>+ Обращение</button>
 <div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
@@ -165,7 +173,7 @@ function dt(t){var d=new Date(t),y=new Date().getFullYear();return pad(d.getDate
 function hm(t){var d=new Date(t),td=new Date();return (d.toDateString()===td.toDateString()?'':pad(d.getDate())+'.'+pad(d.getMonth()+1)+' ')+pad(d.getHours())+':'+pad(d.getMinutes())}
 function dur(a,b){var m=Math.max(0,Math.round((b-a)/60000));if(m<60)return m+' мин';var h=Math.floor(m/60);if(h<24)return h+' ч'+(m%60?' '+m%60+' мин':'');return Math.floor(h/24)+' дн'+(h%24?' '+h%24+' ч':'')}
 var RES={book:'Записан',cons:'Проконсультирован',other:'Другое'};
-var flt='all',q='',exp=null,arm=null,lim=200,flash=null,lastSig='',err='';
+var day=null,flt='all',q='',exp=null,arm=null,lim=200,flash=null,lastSig='',err='';
 try{flt=localStorage.getItem('obr-flt')||'all'}catch(e){}
 var TYK={},delArm=null;
 
@@ -179,9 +187,14 @@ function filters(f,me){var r=[['all','Все'],['open','Открытые']];if(!
 function match(o,s){if(!s)return true;var d=digits(s);if(d&&d.length>=3&&digits(o.phone).indexOf(d)>=0)return true;if(/^\d+$/.test(s)&&String(o.n)===s)return true;
   return [o.client,o.brand,o.model,o.year,o.why,o.desc,o.by,o.respName,o.way,o.note,o.cbName].join(' ').toLowerCase().indexOf(s.toLowerCase())>=0}
 
+/* область даты: «Все дни» или конкретный день (по дате создания обращения); поиск всегда идёт по всем дням */
+var DNS=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],MNS=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+function isoOf(t){var d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function addD(iso,n){var q=iso.split('-'),d=new Date(+q[0],+q[1]-1,+q[2]+n);return isoOf(d.getTime())}
+function dLabel(){var td=isoOf(Date.now());$('dAll').hidden=!day;if(!day){$('dL').textContent='Все дни';return}var q=day.split('-'),d=new Date(+q[0],+q[1]-1,+q[2]);$('dL').innerHTML=DNS[d.getDay()]+', '+d.getDate()+' '+MNS[d.getMonth()]+' '+d.getFullYear()+(day===td?'<span class="sd"> · сегодня</span>':'')}
 function render(){var z=Z();
   if(!z||!z.ok()){$('msg').hidden=false;$('msg').textContent=z?'Войдите во вкладке «Запись».':'Загрузка…';$('tw').hidden=true;$('uChip').hidden=true;$('nB').hidden=true;$('flt').innerHTML='';return}
-  var f=z.f(),me=z.me(),L=z.list().filter(function(o){return visible(o,f,me)}),now=Date.now();
+  var f=z.f(),me=z.me(),L=z.list().filter(function(o){return visible(o,f,me)}),now=Date.now();dLabel();if(day&&!q.trim())L=L.filter(function(o){return isoOf(o.t)===day});
   if(!(f.tab||me.owner)){$('msg').hidden=false;$('msg').textContent='Обращения вам пока не открыты.';$('tw').hidden=true;return}
   // шапка
   var FL=filters(f,me);if(!FL.some(function(x){return x[0]===flt}))flt='all';
@@ -193,7 +206,7 @@ function render(){var z=Z();
   var list=L.filter(function(o){if(flt==='open')return o.st!=='done';if(flt==='done')return o.st==='done'&&myDone(o,f,me);if(flt==='mine')return mine(o,f,me);return true}).filter(function(o){return match(o,q.trim())});
   list.sort(function(a,b){return (b.n||0)-(a.n||0)||b.t-a.t});
   $('msg').hidden=!!list.length;$('tw').hidden=!list.length;
-  if(!list.length){$('msg').textContent=q.trim()?'Ничего не найдено.':flt==='done'?'Закрытых обращений пока нет.':flt==='all'?'Обращений пока нет.':'Открытых обращений нет.';return}
+  if(!list.length){$('msg').textContent=q.trim()?'Ничего не найдено.':day?'За этот день '+(flt==='open'?'открытых ':flt==='done'?'закрытых ':'')+'обращений нет.':flt==='done'?'Закрытых обращений пока нет.':flt==='all'?'Обращений пока нет.':'Открытых обращений нет.';return}
   /* таблица подстраивается под ширину экрана: на ноутбуке часть столбцов объединяется, чтобы всё помещалось без прокрутки вбок */
   var W=document.documentElement.clientWidth,lv=W>=1600?0:W>=1250?1:2;document.body.dataset.lv=lv;
   var nc=f.nocli,np=f.noph,C=[];
@@ -239,6 +252,12 @@ function detail(o,f){var h='<div class="hist">';
   if(err)h+='<div class="err">'+esc(err)+'</div>';
   return h}
 
+$('dPrev').onclick=function(){day=addD(day||isoOf(Date.now()),-1);lim=200;exp=null;render()};
+$('dNext').onclick=function(){day=addD(day||isoOf(Date.now()),1);lim=200;exp=null;render()};
+$('dToday').onclick=function(){day=isoOf(Date.now());lim=200;exp=null;render()};
+$('dAll').onclick=function(){day=null;lim=200;render()};
+$('dPick').onchange=function(){if(this.value){day=this.value;lim=200;exp=null;render()}};
+$('calB').onclick=function(){var p=$('dPick');p.value=day||isoOf(Date.now());try{p.showPicker()}catch(e){p.style.pointerEvents='auto';p.focus();p.click();p.style.pointerEvents=''}};
 $('flt').addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(!b)return;flt=b.dataset.f;lim=200;try{localStorage.setItem('obr-flt',flt)}catch(x){}render()});
 $('q').addEventListener('input',function(){q=this.value;$('qX').hidden=!q;lim=200;render()});
 $('qX').onclick=function(){$('q').value='';q='';this.hidden=true;render();$('q').focus()};
