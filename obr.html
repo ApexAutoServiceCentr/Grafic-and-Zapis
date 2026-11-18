@@ -68,23 +68,23 @@ html:not(.obr-on) .tabs a[data-tab="obr"],html.no-tg .tabs a[data-tab="grafik"],
 .dh b{font-size:16px}
 .dh.td b{color:var(--ac)}
 .dh .sub{color:var(--mu);font-size:13px}
-.tc{background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.tc{background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow-x:auto;overflow-y:hidden}
 .tc .none{padding:12px 14px;color:var(--mu);font-size:14px}
 table{border-collapse:separate;border-spacing:0;width:100%;font-size:14px;table-layout:fixed}
-th,td{padding:7px 9px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top;white-space:normal;overflow-wrap:anywhere}
+th,td{padding:7px 9px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top;white-space:nowrap}
 tr:last-child>td{border-bottom:0}
-@media (max-width:899px){table{min-width:860px}.tc{overflow-x:auto}}
+
 th{overflow-wrap:normal;hyphens:manual;background:var(--hd);font-size:12px;font-weight:700;color:var(--mu);text-transform:none}
 th:not(:last-child),td:not(:last-child){border-right:1px solid var(--bd)}
 td.n{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
 td.dt{font-variant-numeric:tabular-nums}
-td.cm{white-space:normal;min-width:180px;max-width:320px}
-td.w{white-space:normal}
+td.cm{overflow:hidden}
 body[data-lv="1"] th,body[data-lv="1"] td,body[data-lv="2"] th,body[data-lv="2"] td{padding:6px 7px}
 body[data-lv="1"] table,body[data-lv="2"] table{font-size:13.5px}
-body[data-lv="1"] td.cm,body[data-lv="2"] td.cm{min-width:140px;max-width:240px}
-body[data-lv="2"] td.w{min-width:90px}
-td.cm .c{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+td.cm .c{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* замер: столбцы по ширине содержимого, комментарий не учитывается */
+table.meas{table-layout:auto;width:auto}
+table.meas td.cm .c{display:none}table.meas th.cmh,table.meas td.cm{font-size:0;padding:0}
 td.mu,.mu{color:var(--mu)}
 tr.r{cursor:pointer}
 tr.r:hover td{background:var(--rowh)}
@@ -93,9 +93,7 @@ tr.r.due td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
 tr.r.nw td:first-child{box-shadow:inset 3px 0 0 var(--danger)}
 tr.r.fl td{animation:fl 1.6s ease-out 1}
 @keyframes fl{0%{background:rgba(37,99,235,.35)}100%{background:transparent}}
-.ot{display:inline-block;max-width:100%;font-size:12px;padding:2px 8px;border-radius:8px;white-space:normal;font-weight:600}
-td{overflow:hidden}
-td.nw{white-space:nowrap}
+.ot{display:inline-block;font-size:12px;padding:2px 8px;border-radius:8px;white-space:nowrap;font-weight:600}
 .ot.new{background:var(--tn-bg);color:var(--tn)}
 .ot.wip,.ot.later{background:var(--tw-bg);color:var(--tw)}
 .ot.done{background:var(--td-bg);color:var(--td)}
@@ -126,7 +124,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .tyw{position:relative}
 .ty button{padding:6px 10px;font-size:14px}
 .ty button.on,.wk{color:var(--stx)}
-.wk{display:inline-block;max-width:100%;white-space:normal;font-size:13px;padding:1px 8px;border-radius:8px}
+.wk{display:inline-block;white-space:nowrap;font-size:13px;padding:1px 8px;border-radius:8px}
 .on.to,.wk.to{background:var(--to);border-color:var(--to)}.on.rm,.wk.rm{background:var(--rm);border-color:var(--rm)}.on.dg,.wk.dg{background:var(--dg);border-color:var(--dg)}.on.gr,.wk.gr{background:var(--gr);border-color:var(--gr)}
 .on.eq,.wk.eq{background:var(--eq);border-color:var(--eq)}.on.sh,.wk.sh{background:var(--sh);border-color:var(--sh)}.on.ml,.wk.ml{background:var(--ml);border-color:var(--ml)}.on.ak,.wk.ak{background:var(--ak);border-color:var(--ak)}.on.df,.wk.df{background:var(--df);border-color:var(--df)}.on.zc,.wk.zc{background:var(--zc);border-color:var(--zc)}.on.dr,.wk.dr{background:var(--dr);border-color:var(--dr)}
 .cb{position:relative}.cb input{width:100%;padding-right:34px}.cbs input{cursor:pointer}
@@ -210,6 +208,14 @@ function addD(iso,n){var q=iso.split('-'),d=new Date(+q[0],+q[1]-1,+q[2]+n);retu
 var DNL=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],MNL=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 function dObj(iso){var q=iso.split('-');return new Date(+q[0],+q[1]-1,+q[2])}
 function dLabel(){var td=isoOf(Date.now()),d=dObj(day);$('dL').innerHTML=DNS[d.getDay()]+', '+d.getDate()+' '+MNS[d.getMonth()]+' '+d.getFullYear()+(day===td?'<span class="sd"> · сегодня</span>':'')}
+/* ширина столбцов — по самому длинному содержимому во всех днях (одинаковая во всех таблицах); всё, что осталось, отдаётся комментарию.
+   Не помещается — комментарий сжимается, полный текст во всплывающей подсказке */
+function fitCols(){var T=[].slice.call(document.querySelectorAll('#tb table'));if(!T.length)return;var W=[],ci=-1;
+  T.forEach(function(t){t.classList.add('meas');t.style.minWidth='';[].forEach.call(t.querySelectorAll('col'),function(c){c.style.width=''})});
+  T.forEach(function(t){[].forEach.call(t.tHead.rows[0].cells,function(c,i){if(c.classList.contains('cmh')){ci=i;return}var w=c.getBoundingClientRect().width;if(!(W[i]>=w))W[i]=Math.ceil(w)})});
+  T.forEach(function(t){t.classList.remove('meas');[].forEach.call(t.querySelectorAll('col'),function(c,i){c.style.width=i===ci?'':(W[i]||0)+'px'})});
+  var sum=W.reduce(function(a,b){return a+(b||0)},0),tw=T[0].parentNode.clientWidth;T.forEach(function(t){t.style.minWidth=(sum+120)+'px'});
+  [].forEach.call(document.querySelectorAll('#tb td.cm .c'),function(d){if(d.scrollWidth>d.clientWidth+1)d.title=d.dataset.full;else d.removeAttribute('title')})}
 function render(){var z=Z();
   if(!z||!z.ok()){$('msg').hidden=false;$('msg').textContent=z?'Войдите во вкладке «Запись».':'Загрузка…';$('tw').hidden=true;$('uChip').hidden=true;$('nB').hidden=true;$('flt').innerHTML='';return}
   var f=z.f(),me=z.me(),L=z.list().filter(function(o){return visible(o,f,me)}),now=Date.now();if(!day)day=isoOf(now);dLabel();
@@ -225,26 +231,26 @@ function render(){var z=Z();
   list.sort(function(a,b){return (b.n||0)-(a.n||0)||b.t-a.t});
   var srch=!!q.trim();$('msg').hidden=!(srch&&!list.length);$('tw').hidden=srch&&!list.length;if(srch&&!list.length){$('msg').textContent='Ничего не найдено.';return}
   /* таблица подстраивается под ширину экрана: на ноутбуке часть столбцов объединяется, чтобы всё помещалось без прокрутки вбок */
-  var W=document.documentElement.clientWidth,lv=W>=1720?0:W>=1420?1:2;document.body.dataset.lv=lv;
+  var W=document.documentElement.clientWidth,lv=W>=1600?0:W>=1250?1:2;document.body.dataset.lv=lv;
   var nc=f.nocli,np=f.noph,C=[];
   function col(hd,cl,fn,w){C.push({h:hd,c:cl,f:fn,w:w})}
   function telH(o){var ph=digits(o.phone);return ph.length>=10?'<a class="tel" href="tel:+7'+ph.slice(-10)+'" data-tel>'+esc(o.phone)+'</a>':esc(o.phone)}
   function car(o){return esc([o.brand,o.model].filter(Boolean).join(' '))+(o.year?' <span class="mu">'+esc(o.year)+'</span>':'')}
   col('№','n',function(o){return o.n||''},[46,42,38][lv]);
   if(lv===0){col('Принято','dt',function(o){return dt(o.t).split(' ')[1]},104);col('Способ','',function(o){return esc(o.way)},104)}
-  else col('Принято','dt',function(o){return dt(o.t).split(' ')[1]+(lv===2?'<br><span class="mu">'+esc(o.way)+'</span>':'')},lv===2?96:74);
+  else col('Принято','dt',function(o){return dt(o.t).split(' ')[1]+(lv===2?'<br><span class="mu">'+esc(o.way)+'</span>':'')},lv===2?96:64);
   if(lv===1)col('Способ','w',function(o){return esc(o.way)},96);
   col('Ответ&shy;ственный','w',function(o){return o.resp?esc(o.respName):'<span class="mu">—</span>'},[130,110,100][lv]);
   if(lv===0){col('Марка','',function(o){return esc(o.brand)},110);col('Модель','',function(o){return esc(o.model)},130);col('Год','',function(o){return esc(o.year||'')},60)}
   else col('Автомобиль','w',car,lv===1?150:124);
-  if(lv<2){if(!nc)col('Клиент','w',function(o){return esc(o.client)},lv?130:160);if(!np)col('Телефон','nw',telH,lv?152:156)}
+  if(lv<2){if(!nc)col('Клиент','w',function(o){return esc(o.client)},lv?130:160);if(!np)col('Телефон','',telH,lv?136:146)}
   else if(!nc||!np)col(nc?'Телефон':'Клиент','w',function(o){return (nc?'':esc(o.client))+(!nc&&!np&&o.client&&o.phone?'<br>':'')+(np?'':telH(o))},140);
   function whyT(o){return o.why==='Дополнительное оборудование'?'Доп. оборудование':o.why}
-  col('Причина','',function(o){return o.why?(TYK[o.wk]?'<span class="wk '+o.wk+'">'+esc(whyT(o))+'</span>':esc(whyT(o))):''},[176,164,168][lv]);
-  col('Комментарий','cm',function(o){return '<div class="c" title="'+esc(o.desc)+'">'+esc(o.desc)+'</div>'});
+  col('Причина','',function(o){return o.why?(TYK[o.wk]?'<span class="wk '+o.wk+'">'+esc(whyT(o))+'</span>':esc(whyT(o))):''},[176,164,150][lv]);
+  col('Комментарий','cm',function(o){return '<div class="c" data-full="'+esc(o.desc)+'">'+esc(o.desc)+'</div>'});
   function tm(o){return o.st!=='done'?dur(o.t,now):dur(o.t,o.ct)}
-  if(lv<2){col('Статус','',tag,lv?168:176);col('Время','mu',tm,lv?104:110)}else col('Статус','',function(o){return tag(o)+'<div class="mu" style="font-size:12px;margin-top:3px">'+tm(o)+'</div>'},160);
-  var colg='<colgroup>'+C.map(function(c){return '<col'+(c.w?' style="width:'+c.w+'px"':'')+'>'}).join('')+'</colgroup>',thd='<thead><tr>'+C.map(function(c){return '<th scope="col">'+c.h+'</th>'}).join('')+'</tr></thead>';
+  if(lv<2){col('Статус','',tag,lv?132:150);col('Время','mu',tm,lv?84:96)}else col('Статус','',function(o){return tag(o)+'<div class="mu" style="font-size:12px;margin-top:3px">'+tm(o)+'</div>'},124);
+  var colg='<colgroup>'+C.map(function(){return '<col>'}).join('')+'</colgroup>',thd='<thead><tr>'+C.map(function(c){return '<th scope="col"'+(c.c==='cm'?' class="cmh"':'')+'>'+c.h+'</th>'}).join('')+'</tr></thead>';
   /* по дням, как в записи: сверху сегодня, ниже прошлые дни; выбранный день показывается всегда, даже если он пустой */
   var shown=list.slice(0,lim),by={},td=isoOf(now),days=[];shown.forEach(function(o){var k=isoOf(o.t);(by[k]=by[k]||[]).push(o)});
   if(!srch){by[td]=by[td]||[];by[day]=by[day]||[]}
@@ -260,6 +266,7 @@ function render(){var z=Z();
     h+='</tbody></table></div></section>'});
   var st0=$('tw').scrollTop;$('tb').innerHTML=h;var ls=$('tb').lastElementChild;$('tb').style.paddingBottom=ls?Math.max(0,$('tw').clientHeight-ls.offsetHeight-24)+'px':'';$('tw').scrollTop=st0;flash=null;
   if(goDay){var sec=document.querySelector('#tb .day[data-d="'+goDay+'"]');goDay=null;if(sec){spyOff=Date.now();$('tw').scrollTop=sec.offsetTop}}
+  fitCols();
   var dxi=document.querySelector('#tb .dxi');if(dxi)dxi.style.width=Math.max(260,dxi.closest('.tc').clientWidth-30)+'px';
   $('more').hidden=list.length<=lim;$('more').textContent='Показать ещё ('+(list.length-lim)+')';
   if($('lSel'))enhanceSelect('lSel');
