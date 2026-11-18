@@ -374,6 +374,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 .obban .obh{color:var(--mu)}
 .obban button{padding:5px 10px;font-size:13px;flex:none}
 @media (max-width:700px){.obban .obh{display:none}}
+.gor[hidden],.gol[hidden],[data-go][hidden]{display:none!important}
 </style>
 </head>
 <body class="ro">
@@ -395,7 +396,8 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <div id="qRes"></div>
 <div id="menu" class="menu" style="display:none">
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Введите токен в разделе «Синхронизация GitHub».</div>
-<div class="mlbl">Общее для обеих вкладок</div><div class="tools"><button id="goStaff" class="pset">Сотрудники и посты ↗</button><button id="goMode" class="pset">Режим работы ↗</button><button id="uToggle" class="pu" aria-expanded="false">Пользователи ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button></div>
+<div class="mlbl">Общее</div><div class="tools"><button id="goStaff" class="pset">Сотрудники и посты ↗</button><button id="goMode" class="pset">Режим работы ↗</button><button id="uToggle" class="pu" aria-expanded="false">Пользователи ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button></div>
+<div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-go="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-go="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl gol">Обращения</div><div class="tools gor"><button type="button" data-go="obr:rep" data-need="rep">Отчёт по обращениям ↗</button></div>
 <div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="msToggle" class="pset" aria-expanded="false">Шаблоны сообщений ▸</button><button id="ldToggle" class="ldr" aria-expanded="false">Загрузка ▸</button><button id="stToggle" class="ps" aria-expanded="false">Статистика ▸</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
 <div id="setBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="uBox" class="pu" style="display:none;margin-bottom:12px"><div class="set" id="usr"></div></div>
@@ -511,7 +513,7 @@ window.zApi={
   add:function(k){if(!this.can('set'))return 'Нет прав';var c=state.cfg;c.posts.push({id:'p'+uid(),name:'Пост '+(c.posts.length+1),kind:KINDS[k]?k:'me',emp:[]});cfgTouch();return ''},
   up:function(i){if(!this.can('set'))return 'Нет прав';var c=state.cfg;if(i<1||i>=c.posts.length)return '';var x=c.posts[i];c.posts[i]=c.posts[i-1];c.posts[i-1]=x;cfgTouch();return ''},
   del:function(i){if(!this.can('set'))return 'Нет прав';var c=state.cfg,p=c.posts[i];if(!p)return '';if(futureOn(p.id))return 'На «'+p.name+'» есть записи на сегодня или позже. Сначала перенесите их на другие посты.';if(c.posts.length<=1)return 'Должен остаться хотя бы один пост';c.posts.splice(i,1);cfgTouch();return ''},
-  open:function(k){menuOpen=true;applyMenu();collapseMenuSections();var b=document.getElementById(k==='u'?'uToggle':'gToggle');if(b&&getComputedStyle(b).display!=='none')b.click()},
+  open:function(k){menuOpen=true;applyMenu();collapseMenuSections();var b=document.getElementById({u:'uToggle',g:'gToggle',ms:'msToggle',ld:'ldToggle',st:'stToggle'}[k]||'gToggle');if(b&&getComputedStyle(b).display!=='none')b.click()},
   masterDay:function(id,d){openMD(id,d)},
   logout:function(){doLogout()},
   myPw:function(){openMyPw()},
@@ -533,7 +535,7 @@ window.zApi={
     myPw:function(){openMyPw()}
   }
 };
-window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),ob:feat('tabO'),tg:feat('tabG'),tz:feat('tabZ')}};
+window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),ob:feat('tabO'),tg:feat('tabG'),tz:feat('tabZ'),tpl:feat('tpl'),load:feat('load'),stats:can('stats'),rep:feat('obrRep')}};
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
 var KINDS={me:'механик',el:'электрик'};
 function pad(n){return n<10?'0'+n:''+n}
@@ -1835,6 +1837,18 @@ var rzT=null,rzN=innerWidth<600;addEventListener('resize',function(){clearTimeou
 
 window.tabShown=function(){sibGraph();if(KEY&&appVisible())rerender();pull()};
 setInterval(function(){if(sib('fg'))sibGraph()},3000);
+/* единое меню: в каждом разделе видны пункты всех разделов; чужие (со стрелкой ↗) переключают раздел и открывают нужный пункт там */
+(function(){function zw(){try{return parent.document.getElementById('fz').contentWindow}catch(e){return null}}
+  function fw(k){try{return parent.document.getElementById({grafik:'fg',obr:'fo',zapis:'fz'}[k]).contentWindow}catch(e){return null}}
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(!b)return;var q=b.dataset.go.split(':'),t=q[0],a=q[1],w=fw(t);if(!w)return;
+    try{if(typeof setMenu==='function')setMenu(false);else if(typeof menuSet==='function')menuSet(false)}catch(x){}
+    try{parent.showTab(t)}catch(x){}
+    setTimeout(function(){try{if(t==='grafik'){if(a==='exp'){w.document.getElementById('expB').click()}else w.openSec(a)}else if(t==='zapis')w.zApi.open(a);else if(t==='obr')w.openRep()}catch(x){}},60)});
+  function upd(){var z=zw(),p={};try{p=(z&&z.permFor&&z.permFor())||{}}catch(e){}
+    [].forEach.call(document.querySelectorAll('[data-go]'),function(b){var n=b.dataset.need,t=b.dataset.go.split(':')[0],okT=t==='obr'?!!p.ob:t==='grafik'?p.tg!==false:p.tz!==false;
+      b.hidden=!p.role||!okT||!(n==='any'||(n==='owner'?p.role==='owner':!!p[n]))});
+    [].forEach.call(document.querySelectorAll('.gor'),function(r){var lb=r.previousElementSibling,vis=[].some.call(r.children,function(c){return !c.hidden&&getComputedStyle(c).display!=='none'});r.hidden=!vis;if(lb&&lb.classList.contains('gol'))lb.hidden=!vis})}
+  setInterval(upd,1000);upd()})();
 </script>
 </body>
 </html>
