@@ -84,16 +84,24 @@ addEventListener('hashchange',function(){var k=(location.hash||'').replace('#','
 /* ===== переключатель разделов ===== */
 var NM={grafik:['График смен','График'],obr:['Обращения','Обращения'],zapis:['Запись на сервис','Запись']},SW=document.getElementById('tsw'),obCnt='';
 function swList(){return ORD.filter(function(k){return k===cur||authSt()!=='in'||okTab(k)})}
-function swNb(d){var L=swList(),i=L.indexOf(cur);return L[(i+d+L.length)%L.length]}
+/* разделы идут по порядку, без круга: за крайним дальше не листается */
+function swNb(d){var L=swList(),i=L.indexOf(cur);return L[i+d]||null}
 function swLbHtml(k){return NM[k][innerWidth<1500?1:0]+(k==='obr'?'<span class="obc">'+obCnt+'</span>':'')}
 function swLabel(a,b,d){var w=document.getElementById('twin');if(!w)return;var o=w.lastElementChild;w.insertAdjacentHTML('beforeend','<div class="tlb">'+swLbHtml(b)+'</div>');var nl=w.lastElementChild;
   if(!d||!o||!nl.animate){while(w.children.length>1)w.firstElementChild.remove();swUpd();return}
   var op={duration:350,easing:'cubic-bezier(.4,0,.2,1)'};var a1=o.animate([{transform:'none'},{transform:'translateX('+(-100*d)+'%)'}],op);nl.animate([{transform:'translateX('+(100*d)+'%)'},{transform:'none'}],op);
   a1.onfinish=function(){o.remove()};swUpd()}
 function swUpd(){var L=swList(),one=L.length<2;var lb=document.querySelector('#twin .tlb:last-child');if(lb&&!lb.getAnimations().length)lb.innerHTML=swLbHtml(cur);
-  [].forEach.call(SW.querySelectorAll('.tar'),function(b){b.hidden=one;var t=swNb(+b.dataset.dir);b.title=NM[t][0];b.setAttribute('aria-label','Перейти: '+NM[t][0]);b.querySelector('.obc').textContent=(!one&&t==='obr'&&cur!=='obr'&&!(L.length===2&&b.dataset.dir==='-1'))?obCnt:''});
+  [].forEach.call(SW.querySelectorAll('.tar'),function(b){b.hidden=one;var t=swNb(+b.dataset.dir);b.title=t?NM[t][0]:(+b.dataset.dir>0?'Это последний раздел':'Это первый раздел');b.setAttribute('aria-label',t?'Перейти: '+NM[t][0]:b.title);b.querySelector('.obc').textContent=(!one&&t==='obr')?obCnt:''});
   document.getElementById('tdots').innerHTML=one?'':L.map(function(k){return '<i class="'+(k===cur?'on':'')+'"></i>'}).join('')}
-SW.addEventListener('click',function(e){var b=e.target.closest('.tar');if(!b)return;var d=+b.dataset.dir;showTab(swNb(d),d)});
+SW.addEventListener('click',function(e){var b=e.target.closest('.tar');if(!b)return;var d=+b.dataset.dir,t=swNb(d);if(t){showTab(t,d);return}swEdge(d,b)});
+/* упор на крайнем разделе: стрелка вспыхивает красным, название и страница упруго толкаются в сторону нажатия */
+function swEdge(d,b){var red=false;try{red=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}if(!b.animate)return;
+  b.animate([{borderColor:'var(--danger)',color:'var(--danger)',boxShadow:'0 0 0 3px rgba(248,113,113,.25)'},{borderColor:'var(--bd)',color:'var(--tx)',boxShadow:'0 0 0 0 transparent'}],{duration:600,easing:'ease-out'});
+  if(red||ANI.some(function(a){return a.playState==='running'}))return;
+  var o={duration:420,easing:'cubic-bezier(.3,1.6,.5,1)'},lb=document.querySelector('#twin .tlb:last-child'),f=document.getElementById(TABS[cur].f);
+  if(lb)lb.animate([{transform:'none'},{transform:'translateX('+(-14*d)+'%)'},{transform:'none'}],o);
+  if(f)f.animate([{transform:'none'},{transform:'translateX('+(-22*d)+'px)'},{transform:'none'}],o)}
 /* ставим переключатель точно на место-заготовку открытой страницы; прячем, если её закрывает окно, отчёт или экран входа */
 function swPlace(){if(ANI.some(function(a){return a.playState==='running'}))return;
   var f=document.getElementById(TABS[cur].f),ph=null,ok=false,r;try{ph=f.contentDocument&&f.contentDocument.querySelector('.tswph')}catch(e){}
