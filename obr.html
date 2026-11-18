@@ -77,6 +77,7 @@ tr.dx>td{background:var(--bg);white-space:normal;padding:10px 14px 12px}
 .acts button{padding:5px 10px;font-size:13px}
 .acts input,.acts select{padding:5px 8px;font-size:13px}
 .acts input{min-width:240px;flex:0 1 340px}
+.acts .cb{width:180px;flex:none}.acts .cb input{padding:5px 30px 5px 8px;font-size:13px;min-width:0}.acts .cbl div{font-size:13px}
 .seg2{display:inline-flex;border:1px solid var(--bd);border-radius:10px;padding:2px;gap:2px;background:var(--card)}
 .seg2 button{border:0;background:transparent;padding:4px 10px;border-radius:8px;color:var(--mu)}
 .seg2 button.on{background:var(--ac);color:#fff}
@@ -195,15 +196,17 @@ function render(){var z=Z();
     if(exp===o.id)h+='<tr class="dx"><td colspan="'+cols.length+'">'+detail(o,f)+'</td></tr>'});
   $('tb').innerHTML=h;flash=null;
   $('more').hidden=list.length<=lim;$('more').textContent='Показать ещё ('+(list.length-lim)+')';
+  if($('lSel'))enhanceSelect('lSel');
   if(arm){var ci=document.querySelector('#tb [data-c]');if(ci&&!ci.dataset.f){ci.dataset.f=1;ci.focus()}}}
 
+var LATER=(function(){var h='';for(var m=30;m<=300;m+=30){var hh=Math.floor(m/60),mm=m%60;h+='<option value="'+m+'"'+(m===60?' selected':'')+'>через '+(hh?hh+' ч':'')+(hh&&mm?' ':'')+(mm?mm+' мин':'')+'</option>'}return h+'<option value="t10">завтра</option>'})();
 function detail(o,f){var h='<div class="hist">';
   h+='<div>Создал: '+esc(o.by||'—')+' · '+dt(o.t)+'</div>';
   (o.tries||[]).forEach(function(x){h+='<div>'+(x.k==='later'?(x.nr?'Не дозвонились, перезвонить ':'Перезвонить ')+hm(x.at):'Недозвон')+' · '+hm(x.t)+' · '+esc(x.n||'')+(x.c?' — '+esc(x.c):'')+'</div>'});
   if(o.st==='done')h+='<div><b>'+(RES[o.res]||'Закрыто')+'</b> · '+esc(o.cbName)+' · '+dt(o.ct)+(o.note?' — '+esc(o.note):'')+(o.bkLive?' · <a href="#" data-bk="'+o.bk+'">открыть запись</a>':'')+'</div>';
   h+='</div>';
   if(o.canAct){
-    if(arm&&arm.id===o.id){var k=arm.k;h+='<div class="acts">'+(k==='later'?'<div class="seg2" role="group" aria-label="Почему перезвонить"><button type="button" data-nr="1" class="'+(arm.nr?'on':'')+'">Не дозвонились</button><button type="button" data-nr="0" class="'+(arm.nr?'':'on')+'">Клиент попросил</button></div><select data-l aria-label="Когда перезвонить"><option value="30">через 30 мин</option><option value="60" selected>через 1 ч</option><option value="120">через 2 ч</option><option value="t10">завтра в 10:00</option></select>':'')
+    if(arm&&arm.id===o.id){var k=arm.k;h+='<div class="acts">'+(k==='later'?'<div class="seg2" role="group" aria-label="Почему перезвонить"><button type="button" data-nr="1" class="'+(arm.nr?'on':'')+'">Не дозвонились</button><button type="button" data-nr="0" class="'+(arm.nr?'':'on')+'">Клиент попросил</button></div><label class="vh" for="lSel">Когда перезвонить</label><select id="lSel" data-l>'+LATER+'</select>':'')
       +'<input type="text" data-c maxlength="200" aria-label="Комментарий" placeholder="'+(k==='other'?'Что сделали (обязательно)':'Комментарий')+'"><button type="button" class="pri" data-ok="'+o.id+'">'+(k==='later'?'Сохранить':'Закрыть обращение')+'</button><button type="button" data-no>Отмена</button></div>'}
     else h+='<div class="acts">'+(f.book?'<button type="button" class="pri" data-a="book">Записать</button>':'')+'<button type="button" data-a="cons">Проконсультирован</button><button type="button" data-a="later">Перезвонить</button><button type="button" data-a="other">Другое</button></div>'}
   else if(o.st!=='done'&&f.work)h+='<div class="mu" style="font-size:13px">Обращение ведёт '+esc(o.respName)+'.</div>';
