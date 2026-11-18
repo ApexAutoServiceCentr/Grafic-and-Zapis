@@ -2020,6 +2020,10 @@ setInterval(function(){if(sib('fg'))sibGraph()},3000);
       b.hidden=!p.role||!okT||!(n==='any'||(n==='owner'?p.role==='owner':!!p[n]))});
     [].forEach.call(document.querySelectorAll('.gor'),function(r){var lb=r.previousElementSibling,vis=[].some.call(r.children,function(c){return !c.hidden&&getComputedStyle(c).display!=='none'});r.hidden=!vis;if(lb&&lb.classList.contains('gol'))lb.hidden=!vis})}
   setInterval(upd,1000);upd()})();
+/* браузер не должен подсказывать ранее введённые значения (имена, телефоны и т. п.) — отключаем автозаполнение у всех полей, кроме входа */
+(function(){var SEL='input:not([type=checkbox]):not([type=radio]):not([type=date]):not([type=hidden]):not([type=range]):not([type=color]):not([type=file])';
+  function fix(r){[].forEach.call((r.querySelectorAll?r:document).querySelectorAll(SEL),function(i){if(i.id==='pwName'||i.autocomplete==='current-password'||i.dataset.acOk)return;if(i.getAttribute('autocomplete')!=='off')i.setAttribute('autocomplete','off')})}
+  fix(document);new MutationObserver(function(m){m.forEach(function(x){[].forEach.call(x.addedNodes,function(n){if(n.nodeType===1){if(n.matches&&n.matches(SEL))fix(n.parentNode||document);else fix(n)}})})}).observe(document.body,{childList:true,subtree:true})})();
 </script>
 </body>
 </html>
