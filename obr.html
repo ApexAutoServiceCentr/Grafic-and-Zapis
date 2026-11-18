@@ -184,7 +184,7 @@ td a.tel{color:inherit;text-decoration:none}
 .foot{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
 .foot .mu{font-size:13px}
 .foot button{margin-left:auto}
-.gor[hidden],.gol[hidden],[data-go][hidden]{display:none!important}
+.gor[hidden],.gol[hidden],[data-mgo][hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -198,7 +198,7 @@ td a.tel{color:inherit;text-decoration:none}
 <button type="button" id="nB" aria-label="Новое обращение" title="Новое обращение" hidden>+<span class="t"><span class="t2"> Новое</span> обращение</span></button>
 <div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
-<div id="menu" class="menu" hidden><div class="mlbl gol">Общее</div><div class="tools gor"><button type="button" data-go="grafik:s" data-need="any">Сотрудники и посты ↗</button><button type="button" data-go="grafik:m" data-need="set">Режим работы ↗</button><button type="button" data-go="zapis:u" data-need="owner">Пользователи ↗</button><button type="button" data-go="zapis:g" data-need="any">Синхронизация GitHub ↗</button></div><div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-go="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-go="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl">Обращения</div><div class="tools"><button type="button" id="rB" hidden>Отчёт по обращениям</button></div><div class="mlbl gol">Запись на сервис</div><div class="tools gor"><button type="button" data-go="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-go="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button><button type="button" data-go="zapis:zr" data-need="zrep">Отчёт по записям ↗</button></div></div>
+<div id="menu" class="menu" hidden><div class="mlbl gol">Общее</div><div class="tools gor"><button type="button" data-mgo="grafik:s" data-need="any">Сотрудники и посты ↗</button><button type="button" data-mgo="grafik:m" data-need="set">Режим работы ↗</button><button type="button" data-mgo="zapis:u" data-need="owner">Пользователи ↗</button><button type="button" data-mgo="zapis:g" data-need="any">Синхронизация GitHub ↗</button></div><div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-mgo="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-mgo="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl">Обращения</div><div class="tools"><button type="button" id="rB" hidden>Отчёт по обращениям</button></div><div class="mlbl gol">Запись на сервис</div><div class="tools gor"><button type="button" data-mgo="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-mgo="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button><button type="button" data-mgo="zapis:zr" data-need="zrep">Отчёт по записям ↗</button></div></div>
 <div id="msg">Загрузка…</div>
 <div class="tw" id="tw" hidden><div id="tb"></div><button type="button" class="more" id="more" hidden>Показать ещё</button></div>
 </main>
@@ -580,12 +580,12 @@ render();
 /* единое меню: в каждом разделе видны пункты всех разделов; чужие (со стрелкой ↗) переключают раздел и открывают нужный пункт там */
 (function(){function zw(){try{return parent.document.getElementById('fz').contentWindow}catch(e){return null}}
   function fw(k){try{return parent.document.getElementById({grafik:'fg',obr:'fo',zapis:'fz'}[k]).contentWindow}catch(e){return null}}
-  document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(!b)return;var q=b.dataset.go.split(':'),t=q[0],a=q[1],w=fw(t);if(!w)return;
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-mgo]');if(!b)return;var q=b.dataset.mgo.split(':'),t=q[0],a=q[1],w=fw(t);if(!w)return;
     try{if(typeof setMenu==='function')setMenu(false);else if(typeof menuSet==='function')menuSet(false)}catch(x){}
     try{parent.showTab(t)}catch(x){}
     setTimeout(function(){try{if(t==='grafik'){if(a==='exp'){w.document.getElementById('expB').click()}else w.openSec(a)}else if(t==='zapis')w.zApi.open(a);else if(t==='obr')w.openRep()}catch(x){}},60)});
   function upd(){var z=zw(),p={};try{p=(z&&z.permFor&&z.permFor())||{}}catch(e){}
-    [].forEach.call(document.querySelectorAll('[data-go]'),function(b){var n=b.dataset.need,t=b.dataset.go.split(':')[0],okT=t==='obr'?!!p.ob:t==='grafik'?p.tg!==false:p.tz!==false;
+    [].forEach.call(document.querySelectorAll('[data-mgo]'),function(b){var n=b.dataset.need,t=b.dataset.mgo.split(':')[0],okT=t==='obr'?!!p.ob:t==='grafik'?p.tg!==false:p.tz!==false;
       b.hidden=!p.role||!okT||!(n==='any'||(n==='owner'?p.role==='owner':!!p[n]))});
     [].forEach.call(document.querySelectorAll('.gor'),function(r){var lb=r.previousElementSibling,vis=[].some.call(r.children,function(c){return !c.hidden&&getComputedStyle(c).display!=='none'});r.hidden=!vis;if(lb&&lb.classList.contains('gol'))lb.hidden=!vis})}
   setInterval(upd,1000);upd()})();
