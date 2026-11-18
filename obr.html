@@ -187,7 +187,7 @@ function dt(t){var d=new Date(t),y=new Date().getFullYear();return pad(d.getDate
 function hm(t){var d=new Date(t),td=new Date();return (d.toDateString()===td.toDateString()?'':pad(d.getDate())+'.'+pad(d.getMonth()+1)+' ')+pad(d.getHours())+':'+pad(d.getMinutes())}
 function dur(a,b){var m=Math.max(0,Math.round((b-a)/60000));if(m<60)return m+' мин';var h=Math.floor(m/60);if(h<24)return h+' ч'+(m%60?' '+m%60+' мин':'');return Math.floor(h/24)+' дн'+(h%24?' '+h%24+' ч':'')}
 var RES={book:'Записан',cons:'Проконсультирован',other:'Другое'};
-var day=null,goDay=null,spyOff=0,flt='all',q='',exp=null,arm=null,lim=200,flash=null,lastSig='',err='';
+var day=null,span=14,oldest=null,goDay=null,spyOff=0,flt='all',q='',exp=null,arm=null,lim=200,flash=null,lastSig='',err='';
 try{flt=localStorage.getItem('obr-flt')||'all'}catch(e){}
 var TYK={},delArm=null;
 
@@ -207,7 +207,7 @@ function isoOf(t){var d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+
 function addD(iso,n){var q=iso.split('-'),d=new Date(+q[0],+q[1]-1,+q[2]+n);return isoOf(d.getTime())}
 var DNL=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],MNL=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 function dObj(iso){var q=iso.split('-');return new Date(+q[0],+q[1]-1,+q[2])}
-function dLabel(){var td=isoOf(Date.now()),d=dObj(day);$('dL').innerHTML=DNS[d.getDay()]+', '+d.getDate()+' '+MNS[d.getMonth()]+' '+d.getFullYear()+(day===td?'<span class="sd"> · сегодня</span>':'')}
+function dLabel(){var td=isoOf(Date.now()),d=dObj(day);$('dNext').disabled=day>=td;$('dL').innerHTML=DNS[d.getDay()]+', '+d.getDate()+' '+MNS[d.getMonth()]+' '+d.getFullYear()+(day===td?'<span class="sd"> · сегодня</span>':'')}
 /* ширина столбцов — по самому длинному содержимому во всех днях (одинаковая во всех таблицах); всё, что осталось, отдаётся комментарию.
    Не помещается — комментарий сжимается, полный текст во всплывающей подсказке */
 function fitCols(){var T=[].slice.call(document.querySelectorAll('#tb table'));if(!T.length)return;var W=[],ci=-1;
@@ -252,9 +252,11 @@ function render(){var z=Z();
   if(lv<2){col('Статус','',tag,lv?132:150);col('Время','mu',tm,lv?84:96)}else col('Статус','',function(o){return tag(o)+'<div class="mu" style="font-size:12px;margin-top:3px">'+tm(o)+'</div>'},124);
   var colg='<colgroup>'+C.map(function(){return '<col>'}).join('')+'</colgroup>',thd='<thead><tr>'+C.map(function(c){return '<th scope="col"'+(c.c==='cm'?' class="cmh"':'')+'>'+c.h+'</th>'}).join('')+'</tr></thead>';
   /* по дням, как в записи: сверху сегодня, ниже прошлые дни; выбранный день показывается всегда, даже если он пустой */
-  var shown=list.slice(0,lim),by={},td=isoOf(now),days=[];shown.forEach(function(o){var k=isoOf(o.t);(by[k]=by[k]||[]).push(o)});
-  if(!srch){by[td]=by[td]||[];by[day]=by[day]||[]}
-  days=Object.keys(by).sort().reverse();
+  /* дни идут подряд, как в записи: от сегодня назад, пустые дни тоже видны; при прокрутке вниз подгружаются более ранние */
+  var by={},td=isoOf(now),days=[];list.forEach(function(o){var k=isoOf(o.t);(by[k]=by[k]||[]).push(o)});
+  if(srch)days=Object.keys(by).sort().reverse();
+  else{if(day>td)day=td;var lo=addD(td,-span);if(day<lo){span=Math.round((dObj(td)-dObj(day))/864e5)+3;lo=addD(td,-span)}
+    oldest=list.reduce(function(m,o){var k=isoOf(o.t);return k<m?k:m},td);for(var k=td;k>=lo;k=addD(k,-1)){days.push(k);by[k]=by[k]||[]}}
   var all={};L.forEach(function(o){var k=isoOf(o.t);all[k]=all[k]||[0,0];all[k][0]++;if(o.st!=='done')all[k][1]++});
   var h='';days.forEach(function(k){var d=dObj(k),rows=by[k],a=all[k]||[0,0];
     h+='<section class="day" data-d="'+k+'"><div class="dh'+(k===td?' td':'')+'"><b>'+DNL[d.getDay()]+', '+d.getDate()+' '+MNL[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'')+(k===td?' · сегодня':'')+'</b><span class="sub">Обращений: '+a[0]+(a[1]?' · открытых: '+a[1]:'')+'</span></div><div class="tc">';
@@ -268,7 +270,7 @@ function render(){var z=Z();
   if(goDay){var sec=document.querySelector('#tb .day[data-d="'+goDay+'"]');goDay=null;if(sec){spyOff=Date.now();$('tw').scrollTop=sec.offsetTop}}
   fitCols();
   var dxi=document.querySelector('#tb .dxi');if(dxi)dxi.style.width=Math.max(260,dxi.closest('.tc').clientWidth-30)+'px';
-  $('more').hidden=list.length<=lim;$('more').textContent='Показать ещё ('+(list.length-lim)+')';
+  $('more').hidden=true;
   if($('lSel'))enhanceSelect('lSel');
   if(arm){var ci=document.querySelector('#tb [data-c]');if(ci&&!ci.dataset.f){ci.dataset.f=1;ci.focus()}}}
 
@@ -289,11 +291,11 @@ function detail(o,f){var h='<div class="hist">';
 
 function goto(d){day=d;goDay=d;exp=null;arm=null;render()}
 $('dPrev').onclick=function(){goto(addD(day||isoOf(Date.now()),-1))};
-$('dNext').onclick=function(){goto(addD(day||isoOf(Date.now()),1))};
+$('dNext').onclick=function(){var t=isoOf(Date.now());if(day<t)goto(addD(day,1))};
 $('dToday').onclick=function(){goto(isoOf(Date.now()))};
 $('dPick').onchange=function(){if(this.value)goto(this.value)};
 /* при прокрутке в надписи даты — день, который сейчас вверху таблицы */
-$('tw').addEventListener('scroll',function(){if(Date.now()-spyOff<400)return;var tw=this,top=tw.scrollTop+4,secs=document.querySelectorAll('#tb .day'),k=null;[].forEach.call(secs,function(x){if(x.offsetTop<=top)k=x.dataset.d});if(!k&&secs.length)k=secs[0].dataset.d;if(k&&k!==day){day=k;dLabel()}});
+$('tw').addEventListener('scroll',function(){var tw=this;if(!q.trim()&&tw.scrollTop+tw.clientHeight>tw.scrollHeight-400&&oldest&&addD(isoOf(Date.now()),-span)>addD(oldest,-7)){span+=14;render()}if(Date.now()-spyOff<400)return;var top=tw.scrollTop+40,secs=document.querySelectorAll('#tb .day'),k=null;[].forEach.call(secs,function(x){if(x.offsetTop<=top)k=x.dataset.d});if(!k&&secs.length)k=secs[0].dataset.d;if(k&&k!==day){day=k;dLabel()}});
 $('calB').onclick=function(){var p=$('dPick');p.value=day||isoOf(Date.now());try{p.showPicker()}catch(e){p.style.pointerEvents='auto';p.focus();p.click();p.style.pointerEvents=''}};
 $('flt').addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(!b)return;flt=b.dataset.f;lim=200;try{localStorage.setItem('obr-flt',flt)}catch(x){}render()});
 $('q').addEventListener('input',function(){q=this.value;$('qX').hidden=!q;lim=200;render()});
