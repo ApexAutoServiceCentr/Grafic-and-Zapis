@@ -25,8 +25,20 @@ iframe.off{visibility:hidden;pointer-events:none;z-index:-1}
 /* вкладки всегда грузятся свежими: без этого браузер может показывать старую версию графика или записи из кэша */
 var V=Date.now();document.getElementById('fg').src='grafik.html?v='+V;document.getElementById('fz').src='zapis.html?v='+V;document.getElementById('fo').src='obr.html?v='+V;
 var TABS={grafik:{f:'fg',t:'График смен',i:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMjQiIHk9IjUiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI1IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM0NzU1NjkiLz48cmVjdCB4PSI1IiB5PSIyNCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNDc1NTY5Ii8+PHJlY3QgeD0iMjQiIHk9IjI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM2MGE1ZmEiLz48cmVjdCB4PSI0MyIgeT0iMjQiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjUiIHk9IjQzIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiNmYmJmMjQiLz48cmVjdCB4PSIyNCIgeT0iNDMiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI0MyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PC9zdmc+'},obr:{f:'fo',t:'Обращения',i:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjYyIiBoZWlnaHQ9IjYyIiByeD0iMTIiIGZpbGw9IiMzNzQxNTEiLz48cGF0aCBkPSJNMjAgMTRjMi0xIDQgMCA1IDJsNCA4YzEgMiAwIDQtMSA1bC0zIDNjMiA1IDYgOSAxMSAxMWwzLTNjMS0xIDMtMiA1LTFsOCA0YzIgMSAzIDMgMiA1bC0yIDVjLTEgMi0zIDMtNSAzQzI5IDU2IDggMzUgOSAxN2MwLTIgMS00IDMtNXoiIGZpbGw9IiNmYmJmMjQiLz48L3N2Zz4='},zapis:{f:'fz',t:'Запись на сервис',i:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iMSIgeT0iNyIgd2lkdGg9IjYyIiBoZWlnaHQ9IjU2IiByeD0iOSIgZmlsbD0iIzM3NDE1MSIvPjxwYXRoIGQ9Ik0xIDE2IGE5IDkgMCAwIDEgOSAtOSBoNDQgYTkgOSAwIDAgMSA5IDkgdjggaC02MiB6IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMTMiIHk9IjEiIHdpZHRoPSI3IiBoZWlnaHQ9IjEzIiByeD0iMy41IiBmaWxsPSIjOTRhM2I4Ii8+PHJlY3QgeD0iNDQiIHk9IjEiIHdpZHRoPSI3IiBoZWlnaHQ9IjEzIiByeD0iMy41IiBmaWxsPSIjOTRhM2I4Ii8+PGcgdHJhbnNmb3JtPSJyb3RhdGUoLTQ1IDMyIDQzKSI+PHJlY3QgeD0iMjcuNSIgeT0iMzAiIHdpZHRoPSI5IiBoZWlnaHQ9IjI5IiByeD0iNC41IiBmaWxsPSIjZmJiZjI0Ii8+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMCIgcj0iMTAuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjI4IiB5PSIxOCIgd2lkdGg9IjgiIGhlaWdodD0iMTIiIHJ4PSIxLjUiIGZpbGw9IiMzNzQxNTEiLz48L2c+PC9zdmc+'}},cur=null;
-function showTab(k){if(!TABS[k])k='grafik';var first=cur===null;if(k===cur)return;cur=k;
-  for(var n in TABS){var f=document.getElementById(TABS[n].f);f.classList.toggle('off',n!==k);f.setAttribute('aria-hidden',n!==k?'true':'false')}
+/* смена вкладки со сдвигом: старая страница уезжает в сторону стрелки, новая въезжает с другой стороны */
+var ORD=['grafik','obr','zapis'],ANI=[];
+function showTab(k,d){if(!TABS[k])k='grafik';var first=cur===null;if(k===cur)return;var prev=cur;cur=k;
+  ANI.forEach(function(a){try{a.finish()}catch(e){}});ANI=[];
+  var red=false;try{red=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
+  if(!d)d=ORD.indexOf(k)>ORD.indexOf(prev)?1:-1;
+  var fo=prev&&document.getElementById(TABS[prev].f),fn=document.getElementById(TABS[k].f);
+  for(var n in TABS){var f=document.getElementById(TABS[n].f);if(n!==k&&n!==prev)f.classList.add('off');f.setAttribute('aria-hidden',n!==k?'true':'false')}
+  fn.classList.remove('off');
+  if(first||!fo||red||!fn.animate){if(fo)fo.classList.add('off')}
+  else{var o={duration:350,easing:'cubic-bezier(.4,0,.2,1)'};fo.style.zIndex=1;fn.style.zIndex=2;
+    var a1=fo.animate([{transform:'translateX(0)',opacity:1},{transform:'translateX('+(-30*d)+'%)',opacity:0}],o),a2=fn.animate([{transform:'translateX('+(30*d)+'%)',opacity:0},{transform:'translateX(0)',opacity:1}],o);ANI=[a1,a2];
+    a1.onfinish=function(){if(cur!==prev)fo.classList.add('off');fo.style.zIndex=fn.style.zIndex=''};
+    try{fo.contentWindow.tabOut&&fo.contentWindow.tabOut(d)}catch(e){}try{fn.contentWindow.tabIn&&fn.contentWindow.tabIn(d)}catch(e){}}
   document.title=TABS[k].t;
   try{history.replaceState(null,'','#'+k)}catch(e){location.hash=k}
   try{localStorage.setItem('shell-tab',k)}catch(e){}
@@ -42,11 +54,11 @@ function perm(){try{var w=document.getElementById('fz').contentWindow;return (w&
 /* какие вкладки открыты сотруднику — настраивает владелец в «Доступе к функциям» */
 function okTab(k){var p=perm();return k==='grafik'?p.tg!==false:k==='obr'?!!p.ob:p.tz!==false}
 function firstTab(){return ['grafik','obr','zapis'].filter(okTab)[0]||'zapis'}
-var _show=showTab;showTab=function(k){var a=authSt();if(k!=='zapis'&&a==='out'){want=k;k='zapis'}else if(a==='in'&&!okTab(k))k=firstTab();else if(k==='zapis'&&cur!=='zapis'&&want)want=null;_show(k)};
+var _show=showTab;window.tabGo=function(k,d){showTab(k,d)};showTab=function(k,d){var a=authSt();if(k!=='zapis'&&a==='out'){want=k;k='zapis'}else if(a==='in'&&!okTab(k))k=firstTab();else if(k==='zapis'&&cur!=='zapis'&&want)want=null;_show(k,d)};
 /* у вкладок прячем недоступные; рядом с «Обращениями» — число открытых */
 var vis=null;
 function obUpd(){var a=authSt(),p=a==='in'?perm():{},on=a==='in'&&!!p.ob,ng=a==='in'&&p.tg===false,nz=a==='in'&&p.tz===false,n='';if(on){try{var z=document.getElementById('fz').contentWindow.zApi.ob;n=z.count()||''}catch(e){}}
-  var key=[on,ng,nz,n].join('|');if(key===vis)return;vis=key;['fg','fo','fz'].forEach(function(id){try{var d=document.getElementById(id).contentDocument;if(!d||!d.documentElement)return;var c=d.documentElement.classList;c.toggle('obr-on',on);c.toggle('no-tg',ng);c.toggle('no-tz',nz);[].forEach.call(d.querySelectorAll('.tabs a[data-tab="obr"] .obc'),function(x){x.textContent=n})}catch(e){}})}
+  var key=[on,ng,nz,n].join('|');if(key===vis)return;vis=key;['fg','fo','fz'].forEach(function(id){try{var d=document.getElementById(id).contentDocument;if(!d||!d.documentElement)return;var c=d.documentElement.classList;c.toggle('obr-on',on);c.toggle('no-tg',ng);c.toggle('no-tz',nz);[].forEach.call(d.querySelectorAll('.tsw .obc'),function(x){x.textContent=n})}catch(e){}})}
 ['fg','fo','fz'].forEach(function(id){document.getElementById(id).addEventListener('load',function(){vis=null;obUpd()})});
 setInterval(function(){var a=authSt();obUpd();if(a==='out'&&cur!=='zapis'){want=cur;_show('zapis')}else if(a==='in'&&want){var t=want;want=null;showTab(t)}else if(a==='in'&&!okTab(cur))_show(firstTab())},400);
 addEventListener('hashchange',function(){var k=(location.hash||'').replace('#','');if(TABS[k])showTab(k)});
