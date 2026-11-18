@@ -8,10 +8,15 @@
 try{if(window.parent===window)location.replace('index.html#obr')}catch(e){}</script>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7280;--bd:#e2e5ea;--ac:#2563eb;--danger:#dc2626;--ok:#16a34a;--warn:#d97706;--hd:#e9eef6;--rowh:rgba(37,99,235,.08);
---tn-bg:rgba(226,75,74,.16);--tn:#a32d2d;--tw-bg:rgba(239,159,39,.2);--tw:#854f0b;--td-bg:rgba(29,158,117,.16);--td:#0f6e56;--to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a5f3fc;--sh:#fde68a;--ml:#e2e8f0;--ak:#e9d5b7;--df:#fecdd3;--zc:#d9f99d;--stx:#1b1f24;color-scheme:light}
+--tn-bg:rgba(226,75,74,.16);--tn:#a32d2d;--tw-bg:rgba(239,159,39,.2);--tw:#854f0b;--td-bg:rgba(29,158,117,.16);--td:#0f6e56;--to:#bfdbfe;--rm:#fed7aa;--dg:#ddd6fe;--gr:#fbcfe8;--eq:#a5f3fc;--sh:#fde68a;--ml:#e2e8f0;--ak:#e9d5b7;--df:#fecdd3;--zc:#d9f99d;--dr:#cbd5e1;--stx:#1b1f24;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--bg:#14161a;--card:#1d2026;--tx:#eceef1;--mu:#9aa1ab;--bd:#2d323a;--ac:#6ea0ff;--danger:#f87171;--ok:#4ade80;--warn:#fbbf24;--hd:#2c333f;--rowh:rgba(110,160,255,.10);
---tn-bg:rgba(226,75,74,.24);--tn:#f09595;--tw-bg:rgba(239,159,39,.22);--tw:#efb04f;--td-bg:rgba(29,158,117,.22);--td:#5dcaa5;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--ak:#5c4527;--df:#7a2333;--zc:#3f5f1a;--stx:#f3f4f6;color-scheme:dark}}
+--tn-bg:rgba(226,75,74,.24);--tn:#f09595;--tw-bg:rgba(239,159,39,.22);--tw:#efb04f;--td-bg:rgba(29,158,117,.22);--td:#5dcaa5;--to:#1e4274;--rm:#7c3a12;--dg:#4b3a8a;--gr:#7a2a55;--eq:#155e75;--sh:#715a12;--ml:#3f4856;--ak:#5c4527;--df:#7a2333;--zc:#3f5f1a;--dr:#4b5563;--stx:#f3f4f6;color-scheme:dark}}
 *{box-sizing:border-box}
+*{scrollbar-width:thin;scrollbar-color:rgba(128,128,128,.4) transparent}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(128,128,128,.4);border-radius:8px;border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(128,128,128,.65);background-clip:content-box}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
 main{flex:1;min-height:0;display:flex;flex-direction:column;padding:16px max(12px,env(safe-area-inset-right,0px)) 12px max(12px,env(safe-area-inset-left,0px))}
@@ -91,7 +96,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .ty button.on,.wk{color:var(--stx)}
 .wk{display:inline-block;font-size:13px;padding:1px 8px;border-radius:8px}
 .on.to,.wk.to{background:var(--to);border-color:var(--to)}.on.rm,.wk.rm{background:var(--rm);border-color:var(--rm)}.on.dg,.wk.dg{background:var(--dg);border-color:var(--dg)}.on.gr,.wk.gr{background:var(--gr);border-color:var(--gr)}
-.on.eq,.wk.eq{background:var(--eq);border-color:var(--eq)}.on.sh,.wk.sh{background:var(--sh);border-color:var(--sh)}.on.ml,.wk.ml{background:var(--ml);border-color:var(--ml)}.on.ak,.wk.ak{background:var(--ak);border-color:var(--ak)}.on.df,.wk.df{background:var(--df);border-color:var(--df)}.on.zc,.wk.zc{background:var(--zc);border-color:var(--zc)}
+.on.eq,.wk.eq{background:var(--eq);border-color:var(--eq)}.on.sh,.wk.sh{background:var(--sh);border-color:var(--sh)}.on.ml,.wk.ml{background:var(--ml);border-color:var(--ml)}.on.ak,.wk.ak{background:var(--ak);border-color:var(--ak)}.on.df,.wk.df{background:var(--df);border-color:var(--df)}.on.zc,.wk.zc{background:var(--zc);border-color:var(--zc)}.on.dr,.wk.dr{background:var(--dr);border-color:var(--dr)}
 .cb{position:relative}.cb input{width:100%;padding-right:34px}.cbs input{cursor:pointer}
 .cbb{position:absolute;right:3px;top:50%;transform:translateY(-50%);border:none;background:transparent;padding:4px 8px;color:var(--mu);font-size:14px}
 .cbl{position:absolute;left:0;right:0;top:100%;margin-top:3px;max-height:230px;overflow:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px;z-index:30;box-shadow:0 8px 22px rgba(0,0,0,.25);padding:4px 0}
