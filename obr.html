@@ -65,6 +65,12 @@ a{color:var(--ac)}
 .kp{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:12px}
 .kp>div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px}
 .kp small{display:block;color:var(--mu);font-size:13px}.kp b{font-size:24px;margin-right:6px}.kp i{font-style:normal;font-size:12px;color:var(--mu)}
+.sg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.sgc{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
+.sgk{display:flex;align-items:center;gap:6px;color:var(--mu);font-size:13px}.sgk svg{width:16px;height:16px}
+.sgv{font-size:22px;font-weight:700}
+.sbar{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px}
+@media (max-width:600px){.sg{grid-template-columns:1fr 1fr!important}}
 .rg{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;margin-bottom:12px}
 .rg2{grid-template-columns:1.6fr 1fr}
 .rc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;min-width:0}
@@ -192,7 +198,7 @@ td a.tel{color:inherit;text-decoration:none}
 <button type="button" id="nB" aria-label="Новое обращение" title="Новое обращение" hidden>+<span class="t"><span class="t2"> Новое</span> обращение</span></button>
 <div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
-<div id="menu" class="menu" hidden><div class="mlbl gol">Общее</div><div class="tools gor"><button type="button" data-go="grafik:s" data-need="any">Сотрудники и посты ↗</button><button type="button" data-go="grafik:m" data-need="set">Режим работы ↗</button><button type="button" data-go="zapis:u" data-need="owner">Пользователи ↗</button><button type="button" data-go="zapis:g" data-need="any">Синхронизация GitHub ↗</button></div><div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-go="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-go="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl">Обращения</div><div class="tools"><button type="button" id="rB" hidden>Отчёт по обращениям</button></div><div class="mlbl gol">Запись на сервис</div><div class="tools gor"><button type="button" data-go="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-go="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button><button type="button" data-go="zapis:st" data-need="stats">Статистика ↗</button></div></div>
+<div id="menu" class="menu" hidden><div class="mlbl gol">Общее</div><div class="tools gor"><button type="button" data-go="grafik:s" data-need="any">Сотрудники и посты ↗</button><button type="button" data-go="grafik:m" data-need="set">Режим работы ↗</button><button type="button" data-go="zapis:u" data-need="owner">Пользователи ↗</button><button type="button" data-go="zapis:g" data-need="any">Синхронизация GitHub ↗</button></div><div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-go="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-go="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl">Обращения</div><div class="tools"><button type="button" id="rB" hidden>Отчёт по обращениям</button></div><div class="mlbl gol">Запись на сервис</div><div class="tools gor"><button type="button" data-go="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-go="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button></div></div>
 <div id="msg">Загрузка…</div>
 <div class="tw" id="tw" hidden><div id="tb"></div><button type="button" class="more" id="more" hidden>Показать ещё</button></div>
 </main>
@@ -501,6 +507,12 @@ function renderRep(){var z=Z();if(!z||!z.ok())return;var all=z.list(),r=rRange()
    +'<div><small>Другое</small><b>'+ot+'</b><i>'+pct(ot,n)+'</i></div>'
    +'<div><small>Открыто сейчас</small><b style="color:var(--warn)">'+op.length+'</b><i>'+(od?'просрочен перезвон: '+od:'просроченных нет')+'</i></div>'
    +'<div><small>Среднее время отработки</small><b>'+(av==null?'—':dur(0,av))+'</b><i>до первого результата</i></div></div>';
+  // записи на сервис по источнику (бывшая «Статистика»): по дате визита в выбранном периоде
+  var bs=z.bookSrc(r[0],r[1]),sm=z.srcMeta(),sk=['call','visit','online'].concat(bs.none?['none']:[]);
+  h+='<div class="rc" style="margin-bottom:12px"><h3>Записи на сервис по источнику <span class="mu" style="font-weight:400">· всего '+bs.tot+' · по дате визита</span></h3><div class="sg" style="grid-template-columns:repeat('+sk.length+',minmax(0,1fr))">'
+    +sk.map(function(x){return '<div class="sgc"><div class="sgk">'+(sm.icon[x]||'')+'<span>'+sm.name[x]+'</span></div><div class="sgv">'+(bs.tot?pct(bs[x],bs.tot):'—')+'</div><div class="mu" style="font-size:12px">'+bs[x]+' зап.</div></div>'}).join('')
+    +'</div><div class="sbar">'+(bs.tot?sk.map(function(x){return bs[x]?'<div style="flex:'+bs[x]+';background:'+sm.color[x]+'" title="'+sm.name[x]+': '+bs[x]+'"></div>':''}).join(''):'<div style="flex:1;background:var(--bd)"></div>')+'</div>'
+    +'<div class="lg">'+sk.map(function(x){return '<span><b style="background:'+sm.color[x]+'"></b>'+sm.name[x]+'</span>'}).join('')+'</div><div class="mu" style="font-size:12px;margin-top:6px">Считаются все записи за период, включая «Не приехал».'+(bs.none?' «Не указан» — записи, сделанные до появления поля.':'')+'</div></div>';
   // по дням / месяцам
   var bins=[],byM=len>62;if(byM){var d0=dObj(r[0]);for(var m=new Date(d0.getFullYear(),d0.getMonth(),1);isoOf(m.getTime())<=r[1];m=new Date(m.getFullYear(),m.getMonth()+1,1))bins.push({k:m.getFullYear()+'-'+pad(m.getMonth()+1),l:MNS[m.getMonth()]+(m.getMonth()===0?' '+String(m.getFullYear()).slice(2):''),a:0,b:0})}
   else for(var k=r[0];k<=r[1];k=addD(k,1)){var dd=dObj(k);bins.push({k:k,l:(len<=7?DNS[dd.getDay()]+' ':'')+dd.getDate(),a:0,b:0})}
