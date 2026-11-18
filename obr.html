@@ -522,38 +522,13 @@ $('rPer').addEventListener('click',function(e){var b=e.target.closest('button[da
 function rShift(d){var r=rRange();if(rp.per==='day')rp.a=addD(rp.a,d);else if(rp.per==='week')rp.a=addD(r[0],7*d);else if(rp.per==='month'){var m=dObj(r[0]);rp.a=isoOf(new Date(m.getFullYear(),m.getMonth()+d,1).getTime())}renderRep()}
 $('rPrev').onclick=function(){rShift(-1)};$('rNext').onclick=function(){rShift(1)};
 $('rFrom').onchange=function(){if(this.value){rp.a=this.value;renderRep()}};$('rTo').onchange=function(){if(this.value){rp.b=this.value;renderRep()}};
-/* выгрузка в Excel (.xlsx): файл собирается прямо в браузере, без сторонних библиотек */
-var CRCT=(function(){var t=[],c,n,k;for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
-function crc32(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
-function zipStore(files){var enc=new TextEncoder(),parts=[],cd=[],off=0;
-  function u16(v){return [v&255,(v>>>8)&255]}function u32(v){return [v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255]}
-  files.forEach(function(f){var nm=enc.encode(f[0]),d=enc.encode(f[1]),cr=crc32(d);
-    var lh=[].concat(u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(cr),u32(d.length),u32(d.length),u16(nm.length),u16(0));
-    parts.push(new Uint8Array(lh),nm,d);
-    cd.push(new Uint8Array([].concat(u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(cr),u32(d.length),u32(d.length),u16(nm.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(off))),nm);
-    off+=lh.length+nm.length+d.length});
-  var cs=cd.reduce(function(a,x){return a+x.length},0);
-  return new Blob(parts.concat(cd,[new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cs),u32(off),u16(0)))]),{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
-function xEsc(v){return String(v).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]}).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'')}
-function colName(i){var s='';i++;while(i){var m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s}
-function xlsx(sheet,head,rows,widths){
-  var x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>'
-    +widths.map(function(w,i){return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>'}).join('')+'</cols><sheetData>';
-  [head].concat(rows).forEach(function(r,ri){x+='<row r="'+(ri+1)+'">'+r.map(function(v,ci){var ref=colName(ci)+(ri+1),st=ri?'':' s="1"';if(v===''||v==null)return ri?'':'<c r="'+ref+'"'+st+'/>';
-    if(ri&&typeof v==='number')return '<c r="'+ref+'"><v>'+v+'</v></c>';return '<c r="'+ref+'" t="inlineStr"'+st+'><is><t xml:space="preserve">'+xEsc(v)+'</t></is></c>'}).join('')+'</row>'});
-  x+='</sheetData><autoFilter ref="A1:'+colName(head.length-1)+(rows.length+1)+'"/></worksheet>';
-  return zipStore([
-    ['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
-    ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
-    ['xl/workbook.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+xEsc(sheet)+'" sheetId="1" r:id="rId1"/></sheets><definedNames><definedName name="_xlnm._FilterDatabase" localSheetId="0" hidden="1">\''+xEsc(sheet)+'\'!$A$1:$'+colName(head.length-1)+'$'+(rows.length+1)+'</definedName></definedNames></workbook>'],
-    ['xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
-    ['xl/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE2E8F0"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'],
-    ['xl/worksheets/sheet1.xml',x]])}
+/* выгрузка: CSV с разделителем «;» — Excel открывает его сразу, русские буквы сохраняются */
 $('rCsv').onclick=function(){var z=Z();if(!z)return;var r=rRange(),L=z.list().filter(function(o){return inR(o,r)}).sort(function(a,b){return a.n-b.n});
   var hd=['№','Дата','Время','Способ','Принял','Ответственный','Марка','Модель','Год','Клиент','Телефон','Причина','Комментарий','Статус','Итог','Закрыл','Время отработки, мин','Недозвонов'];
+  function c(v){v=String(v==null?'':v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
   var rows=L.map(function(o){var d=new Date(o.t),st=o.st==='done'?'Закрыто':o.st==='later'?'Перезвонить':o.st==='wip'?'Недозвон':'Новое';
-    return [o.n||'',pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear(),pad(d.getHours())+':'+pad(d.getMinutes()),o.way||'',o.by||'',o.respName||'',o.brand||'',o.model||'',o.year?+o.year:'',o.client||'',o.phone||'',o.why||'',o.desc||'',st,o.st==='done'?(RES[o.res]||''):'',o.cbName||'',o.st==='done'?Math.round((o.ct-o.t)/60000):'',(o.tries||[]).filter(function(x){return x.k==='wip'||x.nr}).length]});
-  var blob=xlsx('Обращения',hd,rows,[6,11,7,12,16,16,12,14,6,18,17,18,40,12,17,16,10,10]),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Обращения_'+r[0]+(r[1]!==r[0]?'_'+r[1]:'')+'.xlsx';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
+    return [o.n,pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear(),pad(d.getHours())+':'+pad(d.getMinutes()),o.way,o.by,o.respName,o.brand,o.model,o.year||'',o.client,o.phone,o.why,o.desc,st,o.st==='done'?(RES[o.res]||''):'',o.cbName||'',o.st==='done'?Math.round((o.ct-o.t)/60000):'',(o.tries||[]).filter(function(x){return x.k==='wip'||x.nr}).length].map(c).join(';')});
+  var blob=new Blob(['﻿'+[hd.join(';')].concat(rows).join('\r\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Обращения_'+r[0]+(r[1]!==r[0]?'_'+r[1]:'')+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
 window.tabShown=function(){lastSig='';render()};
 render();
 </script>
