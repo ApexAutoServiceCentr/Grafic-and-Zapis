@@ -514,7 +514,7 @@ window.zApi={
     count:function(){return obCount()},
     list:function(){var nc=noCli();return obAll().map(function(o){var x=JSON.parse(JSON.stringify(o));if(nc){x.client='';x.phone=''}x.respName=o.resp?uName(o.resp)||'—':'';x.cbName=uName(o.cb)||o.cbn||'';x.canAct=obCanAct(o);x.bkLive=!!(o.bk&&state.b[o.bk]&&live(state.b[o.bk]));return x})},
     workers:function(){return obWorkers().map(function(u){return {id:u.id,name:u.name}})},
-    lists:function(){return {way:OB_WAY,why:OB_WHY,res:OB_RES,brands:BRANDS,types:TYPES}},
+    lists:function(){return {way:OB_WAY,why:OB_WHY,res:OB_RES,brands:BRANDS,types:TYPES,obTypes:OB_TY}},
     del:function(id){return obDel(id)},
     create:function(f){return obCreate(f||{})},
     act:function(id,k,c,lv){return obDo(id,k,c,lv)},
@@ -1343,6 +1343,7 @@ document.getElementById('msgS').addEventListener('click',function(e){var b=e.tar
 /* ---------- обращения клиентов (вместо таблицы «Обзвон сервис») ---------- */
 var OB_WAY=['Звонок','WhatsApp','Визит','Instagram','Почта','Другое'];
 var OB_WHY=['ТО','Замена масла','Диагностика','Вопрос по сервису','Запчасти','Шиномонтаж','Ремонт','Гарантия','Другое'];
+var OB_TY=TYPES.concat([{k:'df',n:'Дефектовка после ДТП'},{k:'zc',n:'Запчасти'}]);
 var OB_RES={book:'Записан',cons:'Проконсультирован',other:'Другое'};
 var obTab='mine',obArm=null,obPending=null;
 function obAll(){var r=[],k,o=state.o||{};for(k in o)if(!o[k].del)r.push(o[k]);return r}
@@ -1360,7 +1361,7 @@ function obSave(o){o.u=now();state.o=state.o||{};state.o[o.id]=o;commit()}
 /* общие действия: ими пользуются и окно в записи, и вкладка «Обращения» */
 function obCreate(f){if(!(KEY&&me()&&feat('obrAdd')&&canWrite))return {e:'Нет прав создавать обращения'};var u=me(),cl=String(f.client||'').trim().slice(0,60),pr=String(f.phone||'').trim(),pd=digits(pr);
   if(!cl&&pd.length<10)return {e:'Укажите имя клиента или телефон'};if(pr&&pd.length<10)return {e:'Телефон: нужно 10 цифр после +7'};
-  var n=0;obAll().forEach(function(o){if(o.n>n)n=o.n});var o={id:'o'+uid(),n:n+1,t:now(),by:u.name,byU:UID,way:OB_WAY.indexOf(f.way)>=0?f.way:'Звонок',why:String(f.why||'').trim().slice(0,60),wk:TYPES.some(function(t){return t.k===f.wk})?f.wk:'',ton:f.wk==='to'&&/^\d{1,2}$/.test(String(f.ton))?String(f.ton):'',resp:'',client:cl,phone:pd.length>=10?'+7 '+phFmt(pd.slice(-10)):'',brand:String(f.brand||'').slice(0,30),model:String(f.model||'').trim().slice(0,40),desc:String(f.desc||'').trim().slice(0,300),st:'new',tries:[]};
+  var n=0;obAll().forEach(function(o){if(o.n>n)n=o.n});var o={id:'o'+uid(),n:n+1,t:now(),by:u.name,byU:UID,way:OB_WAY.indexOf(f.way)>=0?f.way:'Звонок',why:String(f.why||'').trim().slice(0,60),wk:OB_TY.some(function(t){return t.k===f.wk})?f.wk:'',year:/^\d{4}$/.test(String(f.year||''))?String(f.year):'',resp:'',client:cl,phone:pd.length>=10?'+7 '+phFmt(pd.slice(-10)):'',brand:String(f.brand||'').slice(0,30),model:String(f.model||'').trim().slice(0,40),desc:String(f.desc||'').trim().slice(0,300),st:'new',tries:[]};
   obSave(o);return {id:o.id,n:o.n}}
 function obCanAct(o){var u=me();return !!(o&&u&&feat('obrWork')&&canWrite&&obOpen(o)&&(o.resp===UID||!o.resp||u.role==='owner'))}
 function obDo(id,k,c,lv){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))return 'Нет прав или обращение уже закрыто';o=JSON.parse(JSON.stringify(o));c=String(c||'').trim().slice(0,200);
@@ -1376,7 +1377,7 @@ function obDel(id){var u=me(),o=state.o&&state.o[id];if(!u||u.role!=='owner'||!c
 function obShell(k){try{if(window.parent!==window&&parent.showTab&&parent.document.getElementById('fo')){parent.showTab(k);return true}}catch(e){}return false}
 function obBook(id){var o=state.o&&state.o[id];if(!obCanAct(o)||!can('edit'))return 'Нет прав записывать';obShell('zapis');var d0=document.getElementById('obDlg');if(d0.open)d0.close();
   obPending=o.id;var bm={brand:o.brand==='Другое'?'':o.brand,model:o.model};openForm(null,{date:cur});
-  sv('fClient',o.client||'');if(o.phone)setPhone(o.phone);sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');fillModels();if(o.wk){setType(o.wk);if(o.wk==='to'&&o.ton!==''&&o.ton!=null){sv('fTon',o.ton);tonLabel()}tonClose()}sv('fDesc',o.wk?(o.desc||''):[o.why,o.desc].filter(Boolean).join(': '));if(o.way==='WhatsApp'||o.way==='Instagram')setSrc('online');else if(o.way==='Визит')setSrc('visit');else setSrc('call');return ''}
+  sv('fClient',o.client||'');if(o.phone)setPhone(o.phone);sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');fillModels();var tyOk=TYPES.some(function(x){return x.k===o.wk});if(tyOk){setType(o.wk);tonClose()}if(o.year)sv('fYear',o.year);sv('fDesc',tyOk?(o.desc||''):[o.why,o.desc].filter(Boolean).join(': '));if(o.way==='WhatsApp'||o.way==='Instagram')setSrc('online');else if(o.way==='Визит')setSrc('visit');else setSrc('call');return ''}
 function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
 function renderOB(){var W=feat('obrWork'),V=feat('obrView'),A=feat('obrAdd'),L=obAll(),h='';
   var tabs=[];if(W)tabs.push(['mine','Мои',L.filter(function(o){return obOpen(o)&&obMine(o)}).length]);if(W||V)tabs.push(['all','Все открытые',L.filter(obOpen).length]);if(A&&!W&&!V)tabs.push(['my','Мои обращения',0]);if(W||V||A)tabs.push(['done','Закрытые',0]);if(A&&canWrite)tabs.push(['new','+ Новое',0]);
