@@ -51,6 +51,41 @@ html:not(.obr-on) .tabs a[data-tab="obr"],html.no-tg .tabs a[data-tab="grafik"],
 #nB[hidden]{display:none}
 @media (max-width:1799px){#nB .t2{display:none}}
 @media (max-width:1499px){#nB .t{display:none}#nB{padding:8px 14px;font-weight:700}}
+#rB{flex:none}#rB[hidden]{display:none}
+@media (max-width:1499px){#rB .t{display:none}}
+.rep{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;padding:16px 20px 24px}
+.rep[hidden]{display:none}
+.rh{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;margin-bottom:14px}
+.rh h2{font-size:18px;margin:0 6px 0 0}
+.rnav{display:flex;align-items:center;gap:8px;font-weight:600;white-space:nowrap}
+.rnav[hidden]{display:none}
+.rnav input{padding:6px 8px}
+.rsp{flex:1}
+.kp{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.kp>div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px}
+.kp small{display:block;color:var(--mu);font-size:13px}.kp b{font-size:24px;margin-right:6px}.kp i{font-style:normal;font-size:12px;color:var(--mu)}
+.rg{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.rg2{grid-template-columns:1.6fr 1fr}
+.rc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;min-width:0}
+.rc h3{margin:0 0 10px;font-size:14px}
+.rc .none{color:var(--mu);font-size:13px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:140px}
+.bars>div{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;font-size:11px;color:var(--mu)}
+.bars .bc{width:100%;display:flex;flex-direction:column;justify-content:flex-end;border-radius:4px 4px 0 0;overflow:hidden;min-height:0}
+.bars .bc i{display:block;width:100%}
+.bars .bn{font-size:11px;color:var(--tx)}
+.bars .bl{white-space:nowrap;overflow:hidden;max-width:100%}
+.lg{display:flex;gap:12px;font-size:12px;color:var(--mu);margin-top:6px}.lg b{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}
+.hb{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}
+.hb>span:first-child{width:130px;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
+.hb .tr{flex:1;height:10px;background:var(--bd);border-radius:5px;overflow:hidden}.hb .tr i{display:block;height:100%;background:var(--ac)}
+.hb>b{min-width:64px;text-align:right;font-weight:600;white-space:nowrap}
+.rt{width:100%;border-collapse:collapse;font-size:13px;table-layout:auto}
+.rt th,.rt td{padding:7px 8px;border-bottom:1px solid var(--bd);white-space:nowrap;overflow:visible}
+.rt th{color:var(--mu);font-size:12px;text-align:right;background:transparent}.rt th:first-child,.rt td:first-child{text-align:left}.rt td{text-align:right}
+.rt tr:last-child td{border-bottom:0}
+@media (max-width:1100px){.kp{grid-template-columns:repeat(3,minmax(0,1fr))}.rg,.rg2{grid-template-columns:1fr}}
+@media (max-width:600px){.kp{grid-template-columns:1fr 1fr}.rep{padding:12px}}
 .qw{position:relative;flex:1 1 220px;max-width:360px;display:flex}
 .qw input{width:100%;padding-right:34px}
 .qw button{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:transparent;padding:4px 8px;color:var(--mu)}
@@ -152,12 +187,21 @@ td a.tel{color:inherit;text-decoration:none}
 <div class="seg" id="flt" role="group" aria-label="Какие обращения показать"></div>
 <div class="dnav" role="group" aria-label="День"><button type="button" id="dPrev" aria-label="Предыдущий день">‹</button><div class="rng"><span id="dL"></span><button type="button" id="calB" class="cal" aria-label="Выбрать дату" title="Выбрать дату"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button><input type="date" id="dPick" class="dpk" tabindex="-1" aria-hidden="true"></div><button type="button" id="dNext" aria-label="Следующий день">›</button><button type="button" id="dToday">Сегодня</button></div>
 <div class="qw"><input type="text" id="q" placeholder="Поиск: №, имя, телефон, марка, причина…" autocomplete="off" aria-label="Поиск по обращениям"><button type="button" id="qX" aria-label="Очистить поиск" hidden>✕</button></div>
+<button type="button" id="rB" hidden>📊<span class="t"> Отчёт</span></button>
 <button type="button" id="nB" aria-label="Новое обращение" title="Новое обращение" hidden>+<span class="t"><span class="t2"> Новое</span> обращение</span></button>
 <div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
 <div id="msg">Загрузка…</div>
 <div class="tw" id="tw" hidden><div id="tb"></div><button type="button" class="more" id="more" hidden>Показать ещё</button></div>
 </main>
+<div id="rep" class="rep" role="dialog" aria-modal="true" aria-labelledby="rT" hidden>
+<div class="rh"><h2 id="rT">Отчёт по обращениям</h2>
+<div class="seg" id="rPer" role="group" aria-label="Период"><button type="button" data-p="day">Сегодня</button><button type="button" data-p="week" class="on">Неделя</button><button type="button" data-p="month">Месяц</button><button type="button" data-p="cust">Свой период</button></div>
+<div class="rnav" id="rNav"><button type="button" id="rPrev" aria-label="Предыдущий период">‹</button><span id="rL"></span><button type="button" id="rNext" aria-label="Следующий период">›</button></div>
+<div class="rnav" id="rCust" hidden><label class="vh" for="rFrom">С</label><input type="date" id="rFrom"><span class="mu">—</span><label class="vh" for="rTo">По</label><input type="date" id="rTo"></div>
+<span class="rsp"></span><button type="button" id="rCsv">Скачать в Excel</button><button type="button" id="rX" aria-label="Закрыть отчёт">✕</button></div>
+<div id="rBody"></div>
+</div>
 
 <dialog id="nd" aria-labelledby="ndT"><div class="dlg">
 <div class="mh"><div class="t" id="ndT">Новое обращение</div><button type="button" id="ndX" aria-label="Закрыть">✕</button></div>
@@ -224,7 +268,7 @@ function render(){var z=Z();
   var FL=filters(f,me);if(!FL.some(function(x){return x[0]===flt}))flt='all';
   var cnt={open:L.filter(function(o){return o.st!=='done'}).length};try{(Z().lists().obTypes||Z().lists().types||[]).forEach(function(t){TYK[t.k]=1})}catch(x){}
   $('flt').innerHTML=FL.map(function(x){return '<button type="button" data-f="'+x[0]+'" class="'+(flt===x[0]?'on':'')+'" aria-pressed="'+(flt===x[0])+'">'+x[1]+(cnt[x[0]]?'<b>'+cnt[x[0]]+'</b>':'')+'</button>'}).join('');
-  $('nB').hidden=!f.add;
+  $('nB').hidden=!f.add;$('rB').hidden=!f.rep;if(rOpen){if(f.rep)renderRep();else closeRep()}
   $('uChip').hidden=false;$('uB').innerHTML='👤<span class="un"> '+esc(me.name)+'</span> ▾';$('uB').title=me.name;$('uRole').textContent=me.name+' · '+me.roleName;
   // строки
   var list=L.filter(function(o){if(flt==='open')return o.st!=='done';if(flt==='done')return o.st==='done'&&myDone(o,f,me);if(flt==='mine')return mine(o,f,me);return true}).filter(function(o){return match(o,q.trim())});
@@ -419,6 +463,72 @@ function busy(){var a=document.activeElement;return a&&a.closest&&a.closest('#tb
 setInterval(function(){var z=Z(),s=z?(z.ok()?z.sig():'out'):'';if(s!==lastSig&&!busy()){lastSig=s;render()}},500);
 setInterval(function(){if(!busy())render()},60000);
 var rsT;addEventListener('resize',function(){clearTimeout(rsT);rsT=setTimeout(function(){if(!busy())render()},150)});
+/* ===== Отчёт по обращениям ===== */
+var rp={per:'week',a:null,b:null},rOpen=false;
+function dayStart(iso){return dObj(iso).getTime()}
+function rRange(){var td=isoOf(Date.now());if(!rp.a){rp.a=td;rp.b=td}
+  if(rp.per==='day')return [rp.a,rp.a];
+  if(rp.per==='week'){var d=dObj(rp.a),w=(d.getDay()+6)%7,a=addD(rp.a,-w);return [a,addD(a,6)]}
+  if(rp.per==='month'){var m=dObj(rp.a),a2=isoOf(new Date(m.getFullYear(),m.getMonth(),1).getTime()),b2=isoOf(new Date(m.getFullYear(),m.getMonth()+1,0).getTime());return [a2,b2]}
+  return rp.a<=rp.b?[rp.a,rp.b]:[rp.b,rp.a]}
+function rLbl(r){var a=dObj(r[0]),b=dObj(r[1]);if(rp.per==='day')return DNS[a.getDay()]+', '+a.getDate()+' '+MNL[a.getMonth()]+' '+a.getFullYear();
+  if(rp.per==='month')return ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][a.getMonth()]+' '+a.getFullYear();
+  return a.getDate()+(a.getMonth()!==b.getMonth()?' '+MNL[a.getMonth()]:'')+(a.getFullYear()!==b.getFullYear()?' '+a.getFullYear():'')+' – '+b.getDate()+' '+MNL[b.getMonth()]+' '+b.getFullYear()}
+function inR(o,r){var k=isoOf(o.t);return k>=r[0]&&k<=r[1]}
+function pct(n,t){return t?Math.round(n*100/t)+'%':'—'}
+function hbars(rows,tot,cnt){if(!rows.length)return '<div class="none">Нет данных</div>';var mx=rows[0][1]||1;return rows.slice(0,cnt||6).map(function(r){return '<div class="hb"><span title="'+esc(r[0])+'">'+esc(r[0])+'</span><div class="tr"><i style="width:'+Math.round(r[1]*100/mx)+'%"></i></div><b>'+r[1]+(tot?' · '+pct(r[1],tot):'')+'</b></div>'}).join('')}
+function group(L,fn,top){var m={};L.forEach(function(o){var k=fn(o)||'Не указано';m[k]=(m[k]||0)+1});var r=Object.keys(m).map(function(k){return [k,m[k]]}).sort(function(a,b){return b[1]-a[1]});
+  if(top&&r.length>top){var rest=r.slice(top-1).reduce(function(s,x){return s+x[1]},0);r=r.slice(0,top-1).concat([['Остальные',rest]])}return r}
+function firstRes(o){var t=(o.tries&&o.tries[0]&&o.tries[0].t)||(o.st==='done'?o.ct:0);return t?t-o.t:null}
+function renderRep(){var z=Z();if(!z||!z.ok())return;var all=z.list(),r=rRange(),L=all.filter(function(o){return inR(o,r)}),n=L.length,now=Date.now();
+  $('rL').textContent=rLbl(r);$('rCust').hidden=rp.per!=='cust';$('rNav').hidden=rp.per==='cust';
+  [].forEach.call(document.querySelectorAll('#rPer button'),function(b){b.classList.toggle('on',b.dataset.p===rp.per)});
+  if(rp.per==='cust'){$('rFrom').value=r[0];$('rTo').value=r[1]}
+  $('rNext').disabled=r[1]>=isoOf(now);
+  var len=Math.round((dObj(r[1])-dObj(r[0]))/864e5)+1,tdy=isoOf(now),el=r[1]>tdy?Math.max(1,Math.round((dObj(tdy)-dObj(r[0]))/864e5)+1):len,
+    ps=rp.per==='month'?(function(){var m=dObj(r[0]);return isoOf(new Date(m.getFullYear(),m.getMonth()-1,1).getTime())})():addD(r[0],-len),
+    /* сравниваем с тем же числом дней прошлого периода: идущая неделя (пн–ср) — с пн–ср прошлой недели */
+    pr=[ps,addD(ps,el-1)],pn=all.filter(function(o){return inR(o,pr)}).length,df=n-pn;
+  var bk=L.filter(function(o){return o.res==='book'}).length,cs=L.filter(function(o){return o.res==='cons'}).length,ot=L.filter(function(o){return o.res==='other'}).length;
+  var op=all.filter(function(o){return o.st!=='done'}),od=op.filter(function(o){return o.st==='later'&&o.later<=now}).length;
+  var fr=L.map(firstRes).filter(function(x){return x!=null}),av=fr.length?fr.reduce(function(a,b){return a+b},0)/fr.length:null;
+  var h='<div class="kp"><div><small>Всего обращений</small><b>'+n+'</b><i>'+(pn||n?(df>0?'+'+df:df<0?'−'+(-df):'столько же')+' к прошлому периоду':'')+'</i></div>'
+   +'<div><small>Записано на сервис</small><b style="color:var(--ok)">'+bk+'</b><i>конверсия '+pct(bk,n)+'</i></div>'
+   +'<div><small>Проконсультировано</small><b>'+cs+'</b><i>'+pct(cs,n)+'</i></div>'
+   +'<div><small>Другое</small><b>'+ot+'</b><i>'+pct(ot,n)+'</i></div>'
+   +'<div><small>Открыто сейчас</small><b style="color:var(--warn)">'+op.length+'</b><i>'+(od?'просрочен перезвон: '+od:'просроченных нет')+'</i></div>'
+   +'<div><small>Среднее время отработки</small><b>'+(av==null?'—':dur(0,av))+'</b><i>до первого результата</i></div></div>';
+  // по дням / месяцам
+  var bins=[],byM=len>62;if(byM){var d0=dObj(r[0]);for(var m=new Date(d0.getFullYear(),d0.getMonth(),1);isoOf(m.getTime())<=r[1];m=new Date(m.getFullYear(),m.getMonth()+1,1))bins.push({k:m.getFullYear()+'-'+pad(m.getMonth()+1),l:MNS[m.getMonth()]+(m.getMonth()===0?' '+String(m.getFullYear()).slice(2):''),a:0,b:0})}
+  else for(var k=r[0];k<=r[1];k=addD(k,1)){var dd=dObj(k);bins.push({k:k,l:(len<=7?DNS[dd.getDay()]+' ':'')+dd.getDate(),a:0,b:0})}
+  var bi={};bins.forEach(function(x){bi[x.k]=x});L.forEach(function(o){var k=isoOf(o.t);if(byM)k=k.slice(0,7);var x=bi[k];if(x){x.a++;if(o.res==='book')x.b++}});
+  var mx=Math.max.apply(null,bins.map(function(x){return x.a}).concat([1])),showN=bins.length<=31;
+  h+='<div class="rg"><div class="rc"><h3>'+(byM?'По месяцам':'По дням')+'</h3><div class="bars">'+bins.map(function(x){var hh=Math.round(x.a*100/mx);return '<div title="'+esc(x.l)+': '+x.a+' обращ., записано '+x.b+'">'+(showN&&x.a?'<span class="bn">'+x.a+'</span>':'')+'<div class="bc" style="height:'+hh+'%"><i style="flex:'+(x.a-x.b)+';background:var(--ac)"></i><i style="flex:'+x.b+';background:var(--ok)"></i></div><span class="bl">'+(bins.length>16&&!byM&&(bins.indexOf(x)%3)?'&nbsp;':esc(x.l))+'</span></div>'}).join('')+'</div><div class="lg"><span><b style="background:var(--ok)"></b>записаны</span><span><b style="background:var(--ac)"></b>остальные</span></div></div>';
+  h+='<div class="rc"><h3>Способ обращения</h3>'+hbars(group(L,function(o){return o.way},6),n)+'</div>';
+  h+='<div class="rc"><h3>Причина</h3>'+hbars(group(L,function(o){return o.why},6),n)+'</div></div>';
+  // по сотрудникам
+  var E={};function e(nm){nm=nm||'—';return E[nm]=E[nm]||{n:nm,acc:0,done:0,book:0,nr:0,tt:0,tc:0}}
+  L.forEach(function(o){e(o.by).acc++;(o.tries||[]).forEach(function(x){if(x.k==='wip'||x.nr)e(x.n).nr++});if(o.st==='done'){var w=e(o.cbName||o.respName);w.done++;if(o.res==='book')w.book++;w.tt+=o.ct-o.t;w.tc++}});
+  var ER=Object.keys(E).map(function(k){return E[k]}).sort(function(a,b){return (b.done-a.done)||(b.acc-a.acc)});
+  h+='<div class="rg rg2"><div class="rc"><h3>По сотрудникам</h3>'+(ER.length?'<div style="overflow-x:auto"><table class="rt"><thead><tr><th>Сотрудник</th><th>Принял</th><th>Отработал</th><th>Записал</th><th>Конверсия</th><th>Недозвонов</th><th>Ср. время</th></tr></thead><tbody>'
+    +ER.map(function(x){return '<tr><td>'+esc(x.n)+'</td><td>'+(x.acc||'—')+'</td><td>'+(x.done||'—')+'</td><td>'+(x.done?x.book:'—')+'</td><td>'+(x.done?pct(x.book,x.done):'—')+'</td><td>'+(x.nr||'—')+'</td><td>'+(x.tc?dur(0,x.tt/x.tc):'—')+'</td></tr>'}).join('')+'</tbody></table></div>':'<div class="none">Нет данных</div>')+'</div>';
+  h+='<div class="rc"><h3>По маркам</h3>'+hbars(group(L.filter(function(o){return o.brand}),function(o){return o.brand},6),0)+'</div></div>';
+  $('rBody').innerHTML=h}
+function openRep(){var z=Z();if(!z||!z.f().rep)return;rOpen=true;$('rep').hidden=false;renderRep();$('rX').focus()}
+function closeRep(){rOpen=false;$('rep').hidden=true;$('rB').focus()}
+$('rB').onclick=openRep;$('rX').onclick=closeRep;
+document.addEventListener('keydown',function(e){if(rOpen&&e.key==='Escape'&&!$('nd').open)closeRep()});
+$('rPer').addEventListener('click',function(e){var b=e.target.closest('button[data-p]');if(!b)return;var r=rRange();rp.per=b.dataset.p;if(rp.per==='cust'){rp.a=r[0];rp.b=r[1]}else{rp.a=isoOf(Date.now())}renderRep()});
+function rShift(d){var r=rRange();if(rp.per==='day')rp.a=addD(rp.a,d);else if(rp.per==='week')rp.a=addD(r[0],7*d);else if(rp.per==='month'){var m=dObj(r[0]);rp.a=isoOf(new Date(m.getFullYear(),m.getMonth()+d,1).getTime())}renderRep()}
+$('rPrev').onclick=function(){rShift(-1)};$('rNext').onclick=function(){rShift(1)};
+$('rFrom').onchange=function(){if(this.value){rp.a=this.value;renderRep()}};$('rTo').onchange=function(){if(this.value){rp.b=this.value;renderRep()}};
+/* выгрузка: CSV с разделителем «;» — Excel открывает его сразу, русские буквы сохраняются */
+$('rCsv').onclick=function(){var z=Z();if(!z)return;var r=rRange(),L=z.list().filter(function(o){return inR(o,r)}).sort(function(a,b){return a.n-b.n});
+  var hd=['№','Дата','Время','Способ','Принял','Ответственный','Марка','Модель','Год','Клиент','Телефон','Причина','Комментарий','Статус','Итог','Закрыл','Время отработки, мин','Недозвонов'];
+  function c(v){v=String(v==null?'':v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+  var rows=L.map(function(o){var d=new Date(o.t),st=o.st==='done'?'Закрыто':o.st==='later'?'Перезвонить':o.st==='wip'?'Недозвон':'Новое';
+    return [o.n,pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear(),pad(d.getHours())+':'+pad(d.getMinutes()),o.way,o.by,o.respName,o.brand,o.model,o.year||'',o.client,o.phone,o.why,o.desc,st,o.st==='done'?(RES[o.res]||''):'',o.cbName||'',o.st==='done'?Math.round((o.ct-o.t)/60000):'',(o.tries||[]).filter(function(x){return x.k==='wip'||x.nr}).length].map(c).join(';')});
+  var blob=new Blob(['﻿'+[hd.join(';')].concat(rows).join('\r\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Обращения_'+r[0]+(r[1]!==r[0]?'_'+r[1]:'')+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
 window.tabShown=function(){lastSig='';render()};
 render();
 </script>
