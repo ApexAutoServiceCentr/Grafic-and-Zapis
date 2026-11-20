@@ -196,9 +196,12 @@ td a.tel{color:inherit;text-decoration:none}
 .foot .mu{font-size:13px}
 .foot button{margin-left:auto}
 .gor[hidden],.gol[hidden],[data-mgo][hidden]{display:none!important}
-.uth{display:flex;gap:2px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:2px}
-.uth button{flex:1;border:0;background:transparent;padding:5px 6px;border-radius:7px;font-size:13px;color:var(--mu);text-align:center!important;white-space:nowrap}
-.uth button.on{background:var(--ac);color:#fff;font-weight:600}
+.uth{position:relative;display:flex;gap:2px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:2px}
+.uth button{position:relative;z-index:1;flex:1;border:0;background:transparent!important;padding:5px 6px;border-radius:7px;font-size:13px;color:var(--mu);text-align:center!important;white-space:nowrap;transition:color .25s}
+.uth button.on{color:#fff;font-weight:600}
+/* подсветка выбранной темы переезжает к нажатой кнопке */
+.uthi{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:7px;background:var(--ac);transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
+.uth.noanim .uthi,.uth.noanim button{transition:none}
 </style>
 </head>
 <body>
@@ -211,7 +214,7 @@ td a.tel{color:inherit;text-decoration:none}
 <div class="dnav" role="group" aria-label="День"><button type="button" id="dPrev" aria-label="Предыдущий день">‹</button><div class="rng"><span id="dL"></span><button type="button" id="calB" class="cal" aria-label="Выбрать дату" title="Выбрать дату"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button><input type="date" id="dPick" class="dpk" tabindex="-1" aria-hidden="true"></div><button type="button" id="dNext" aria-label="Следующий день">›</button><button type="button" id="dToday">Сегодня</button></div>
 <div class="qw"><input type="text" id="q" placeholder="Поиск: №, имя, телефон, марка, причина…" autocomplete="off" aria-label="Поиск по обращениям"><button type="button" id="qX" aria-label="Очистить поиск" hidden>✕</button></div>
 <button type="button" id="nB" aria-label="Новое обращение" title="Новое обращение" hidden>+<span class="t"><span class="t2"> Новое</span> обращение</span></button>
-<div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><div class="uth" role="group" aria-label="Тема оформления"><button type="button" data-th="">Авто</button><button type="button" data-th="light">☀ Светлая</button><button type="button" data-th="dark">🌙 Тёмная</button></div><button type="button" id="uGh">Синхронизация GitHub</button><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
+<div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><div class="uth" role="group" aria-label="Тема оформления"><span class="uthi" aria-hidden="true"></span><button type="button" data-th="">Авто</button><button type="button" data-th="light">Светлая</button><button type="button" data-th="dark">Тёмная</button></div><button type="button" id="uGh">Синхронизация GitHub</button><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
 <div id="menu" class="menu" hidden><div class="mlbl gol">Общее</div><div class="tools gor"><button type="button" data-mgo="grafik:s" data-need="any">Сотрудники и посты ↗</button><button type="button" data-mgo="grafik:m" data-need="set">Режим работы ↗</button><button type="button" data-mgo="zapis:u" data-need="owner">Пользователи ↗</button></div><div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-mgo="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-mgo="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl">Обращения</div><div class="tools"><button type="button" id="rB" hidden>Отчёт по обращениям</button></div><div class="mlbl gol">Запись на сервис</div><div class="tools gor"><button type="button" data-mgo="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-mgo="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button><button type="button" data-mgo="zapis:zr" data-need="zrep">Отчёт по записям ↗</button></div></div>
 </div>
@@ -587,8 +590,10 @@ render();
   fix(document);new MutationObserver(function(m){m.forEach(function(x){[].forEach.call(x.addedNodes,function(n){if(n.nodeType===1){if(n.matches&&n.matches(SEL))fix(n.parentNode||document);else fix(n)}})})}).observe(document.body,{childList:true,subtree:true})})();
 /* меню пользователя: тема и синхронизация GitHub */
 (function(){function cur(){try{return localStorage.getItem('app-theme')||''}catch(e){return ''}}
-  function mark(){var t=cur();[].forEach.call(document.querySelectorAll('.uth button'),function(b){b.classList.toggle('on',b.dataset.th===t);b.setAttribute('aria-pressed',b.dataset.th===t?'true':'false')})}
-  window.themeApply=function(){var t=cur();if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');mark()};
+  function mark(anim){var t=cur();[].forEach.call(document.querySelectorAll('.uth'),function(g){var on=null;[].forEach.call(g.querySelectorAll('button'),function(b){var a=b.dataset.th===t;b.classList.toggle('on',a);b.setAttribute('aria-pressed',a?'true':'false');if(a)on=b});
+    var i=g.querySelector('.uthi');if(!i||!on||!on.offsetWidth)return;if(!anim){g.classList.add('noanim')}i.style.width=on.offsetWidth+'px';i.style.transform='translateX('+on.offsetLeft+'px)';if(!anim){void i.offsetWidth;g.classList.remove('noanim')}})}
+  window.themeApply=function(){var t=cur();if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');mark(true)};
+  document.addEventListener('click',function(e){if(e.target.closest('#uB'))setTimeout(function(){mark(false)},0)},true);
   document.addEventListener('click',function(e){var b=e.target.closest('.uth button');if(b){try{localStorage.setItem('app-theme',b.dataset.th)}catch(x){}try{if(window.parent!==window&&parent.themeAll){parent.themeAll();return}}catch(x){}window.themeApply();return}
     if(e.target.closest('#uGh')){try{var m=document.getElementById('uMenu');if(m)m.hidden=true;var ub=document.getElementById('uB');if(ub)ub.setAttribute('aria-expanded','false')}catch(x){}
       try{var z=parent.document.getElementById('fz').contentWindow;if(z!==window)parent.showTab('zapis');z.zApi.open('g')}catch(x){try{zApi.open('g')}catch(y){}}}});
