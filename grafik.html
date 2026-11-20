@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>График смен</title>
+<script>/* тема: авто (как в системе) / светлая / тёмная — выбор хранится на устройстве и общий для всех разделов */
+try{var _t=localStorage.getItem('app-theme');if(_t==='light'||_t==='dark')document.documentElement.setAttribute('data-theme',_t)}catch(e){}</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMjQiIHk9IjUiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI1IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM0NzU1NjkiLz48cmVjdCB4PSI1IiB5PSIyNCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNDc1NTY5Ii8+PHJlY3QgeD0iMjQiIHk9IjI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM2MGE1ZmEiLz48cmVjdCB4PSI0MyIgeT0iMjQiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjUiIHk9IjQzIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiNmYmJmMjQiLz48cmVjdCB4PSIyNCIgeT0iNDMiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI0MyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PC9zdmc+">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMjQiIHk9IjUiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI1IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM0NzU1NjkiLz48cmVjdCB4PSI1IiB5PSIyNCIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNDc1NTY5Ii8+PHJlY3QgeD0iMjQiIHk9IjI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiM2MGE1ZmEiLz48cmVjdCB4PSI0MyIgeT0iMjQiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjUiIHk9IjQzIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSI0LjUiIGZpbGw9IiNmYmJmMjQiLz48cmVjdCB4PSIyNCIgeT0iNDMiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgcng9IjQuNSIgZmlsbD0iIzQ3NTU2OSIvPjxyZWN0IHg9IjQzIiB5PSI0MyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iNC41IiBmaWxsPSIjNjBhNWZhIi8+PC9zdmc+">
 <meta name="theme-color" content="#1f2937">
@@ -183,6 +185,9 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 .zmb .bt{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
 .zmb .bt .go{background:var(--danger);border-color:var(--danger);color:#fff}
 .gor[hidden],.gol[hidden],[data-mgo][hidden]{display:none!important}
+.uth{display:flex;gap:2px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:2px}
+.uth button{flex:1;border:0;background:transparent;padding:5px 6px;border-radius:7px;font-size:13px;color:var(--mu);text-align:center!important;white-space:nowrap}
+.uth button.on{background:var(--ac);color:#fff;font-weight:600}
 </style>
 </head>
 <body>
@@ -195,11 +200,11 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <button id="next" aria-label="Вперёд">›</button>
 <button id="today">Сегодня</button>
 <div class="dfw"><select id="dFilter" aria-label="Отдел" hidden tabindex="-1"></select><button type="button" id="dFB" aria-haspopup="listbox" aria-expanded="false" aria-label="Отдел"><span id="dFT"></span><span class="dfc" aria-hidden="true">▾</span></button><div class="cbl" id="dFL" role="listbox" hidden></div></div>
-<div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
+<div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><div class="uth" role="group" aria-label="Тема оформления"><button type="button" data-th="">Авто</button><button type="button" data-th="light">☀ Светлая</button><button type="button" data-th="dark">🌙 Тёмная</button></div><button type="button" id="uGh">Синхронизация GitHub</button><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
 <div id="menuPanel" class="menu" hidden>
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Токен вводится во вкладке «Запись на сервис»: Меню → Синхронизация GitHub.</div>
-<div class="mlbl">Общее</div><div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и посты ▾</button><button id="mToggle" class="eo" aria-expanded="false">Режим работы ▸</button><button id="goUsers" style="display:none">Пользователи ↗</button><button id="goSync">Синхронизация GitHub ↗</button></div>
+<div class="mlbl">Общее</div><div class="mrow"><button id="sToggle" class="eo" aria-expanded="true">Сотрудники и посты ▾</button><button id="mToggle" class="eo" aria-expanded="false">Режим работы ▸</button><button id="goUsers" style="display:none">Пользователи ↗</button><button id="goSync" style="display:none!important">Синхронизация GitHub ↗</button></div>
 <div class="mlbl">График смен</div><div class="mrow"><button id="bToggle" class="eo" aria-expanded="true">Режимы корректировки ▾</button><span class="eo" style="display:contents"><button id="reset" title="Убирает все ручные отметки за выбранный период (неделю или месяц) у всех сотрудников и возвращает расписание по циклу. Нужно подтвердить вторым нажатием.">Сбросить правки периода</button></span><span class="eo" style="display:contents"><button id="pwB" title="Пароль спрашивается при открытии «Сотрудники и график» и при «Сбросить правки периода». Пароль общий для всех устройств."></button></span><button id="expB" title="Скачивает график выбранного периода (неделя или месяц) файлом Excel (.xlsx) по всем отделам">Скачать график ⭳</button><button id="gToggle" class="eo eg" aria-expanded="true">Синхронизация GitHub ▾</button></div>
 <div class="mlbl gol">Обращения</div><div class="mrow gor"><button type="button" data-mgo="obr:rep" data-need="rep">Отчёт по обращениям ↗</button></div><div class="mlbl gol">Запись на сервис</div><div class="mrow gor"><button type="button" data-mgo="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-mgo="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button><button type="button" data-mgo="zapis:zr" data-need="zrep">Отчёт по записям ↗</button></div>
 <div id="setBox" class="eo">
@@ -1101,6 +1106,14 @@ addEventListener('resize',alignHdr);alignHdr();new ResizeObserver(alignHdr).obse
 (function(){var b=document.getElementById('hdrMore');if(!b)return;var o=false;try{o=localStorage.getItem('g-hdr-open')==='1'}catch(e){}
   function ap(){document.body.classList.toggle('hdr-open',o);b.setAttribute('aria-expanded',o?'true':'false');b.textContent=o?'✕':'⋯';b.title=o?'Свернуть':'Ещё'}
   b.addEventListener('click',function(){o=!o;try{localStorage.setItem('g-hdr-open',o?'1':'0')}catch(e){}ap()});ap()})();
+/* меню пользователя: тема и синхронизация GitHub */
+(function(){function cur(){try{return localStorage.getItem('app-theme')||''}catch(e){return ''}}
+  function mark(){var t=cur();[].forEach.call(document.querySelectorAll('.uth button'),function(b){b.classList.toggle('on',b.dataset.th===t);b.setAttribute('aria-pressed',b.dataset.th===t?'true':'false')})}
+  window.themeApply=function(){var t=cur();if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');mark()};
+  document.addEventListener('click',function(e){var b=e.target.closest('.uth button');if(b){try{localStorage.setItem('app-theme',b.dataset.th)}catch(x){}try{if(window.parent!==window&&parent.themeAll){parent.themeAll();return}}catch(x){}window.themeApply();return}
+    if(e.target.closest('#uGh')){try{var m=document.getElementById('uMenu');if(m)m.hidden=true;var ub=document.getElementById('uB');if(ub)ub.setAttribute('aria-expanded','false')}catch(x){}
+      try{var z=parent.document.getElementById('fz').contentWindow;if(z!==window)parent.showTab('zapis');z.zApi.open('g')}catch(x){try{zApi.open('g')}catch(y){}}}});
+  mark()})();
 </script>
 </body>
 </html>
