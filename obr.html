@@ -311,7 +311,6 @@ function render(){var z=Z();
   function car(o){return esc([o.brand,o.model].filter(Boolean).join(' '))+(o.year?' <span class="mu">'+esc(o.year)+'</span>':'')}
   col('№','n',function(o){return o.n||''},[46,42,38][lv]);
   col('Принято','dt',function(o){return dt(o.t).split(' ')[1]+(lv===2?'<br><span class="mu">'+esc(o.way)+'</span>':'')},[104,64,96][lv]);
-  col('Ответ&shy;ственный','w',function(o){return o.resp?esc(o.respName):'<span class="mu">—</span>'},[130,110,100][lv]);
   if(lv<2)col('Способ',lv?'w':'',function(o){return esc(o.way)},lv?96:104);
   if(lv<2){if(!nc)col('Клиент','w',function(o){return esc(o.client)},lv?130:160);if(!np)col('Телефон','',telH,lv?136:146)}
   else if(!nc||!np)col(nc?'Телефон':'Клиент','w',function(o){return (nc?'':esc(o.client))+(!nc&&!np&&o.client&&o.phone?'<br>':'')+(np?'':telH(o))},140);
@@ -321,7 +320,8 @@ function render(){var z=Z();
   col('Причина','',function(o){return o.why?(TYK[o.wk]?'<span class="wk '+o.wk+'">'+esc(whyT(o))+'</span>':esc(whyT(o))):''},[176,164,150][lv]);
   col('Комментарий','cm',function(o){return '<div class="c" data-full="'+esc(o.desc)+'">'+esc(o.desc)+'</div>'});
   function tm(o){return o.st!=='done'?dur(o.t,now):dur(o.t,o.ct)}
-  if(lv<2){col('Статус','',tag,lv?132:150);col('Время','mu',tm,lv?84:96)}else col('Статус','',function(o){return tag(o)+'<div class="mu" style="font-size:12px;margin-top:3px">'+tm(o)+'</div>'},124);
+  function resp(){col('Ответ&shy;ственный','w',function(o){return o.resp?esc(o.respName):'<span class="mu">—</span>'},[130,110,100][lv])}
+  if(lv<2){col('Статус','',tag,lv?132:150);resp();col('Время','mu',tm,lv?84:96)}else{col('Статус','',function(o){return tag(o)+'<div class="mu" style="font-size:12px;margin-top:3px">'+tm(o)+'</div>'},124);resp()}
   var colg='<colgroup>'+C.map(function(){return '<col>'}).join('')+'</colgroup>',thd='<thead><tr>'+C.map(function(c){return '<th scope="col"'+(c.c==='cm'?' class="cmh"':'')+'>'+c.h+'</th>'}).join('')+'</tr></thead>';
   /* по дням, как в записи: сверху сегодня, ниже прошлые дни; выбранный день показывается всегда, даже если он пустой */
   /* дни идут подряд, как в записи: от сегодня назад, пустые дни тоже видны; при прокрутке вниз подгружаются более ранние */
