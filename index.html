@@ -4,18 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>График смен</title>
+<script>/* тема: авто (как в системе) / светлая / тёмная — выбор хранится на устройстве и общий для всех разделов */
+try{var _t=localStorage.getItem('app-theme');if(_t==='light'||_t==='dark')document.documentElement.setAttribute('data-theme',_t)}catch(e){}</script>
 <link rel="icon" id="ico" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiMyMTJhMzkiLz48ZyBmaWxsPSIjMmIzNDQ2Ij48cmVjdCB4PSI4IiB5PSI5IiB3aWR0aD0iMTAiIGhlaWdodD0iNDQiIHJ4PSIzIi8+PHJlY3QgeD0iMjEiIHk9IjkiIHdpZHRoPSIxMCIgaGVpZ2h0PSI0NCIgcng9IjMiLz48cmVjdCB4PSIzNCIgeT0iOSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjQ0IiByeD0iMyIvPjxyZWN0IHg9IjQ3IiB5PSI5IiB3aWR0aD0iMTAiIGhlaWdodD0iNDQiIHJ4PSIzIi8+PC9nPjxyZWN0IHg9IjgiIHk9IjExIiB3aWR0aD0iMTAiIGhlaWdodD0iMTYiIHJ4PSIzIiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMjEiIHk9IjIxIiB3aWR0aD0iMTAiIGhlaWdodD0iMjIiIHJ4PSIzIiBmaWxsPSIjZmI5MjNjIi8+PHJlY3QgeD0iMzQiIHk9IjExIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHJ4PSIzIiBmaWxsPSIjMzRkMzk5Ii8+PHJlY3QgeD0iMzQiIHk9IjI5IiB3aWR0aD0iMTAiIGhlaWdodD0iMTgiIHJ4PSIzIiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iNDciIHk9IjE3IiB3aWR0aD0iMTAiIGhlaWdodD0iMTQiIHJ4PSIzIiBmaWxsPSIjZmJiZjI0Ii8+PC9zdmc+">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiMyMTJhMzkiLz48ZyBmaWxsPSIjMmIzNDQ2Ij48cmVjdCB4PSI4IiB5PSI5IiB3aWR0aD0iMTAiIGhlaWdodD0iNDQiIHJ4PSIzIi8+PHJlY3QgeD0iMjEiIHk9IjkiIHdpZHRoPSIxMCIgaGVpZ2h0PSI0NCIgcng9IjMiLz48cmVjdCB4PSIzNCIgeT0iOSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjQ0IiByeD0iMyIvPjxyZWN0IHg9IjQ3IiB5PSI5IiB3aWR0aD0iMTAiIGhlaWdodD0iNDQiIHJ4PSIzIi8+PC9nPjxyZWN0IHg9IjgiIHk9IjExIiB3aWR0aD0iMTAiIGhlaWdodD0iMTYiIHJ4PSIzIiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMjEiIHk9IjIxIiB3aWR0aD0iMTAiIGhlaWdodD0iMjIiIHJ4PSIzIiBmaWxsPSIjZmI5MjNjIi8+PHJlY3QgeD0iMzQiIHk9IjExIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHJ4PSIzIiBmaWxsPSIjMzRkMzk5Ii8+PHJlY3QgeD0iMzQiIHk9IjI5IiB3aWR0aD0iMTAiIGhlaWdodD0iMTgiIHJ4PSIzIiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iNDciIHk9IjE3IiB3aWR0aD0iMTAiIGhlaWdodD0iMTQiIHJ4PSIzIiBmaWxsPSIjZmJiZjI0Ii8+PC9zdmc+">
 <meta name="theme-color" content="#1f2937">
 <style>
-:root{color-scheme:light dark}
+:root{color-scheme:light dark}:root[data-theme="light"]{color-scheme:light}:root[data-theme="dark"]{color-scheme:dark}
 html,body{margin:0;height:100%;overflow:hidden;background:#f6f7f9}
-@media (prefers-color-scheme:dark){html,body{background:#14161a}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]),:root:not([data-theme="light"]) body{background:#14161a}}
+:root[data-theme="dark"],:root[data-theme="dark"] body{background:#14161a}
 iframe{position:fixed;top:0;left:0;width:100%;height:100%;border:0;display:block;background:transparent}
 iframe.off{visibility:hidden;pointer-events:none;z-index:-1}
 /* переключатель разделов: стоит на месте, пока страницы под ним сдвигаются */
 :root{--card:#fff;--bd:#e2e5ea;--tx:#1b1f24;--ac:#2563eb;--danger:#dc2626}
-@media (prefers-color-scheme:dark){:root{--card:#1d2026;--bd:#2d323a;--tx:#eceef1;--ac:#6ea0ff;--danger:#f87171}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--card:#1d2026;--bd:#2d323a;--tx:#eceef1;--ac:#6ea0ff;--danger:#f87171}}
+:root[data-theme="dark"]{--card:#1d2026;--bd:#2d323a;--tx:#eceef1;--ac:#6ea0ff;--danger:#f87171}
 .tsw{position:fixed;z-index:10;display:flex;align-items:center;gap:6px;font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tx);transition:left .2s,top .2s}
 .tsw[hidden]{display:none}
 .tsw .tar{position:relative;width:38px;height:38px;padding:0;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:18px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,transform .1s;font-family:inherit}
@@ -111,6 +115,9 @@ setInterval(function(){var n='';try{if(authSt()==='in'&&perm().ob)n=String(docum
 ['fg','fo','fz'].forEach(function(id){var f=document.getElementById(id);f.addEventListener('load',function(){try{f.contentWindow.addEventListener('scroll',swPlace,true);f.contentWindow.addEventListener('resize',swPlace)}catch(e){}})});
 addEventListener('resize',function(){swUpd();swPlace()});
 swLabel(null,cur,0);
+/* смена темы из меню пользователя любого раздела: применяем к общей странице и всем разделам сразу */
+window.themeAll=function(){var t='';try{t=localStorage.getItem('app-theme')||''}catch(e){}if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');
+  ['fg','fo','fz'].forEach(function(id){try{var w=document.getElementById(id).contentWindow;if(w.themeApply)w.themeApply()}catch(e){}})};
 </script>
 </body>
 </html>
