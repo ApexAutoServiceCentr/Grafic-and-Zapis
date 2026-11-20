@@ -387,9 +387,12 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 @media (max-width:700px){.obban .obh{display:none}}
 .gor[hidden],.gol[hidden],[data-mgo][hidden]{display:none!important}
 .pwx{-webkit-text-security:disc;text-security:disc}.pwx.pwshow{-webkit-text-security:none;text-security:none}
-.uth{display:flex;gap:2px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:2px}
-.uth button{flex:1;border:0;background:transparent;padding:5px 6px;border-radius:7px;font-size:13px;color:var(--mu);text-align:center!important;white-space:nowrap}
-.uth button.on{background:var(--ac);color:#fff;font-weight:600}
+.uth{position:relative;display:flex;gap:2px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:2px}
+.uth button{position:relative;z-index:1;flex:1;border:0;background:transparent!important;padding:5px 6px;border-radius:7px;font-size:13px;color:var(--mu);text-align:center!important;white-space:nowrap;transition:color .25s}
+.uth button.on{color:#fff;font-weight:600}
+/* подсветка выбранной темы переезжает к нажатой кнопке */
+.uthi{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:7px;background:var(--ac);transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
+.uth.noanim .uthi,.uth.noanim button{transition:none}
 </style>
 </head>
 <body class="ro">
@@ -405,7 +408,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <button id="today">Сегодня</button>
 <button id="newB" class="pri eo pe" aria-label="Новая запись">+<span class="t"><span class="t2"> Новая</span> запись</span></button>
 </div>
-<div class="bar" style="margin-bottom:0"><div class="qw"><input type="text" id="q" placeholder="Поиск по всем записям: госномер, телефон, имя или слово из комментария" autocomplete="off"><button type="button" id="qX" class="qx" tabindex="-1" aria-label="Поиск"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><div class="uth" role="group" aria-label="Тема оформления"><button type="button" data-th="">Авто</button><button type="button" data-th="light">☀ Светлая</button><button type="button" data-th="dark">🌙 Тёмная</button></div><button type="button" id="uGh">Синхронизация GitHub</button><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div></div>
+<div class="bar" style="margin-bottom:0"><div class="qw"><input type="text" id="q" placeholder="Поиск по всем записям: госномер, телефон, имя или слово из комментария" autocomplete="off"><button type="button" id="qX" class="qx" tabindex="-1" aria-label="Поиск"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><div class="uth" role="group" aria-label="Тема оформления"><span class="uthi" aria-hidden="true"></span><button type="button" data-th="">Авто</button><button type="button" data-th="light">Светлая</button><button type="button" data-th="dark">Тёмная</button></div><button type="button" id="uGh">Синхронизация GitHub</button><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div></div>
 </div>
 </div>
 <div id="qRes"></div>
@@ -1935,8 +1938,10 @@ setInterval(function(){if(sib('fg'))sibGraph()},3000);
   fix(document);new MutationObserver(function(m){m.forEach(function(x){[].forEach.call(x.addedNodes,function(n){if(n.nodeType===1){if(n.matches&&n.matches(SEL))fix(n.parentNode||document);else fix(n)}})})}).observe(document.body,{childList:true,subtree:true})})();
 /* меню пользователя: тема и синхронизация GitHub */
 (function(){function cur(){try{return localStorage.getItem('app-theme')||''}catch(e){return ''}}
-  function mark(){var t=cur();[].forEach.call(document.querySelectorAll('.uth button'),function(b){b.classList.toggle('on',b.dataset.th===t);b.setAttribute('aria-pressed',b.dataset.th===t?'true':'false')})}
-  window.themeApply=function(){var t=cur();if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');mark()};
+  function mark(anim){var t=cur();[].forEach.call(document.querySelectorAll('.uth'),function(g){var on=null;[].forEach.call(g.querySelectorAll('button'),function(b){var a=b.dataset.th===t;b.classList.toggle('on',a);b.setAttribute('aria-pressed',a?'true':'false');if(a)on=b});
+    var i=g.querySelector('.uthi');if(!i||!on||!on.offsetWidth)return;if(!anim){g.classList.add('noanim')}i.style.width=on.offsetWidth+'px';i.style.transform='translateX('+on.offsetLeft+'px)';if(!anim){void i.offsetWidth;g.classList.remove('noanim')}})}
+  window.themeApply=function(){var t=cur();if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');mark(true)};
+  document.addEventListener('click',function(e){if(e.target.closest('#uB'))setTimeout(function(){mark(false)},0)},true);
   document.addEventListener('click',function(e){var b=e.target.closest('.uth button');if(b){try{localStorage.setItem('app-theme',b.dataset.th)}catch(x){}try{if(window.parent!==window&&parent.themeAll){parent.themeAll();return}}catch(x){}window.themeApply();return}
     if(e.target.closest('#uGh')){try{var m=document.getElementById('uMenu');if(m)m.hidden=true;var ub=document.getElementById('uB');if(ub)ub.setAttribute('aria-expanded','false')}catch(x){}
       try{var z=parent.document.getElementById('fz').contentWindow;if(z!==window)parent.showTab('zapis');z.zApi.open('g')}catch(x){try{zApi.open('g')}catch(y){}}}});
