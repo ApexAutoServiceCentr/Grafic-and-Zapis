@@ -192,6 +192,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 .uthi{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:7px;background:var(--ac);transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
 .uth.noanim .uthi,.uth.noanim button{transition:none}
 .mbx{margin:4px 0 12px}
+.menu>.mrow[hidden],.menu>.tools[hidden],.menu>.mlbl[hidden]{display:none!important}#menuB.mnone{display:none!important}
 </style>
 </head>
 <body>
@@ -578,7 +579,7 @@ function locked(){if(EMB)return !RP().graf;return true}
 function setLocked(){if(EMB)return !RP().set;return true}
 function applyRole(){if(!EMB){var rs0=document.getElementById('reset');if(rs0)rs0.style.display='none';return}var r=RP(),b=document.getElementById('bToggle'),st=document.getElementById('sToggle'),pb=document.getElementById('pwB');
   b.style.display=r.graf?'':'none';st.style.display=r.set?'':'none';if(pb)pb.style.display='none';
-  document.getElementById('mToggle').style.display=r.set?'':'none';document.getElementById('goUsers').style.display=r.role==='owner'?'':'none';document.getElementById('goSync').style.display=r.name?'':'none';if(!r.set&&!modeCol){modeCol=true;applyMode()}
+  document.getElementById('mToggle').style.display=r.set?'':'none';document.getElementById('expB').style.display=r.exp?'':'none';document.getElementById('goUsers').style.display=r.role==='owner'?'':'none';document.getElementById('goSync').style.display=r.name?'':'none';if(!r.set&&!modeCol){modeCol=true;applyMode()}
   var uc=document.getElementById('uChip');uc.hidden=!r.name;if(r.name){document.getElementById('uB').innerHTML='👤<span class="un"> '+esc(r.name)+'</span> ▾';document.getElementById('uB').title=r.name;document.getElementById('uRole').textContent=r.name+' · '+(r.roleName||'')}
   var rs=document.getElementById('reset');if(rs)rs.style.display=r.role==='owner'?'':'none';
   if(!r.graf&&!collapsed){collapsed=true}if(!r.set&&!setCol){setCol=true}
@@ -770,7 +771,7 @@ function exportXlsx(){
     el.href=u;el.download=nm;document.body.appendChild(el);el.click();document.body.removeChild(el);setTimeout(function(){URL.revokeObjectURL(u)},2000);
   });
 }
-document.getElementById('expB').onclick=function(){exportXlsx().catch(function(e){exportCsv();alert('Не удалось собрать Excel-файл, скачан упрощённый CSV.')})};
+document.getElementById('expB').onclick=function(){if(EMB&&!RP().exp)return;exportXlsx().catch(function(e){exportCsv();alert('Не удалось собрать Excel-файл, скачан упрощённый CSV.')})};
 
 document.getElementById('set').addEventListener('change',function(ev){var t=ev.target;if(t.dataset.ppn!==undefined){var z=ZA();if(z)z.rename(+t.dataset.ppn,t.value);renderSet()}});
 document.getElementById('set').addEventListener('click',function(ev){
@@ -1122,6 +1123,13 @@ addEventListener('resize',alignHdr);alignHdr();new ResizeObserver(alignHdr).obse
   mark()})();
 /* окна пунктов меню открываются сразу под строкой с нажатой кнопкой, а не внизу под всеми кнопками */
 (function(P){P.forEach(function(p){var t=document.getElementById(p[0]),b=document.getElementById(p[1]);if(!t||!b)return;var r=t.closest('.mrow,.tools');if(!r)return;var a=r._lastBox||r;a.parentNode.insertBefore(b,a.nextSibling);r._lastBox=b;b.classList.add('mbx')})})([['sToggle','setBox'],['mToggle','modeBox'],['bToggle','brush']]);
+
+/* меню: строки без доступных кнопок прячутся вместе с подписью; если доступных пунктов нет совсем — прячется и кнопка «Меню» */
+(function(M,B,close){function vis(e){if(e.hidden)return false;var d=getComputedStyle(e).display;if(d==='none')return false;if(d==='contents')return [].some.call(e.children,vis);return true}
+  function tidy(){var m=document.getElementById(M),b=document.getElementById(B);if(!m||!b)return;var any=false;
+    [].forEach.call(m.children,function(r){if(!r.matches('.mrow,.tools'))return;r.hidden=false;var v=vis(r)&&[].some.call(r.children,vis);r.hidden=!v;var lb=r.previousElementSibling;if(lb&&lb.classList.contains('mlbl'))lb.hidden=!v;if(v)any=true});
+    var was=b.classList.contains('mnone');b.classList.toggle('mnone',!any);if(!any&&!was){try{close()}catch(e){}}}
+  window.menuTidy=tidy;setInterval(tidy,400);tidy()})('menuPanel','menuB',function(){menuSet(false)});
 </script>
 </body>
 </html>
