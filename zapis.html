@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Запись на сервис</title>
+<script>/* запись работает только внутри общей страницы (index.html), как график и обращения */
+try{if(window.parent===window&&/^https?:$/.test(location.protocol))location.replace('index.html#zapis')}catch(e){}</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iMSIgeT0iNyIgd2lkdGg9IjYyIiBoZWlnaHQ9IjU2IiByeD0iOSIgZmlsbD0iIzM3NDE1MSIvPjxwYXRoIGQ9Ik0xIDE2IGE5IDkgMCAwIDEgOSAtOSBoNDQgYTkgOSAwIDAgMSA5IDkgdjggaC02MiB6IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMTMiIHk9IjEiIHdpZHRoPSI3IiBoZWlnaHQ9IjEzIiByeD0iMy41IiBmaWxsPSIjOTRhM2I4Ii8+PHJlY3QgeD0iNDQiIHk9IjEiIHdpZHRoPSI3IiBoZWlnaHQ9IjEzIiByeD0iMy41IiBmaWxsPSIjOTRhM2I4Ii8+PGcgdHJhbnNmb3JtPSJyb3RhdGUoLTQ1IDMyIDQzKSI+PHJlY3QgeD0iMjcuNSIgeT0iMzAiIHdpZHRoPSI5IiBoZWlnaHQ9IjI5IiByeD0iNC41IiBmaWxsPSIjZmJiZjI0Ii8+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMCIgcj0iMTAuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjI4IiB5PSIxOCIgd2lkdGg9IjgiIGhlaWdodD0iMTIiIHJ4PSIxLjUiIGZpbGw9IiMzNzQxNTEiLz48L2c+PC9zdmc+">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iMSIgeT0iNyIgd2lkdGg9IjYyIiBoZWlnaHQ9IjU2IiByeD0iOSIgZmlsbD0iIzM3NDE1MSIvPjxwYXRoIGQ9Ik0xIDE2IGE5IDkgMCAwIDEgOSAtOSBoNDQgYTkgOSAwIDAgMSA5IDkgdjggaC02MiB6IiBmaWxsPSIjNjBhNWZhIi8+PHJlY3QgeD0iMTMiIHk9IjEiIHdpZHRoPSI3IiBoZWlnaHQ9IjEzIiByeD0iMy41IiBmaWxsPSIjOTRhM2I4Ii8+PHJlY3QgeD0iNDQiIHk9IjEiIHdpZHRoPSI3IiBoZWlnaHQ9IjEzIiByeD0iMy41IiBmaWxsPSIjOTRhM2I4Ii8+PGcgdHJhbnNmb3JtPSJyb3RhdGUoLTQ1IDMyIDQzKSI+PHJlY3QgeD0iMjcuNSIgeT0iMzAiIHdpZHRoPSI5IiBoZWlnaHQ9IjI5IiByeD0iNC41IiBmaWxsPSIjZmJiZjI0Ii8+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMCIgcj0iMTAuNSIgZmlsbD0iI2ZiYmYyNCIvPjxyZWN0IHg9IjI4IiB5PSIxOCIgd2lkdGg9IjgiIGhlaWdodD0iMTIiIHJ4PSIxLjUiIGZpbGw9IiMzNzQxNTEiLz48L2c+PC9zdmc+">
 <style>
@@ -173,14 +175,6 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .seg.miss{outline:2px solid var(--danger);outline-offset:3px;border-radius:10px}
 .srt{display:inline-block;font-size:11px;font-weight:600;padding:0 5px;margin-left:5px;border-radius:5px;background:rgba(255,255,255,.5);color:var(--stx);vertical-align:1px}
 .stt{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}.stt td,.stt th{padding:7px 8px;border-bottom:1px solid var(--bd);text-align:left}.stt th{color:var(--mu);font-weight:600;font-size:12px}.stt td.n{text-align:right;font-variant-numeric:tabular-nums}.stt .bar{height:8px;border-radius:4px;background:var(--ac)}
-.stsw{display:inline-flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:10px}.stsw button{border:none;border-radius:0;padding:7px 16px;background:transparent}.stsw button+button{border-left:1px solid var(--bd)}.stsw button.on{background:var(--ac);color:#fff;font-weight:600}
-.stnav b{min-width:220px;text-align:center;font-size:15px}.stnow{margin-left:auto}
-.sttot{font-size:14px;color:var(--mu);margin:4px 0 10px}.sttot b{color:var(--tx);font-size:16px}
-.stcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.stc{background:var(--bg);border-radius:12px;padding:12px 14px}.stk{display:flex;align-items:center;gap:7px;font-size:14px;color:var(--mu)}.stk .si{width:16px;height:16px}
-.stv{font-size:30px;font-weight:600;line-height:1.2;margin-top:4px}.stn{font-size:13px;color:var(--mu)}
-.stbar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin-top:14px;gap:0}
-.stleg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:13px;color:var(--mu)}.stleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 #fHint{background:var(--bg);border:1px solid var(--ac);border-radius:10px;padding:8px 10px;font-size:13px;flex-direction:row!important;flex-wrap:wrap;align-items:center;gap:6px 10px}
 #fHint .sp{flex:1}
 #fHint button{padding:5px 10px}
@@ -358,7 +352,7 @@ body.nocli .msgb{display:none!important}
 .mchips button{padding:3px 8px;font-size:12px}
 .msgT{width:100%;min-height:80px;font:inherit}
 .mprev{white-space:pre-wrap;background:var(--bg);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:6px}
-body:not(.f-wa) #fMsgW,body:not(.f-tpl) #msToggle,body:not(.f-tpl) #msBox,body:not(.f-zrep) #zrToggle,body:not(.f-load) #ldToggle,body:not(.f-load) #ldBox,body:not(.f-stats) #stToggle,body:not(.f-stats) #stBox,body:not(.f-row) .mlbl.ldr,body:not(.f-row) .tools.ldr{display:none!important}
+body:not(.f-wa) #fMsgW,body:not(.f-tpl) #msToggle,body:not(.f-tpl) #msBox,body:not(.f-zrep) #zrToggle,body:not(.f-load) #ldToggle,body:not(.f-load) #ldBox,body:not(.f-row) .mlbl.ldr,body:not(.f-row) .tools.ldr{display:none!important}
 body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 .acc{margin-top:12px;border-top:1px solid var(--bd);padding-top:8px}
 .acc summary{cursor:pointer;font-weight:700;user-select:none}
@@ -381,24 +375,6 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 #cnt .obb b{background:transparent;color:inherit;font-weight:400;padding:0;margin-left:0;min-width:0}
 #cnt .obn{border-color:#1D9E75;color:#5dcaa5}
 @media (prefers-color-scheme:light){#cnt .obb{color:#a32d2d;background:#fcebeb}#cnt .obn{color:#0f6e56}}
-.obd{width:min(720px,96vw)}
-.obd .tabs2{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-.obd .tabs2 button.on{background:var(--tx);color:var(--bg)}
-.obd .og{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.obd .og .f{display:flex;flex-direction:column;gap:3px}
-.obd .og label{font-size:12px;color:var(--mu)}
-.obd .og .w3{grid-column:1/-1}
-@media (max-width:600px){.obd .og{grid-template-columns:1fr 1fr}}
-.obd .oi{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:10px;padding:10px 0;border-top:1px solid var(--bd);align-items:start;font-size:14px}
-.obd .oi .m{color:var(--mu);font-size:13px}
-.obd .ot{font-size:12px;padding:2px 8px;border-radius:8px;white-space:nowrap}
-.obd .ot.new{background:rgba(226,75,74,.24);color:#f09595}
-.obd .ot.wip,.obd .ot.later{background:rgba(239,159,39,.22);color:#efb04f}
-.obd .ot.done{background:rgba(29,158,117,.22);color:#5dcaa5}
-@media (prefers-color-scheme:light){.obd .ot.new{color:#a32d2d}.obd .ot.wip,.obd .ot.later{color:#854f0b}.obd .ot.done{color:#0f6e56}}
-.obd .oacts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center}
-.obd .oacts button{padding:4px 9px;font-size:13px}
-.obd .oacts input,.obd .oacts select{padding:4px 8px;font-size:13px;width:auto}
 .obban{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;border-radius:12px;background:var(--card);border:1px solid var(--ac);box-shadow:0 8px 24px rgba(0,0,0,.3);font-size:14px}
 .obban[hidden]{display:none}
 .obban .obh{color:var(--mu)}
@@ -429,13 +405,13 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Введите токен в разделе «Синхронизация GitHub».</div>
 <div class="mlbl">Общее</div><div class="tools"><button id="goStaff" class="pset">Сотрудники и посты ↗</button><button id="goMode" class="pset">Режим работы ↗</button><button id="uToggle" class="pu" aria-expanded="false">Пользователи ▸</button><button id="gToggle" aria-expanded="false">Синхронизация GitHub ▸</button></div>
 <div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-mgo="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-mgo="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl gol">Обращения</div><div class="tools gor"><button type="button" data-mgo="obr:rep" data-need="rep">Отчёт по обращениям ↗</button></div>
-<div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="msToggle" class="pset" aria-expanded="false">Шаблоны сообщений ▸</button><button id="ldToggle" class="ldr" aria-expanded="false">Отчёт загрузки цеха ▸</button><button id="zrToggle" type="button">Отчёт по записям</button><button id="stToggle" class="ps" aria-expanded="false" style="display:none!important">Статистика ▸</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
+<div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="msToggle" class="pset" aria-expanded="false">Шаблоны сообщений ▸</button><button id="ldToggle" class="ldr" aria-expanded="false">Отчёт загрузки цеха ▸</button><button id="zrToggle" type="button">Отчёт по записям</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
 <div id="setBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="uBox" class="pu" style="display:none;margin-bottom:12px"><div class="set" id="usr"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
 <div id="ldBox" style="display:none"></div>
 <div id="msBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="msgS"></div></div>
-<div id="stBox" style="display:none;margin-bottom:12px"><div class="set" id="stat"></div></div>
+
 <div class="leg">
 <span><b style="background:var(--to)"></b>ТО</span>
 <span><b style="background:var(--rm)"></b>Ремонт</span>
@@ -464,7 +440,6 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 </main>
 
 <div id="pwM" class="pwm" hidden><div class="pwb" role="dialog" aria-modal="true" aria-labelledby="pwT"><div id="pwT" style="font-weight:600;margin-bottom:6px"></div><input type="text" class="pwx" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore id="pwI0" autocomplete="off" placeholder="Старый пароль" style="display:none"><input type="text" class="pwx" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore id="pwI" autocomplete="off" placeholder="Пароль"><input type="text" class="pwx" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore id="pwI2" autocomplete="off" placeholder="Повторите пароль"><div id="pwE" class="err"></div><div style="display:flex;gap:8px"><button id="pwOk" class="pri">OK</button><button id="pwNo">Отмена</button></div></div></div>
-<dialog id="obDlg" class="mdd obd"><div class="dlg" id="obBody"></div></dialog>
 <dialog id="pkDlg" class="mdd"><div class="dlg" id="pkBody"></div></dialog>
 <dialog id="mdDlg" class="mdd"><div class="dlg" id="mdBody"></div></dialog>
 <div id="printArea"></div>
@@ -554,7 +529,7 @@ window.zApi={
   add:function(k){if(!this.can('set'))return 'Нет прав';var c=state.cfg;c.posts.push({id:'p'+uid(),name:'Пост '+(c.posts.length+1),kind:KINDS[k]?k:'me',emp:[]});cfgTouch();return ''},
   up:function(i){if(!this.can('set'))return 'Нет прав';var c=state.cfg;if(i<1||i>=c.posts.length)return '';var x=c.posts[i];c.posts[i]=c.posts[i-1];c.posts[i-1]=x;cfgTouch();return ''},
   del:function(i){if(!this.can('set'))return 'Нет прав';var c=state.cfg,p=c.posts[i];if(!p)return '';if(futureOn(p.id))return 'На «'+p.name+'» есть записи на сегодня или позже. Сначала перенесите их на другие посты.';if(c.posts.length<=1)return 'Должен остаться хотя бы один пост';c.posts.splice(i,1);cfgTouch();return ''},
-  open:function(k){menuOpen=true;applyMenu();collapseMenuSections();var b=document.getElementById({u:'uToggle',g:'gToggle',ms:'msToggle',ld:'ldToggle',st:'stToggle',zr:'zrToggle'}[k]||'gToggle');if(b&&getComputedStyle(b).display!=='none')b.click()},
+  open:function(k){menuOpen=true;applyMenu();collapseMenuSections();var b=document.getElementById({u:'uToggle',g:'gToggle',ms:'msToggle',ld:'ldToggle',zr:'zrToggle'}[k]||'gToggle');if(b&&getComputedStyle(b).display!=='none')b.click()},
   masterDay:function(id,d){openMD(id,d)},
   logout:function(){doLogout()},
   myPw:function(){openMyPw()},
@@ -893,7 +868,6 @@ function applyPerm(){var B=document.body.classList,w=canWrite&&KEY;
   var rn=document.getElementById('roNote');if(rn)rn.style.display=KEY&&!canWrite&&(can('edit')||can('set')||can('users'))?'':'none';
   document.body.classList.toggle('nocli',noCli());
   var u=me(),mi=document.getElementById('meInfo'),uc=document.getElementById('uChip');if(uc){uc.hidden=!u;if(u){document.getElementById('uB').innerHTML='👤<span class="un"> '+esc(u.name)+'</span> ▾';document.getElementById('uB').title=u.name;document.getElementById('uRole').textContent=u.name+' · '+((ROLES[u.role]||{}).n||'')}}if(mi)mi.innerHTML=u?'👤 <b>'+esc(u.name)+'</b> · '+esc((ROLES[u.role]||{}).n||''):'';
-  if(typeof stOpen!=='undefined'&&stOpen&&!can('stats')){stOpen=false;applyStBox()}
   if(typeof setOpen!=='undefined'&&setOpen&&!(w&&can('set'))){setOpen=false;applySetBox()}
   if(typeof uOpen!=='undefined'&&uOpen&&!(w&&can('users'))){uOpen=false;applyUBox()}}
 
@@ -951,10 +925,10 @@ var cur=iso(new Date()),RS=null,RE=null,needScroll=true,nar=false,RH=36;
 /* высота строки подбирается так, чтобы день целиком помещался на экране (от 30 до 44 пикселей) */
 function calcRH(){var h=document.getElementById('hdr'),mn=document.getElementById('menu'),qr=document.getElementById('qRes'),hh=h?h.offsetHeight-mn.offsetHeight-qr.offsetHeight:120,g=document.querySelector('#days .gh'),gh=g?g.offsetHeight:72,d=document.querySelector('#days .dh'),dh=d?d.offsetHeight+16:44,n=slots().length||20;
   return Math.max(28,Math.min(44,Math.floor((innerHeight-hh-dh-gh-10)/n)))}
-function rerender(){render();if(stOpen)renderStat();if(lrOpen)renderLoad();if(zrOpen)renderZr();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
+function rerender(){render();if(lrOpen)renderLoad();if(zrOpen)renderZr();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
 function appVisible(){return document.getElementById('app').style.display!=='none'}
 function secOf(d){return document.querySelector('#days .day[data-d="'+d+'"]')}
-function headRng(){var dd=parseIso(cur);document.getElementById('rng').textContent=(nar||innerWidth<1500?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()].slice(0,3)+' '+dd.getFullYear():innerWidth<1800?DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()]+' '+dd.getFullYear():fdate(cur))+(cur===iso(new Date())?' · сегодня':'');document.getElementById('dPick').value=cur}
+function headRng(){var dd=parseIso(cur);document.getElementById('rng').textContent=DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()].slice(0,3)+' '+dd.getFullYear()+(cur===iso(new Date())?' · сегодня':'');document.getElementById('dPick').value=cur}
 function topBottom(){return document.getElementById('hdr').getBoundingClientRect().bottom}
 /* день, который сейчас вверху экрана, под закреплённой панелью */
 function anchor(){var y=topBottom()+40,ss=document.querySelectorAll('#days .day'),a=null,i;for(i=0;i<ss.length;i++){if(ss[i].getBoundingClientRect().top<=y)a=ss[i];else break}return a||ss[0]||null}
@@ -998,8 +972,8 @@ function renderCnt(){var el=document.getElementById('cnt'),t=iso(new Date()),L=n
   if(feat('cnt'))for(i=0;i<3;i++){d=addDays(t,i);n=0;for(k in state.b){b=state.b[k];if(live(b)&&b.date===d&&st(b)!=='nos')n++}h+='<button type="button" class="'+(n?'':'z')+'" data-go="'+d+'" title="Записано на '+fdate(d)+'">'+L[i]+'<b>'+n+'</b></button>'}
   if(KEY&&me()){var oc=obCount();if(feat('obrAdd')&&canWrite&&me().role!=='owner')h+='<button type="button" class="obn" data-obn="1" title="Новое обращение клиента">+ Обращение</button>';}
   var pn=canWrite&&KEY&&can('edit')&&feat('move')?pkList().length:0;if(pn)h+='<button type="button" class="pkb" data-pk="1" title="Записи, у которых мастер не на смене — их нужно перенести">⚠ Перенести: <b>'+pn+'</b></button>';
-  el.innerHTML=h;el.style.display=appVisible()&&h?'':'none';document.getElementById('hdr').classList.toggle('has-cnt',!!(appVisible()&&h));if(document.getElementById('pkDlg').open)renderPK();if(document.getElementById('obDlg').open&&obTab!=='new')renderOB()}
-document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;if(t.dataset.pk){openPK();return}if(t.dataset.ob){if(!obShell('obr'))openOB();return}if(t.dataset.obn){if(obShell('obr')){try{var fw=parent.document.getElementById('fo').contentWindow;if(fw.obNew)fw.obNew()}catch(x){}}else openOB('new');return}goto(t.dataset.go,true)});
+  el.innerHTML=h;el.style.display=appVisible()&&h?'':'none';document.getElementById('hdr').classList.toggle('has-cnt',!!(appVisible()&&h));if(document.getElementById('pkDlg').open)renderPK()}
+document.getElementById('cnt').addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;if(t.dataset.pk){openPK();return}if(t.dataset.obn){if(obShell('obr')){try{var fw=parent.document.getElementById('fo').contentWindow;if(fw.obNew)fw.obNew()}catch(x){}}return}goto(t.dataset.go,true)});
 /* линия текущего времени в сегодняшнем дне, обновляется раз в минуту */
 function updNow(){
   [].forEach.call(document.querySelectorAll('#days .nowl'),function(x){x.remove()});
@@ -1016,6 +990,7 @@ function render(){
   nar=innerWidth<600;if(appVisible())RH=nar?34:calcRH();
   if(!RS){RS=addDays(cur,-2);RE=addDays(cur,12)}
   var box=document.getElementById('days'),a=box.children.length&&appVisible()?anchor():null,ad=a&&a.dataset.d,off=a?a.getBoundingClientRect().top:0,h='',d;
+  if(Date.now()-rzLock<600&&vA&&secOf(vA.d)){ad=vA.d;off=vA.o}
   for(d=RS;d<=RE;d=addDays(d,1))h+=dayHtml(d);
   box.innerHTML=h;
   if(ad&&secOf(ad))scrollBy(0,secOf(ad).getBoundingClientRect().top-off);
@@ -1025,7 +1000,7 @@ function render(){
 function goto(date,smooth){
   if(!RS||date<RS||date>RE){RS=addDays(date,-2);RE=addDays(date,12);cur=date;document.getElementById('days').innerHTML='';needScroll=false;render()}
   var sec=secOf(date);cur=date;headRng();if(!sec)return;
-  var y=sec.getBoundingClientRect().top+scrollY-document.getElementById('hdr').offsetHeight+2;
+  var y=sec.getBoundingClientRect().top+scrollY-document.getElementById('hdr').offsetHeight+2;vA={d:date,o:document.getElementById('hdr').offsetHeight-2};
   scrollTo({top:Math.max(0,y),behavior:smooth?'smooth':'auto'});
 }
 var MAXD=42,SAVED=null,svT=null;
@@ -1042,9 +1017,14 @@ function onScroll(){
   var box=document.getElementById('days');if(!box.firstElementChild)return;
   if(scrollY+innerHeight>document.documentElement.scrollHeight-1600)appendDays(7);
   else if(box.firstElementChild.getBoundingClientRect().top>-900&&scrollY>0)prependDays(7);
-  var a=anchor();if(a&&a.dataset.d!==cur){cur=a.dataset.d;headRng()}
+  if(Date.now()-rzLock<600)return;
+  var a=anchor();if(a){vA={d:a.dataset.d,o:a.getBoundingClientRect().top};if(a.dataset.d!==cur){cur=a.dataset.d;headRng()}}
   clearTimeout(svT);svT=setTimeout(saveView,250);
 }
+/* при изменении размера окна (поворот телефона, растягивание окна) остаёмся на том же дне: возвращаем его на прежнее место */
+var vA=null,rzLock=0;
+function keepDay(){if(!RS||!vA)return;var s0=secOf(vA.d);if(!s0)return;var dy=s0.getBoundingClientRect().top-vA.o;if(Math.abs(dy)>1)scrollBy(0,dy);if(cur!==vA.d){cur=vA.d;headRng()}}
+addEventListener('resize',function(){rzLock=Date.now();keepDay();requestAnimationFrame(keepDay)});
 addEventListener('scroll',function(){if(scT)return;scT=true;requestAnimationFrame(function(){scT=false;onScroll()})},{passive:true});
 /* всплывающая подсказка с полной информацией при наведении курсора */
 var tip=document.getElementById('tip');
@@ -1400,18 +1380,13 @@ var OB_WAY=['Звонок','WhatsApp','Визит','Instagram','Почта','Д�
 var OB_WHY=['ТО','Замена масла','Диагностика','Вопрос по сервису','Запчасти','Шиномонтаж','Ремонт','Гарантия','Другое'];
 var OB_TY=(function(){var r=[];TYPES.forEach(function(t){r.push(t);if(t.k==='ak')r.push({k:'zc',n:'Запчасти'})});r.push({k:'dr',n:'Другое'});return r})();
 var OB_RES={book:'Записан',cons:'Проконсультирован',other:'Другое'};
-var obTab='mine',obArm=null,obPending=null;
+var obPending=null;
 function obAll(){var r=[],k,o=state.o||{};for(k in o)if(!o[k].del)r.push(o[k]);return r}
-function obMine(o){return o.resp===UID||(!o.resp&&feat('obrWork'))}
 function obOpen(o){return o.st!=='done'}
-function obCount(){if(!(KEY&&me()))return 0;var L=obAll().filter(obOpen);if(feat('obrWork'))return L.filter(obMine).length;if(feat('obrView'))return L.length;return L.filter(function(o){return o.byU===UID}).length}
+/* значок на переключателе разделов: все открытые обращения — столько же, сколько в «Открытых» во вкладке */
+function obCount(){if(!(KEY&&me()))return 0;return obAll().filter(obOpen).length}
 function obWorkers(){var us=state.users||{},r=[],k;for(k in us){var u=us[k];if(u.del)continue;if(u.role==='owner'||featRoles('obrWork').indexOf(u.role)>=0)r.push(u)}r.sort(function(a,b){return a.name.localeCompare(b.name,'ru')});return r}
 function uName(id){var u=(state.users||{})[id];return u?u.name:''}
-function obAge(t){var m=Math.max(0,Math.round((now()-t)/60000));if(m<60)return m+' мин';var h=Math.floor(m/60);if(h<24)return h+' ч'+(m%60?' '+m%60+' мин':'');return Math.floor(h/24)+' дн'}
-function obDur(a,b){var m=Math.max(0,Math.round((b-a)/60000));return m<60?m+' мин':Math.floor(m/60)+' ч'+(m%60?' '+m%60+' мин':'')}
-function obWhen(t){var d=new Date(t),td=new Date();return (d.toDateString()===td.toDateString()?'':pad(d.getDate())+'.'+pad(d.getMonth()+1)+' ')+fm(d.getHours()*60+d.getMinutes())}
-function obTag(o){if(o.st==='done')return '<span class="ot done">'+OB_RES[o.res]+'</span>';if(o.st==='later')return '<span class="ot later">Перезвонить '+obWhen(o.later)+'</span>';if(o.st==='wip')return '<span class="ot wip">Недозвон ×'+(o.tries||[]).length+'</span>';return '<span class="ot new">Новое</span>'}
-function openOB(tab){if(!(KEY&&me()))return;obTab=tab||(feat('obrWork')?'mine':feat('obrView')?'all':'my');obArm=null;renderOB();var d=document.getElementById('obDlg');if(!d.open)d.showModal()}
 function obSave(o){o.u=now();state.o=state.o||{};state.o[o.id]=o;commit()}
 /* общие действия: ими пользуются и окно в записи, и вкладка «Обращения» */
 function obCreate(f){if(!(KEY&&me()&&feat('obrAdd')&&canWrite))return {e:'Нет прав создавать обращения'};var u=me(),cl=String(f.client||'').trim().slice(0,60),pr=String(f.phone||'').trim(),pd=digits(pr);
@@ -1431,8 +1406,7 @@ function obDo(id,k,c,lv,nr){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))re
 function obDel(id){var u=me(),o=state.o&&state.o[id];if(!u||u.role!=='owner'||!canWrite)return 'Удалять может только владелец';if(!o)return '';o=JSON.parse(JSON.stringify(o));o.del=true;obSave(o);return ''}
 function obShell(k){try{if(window.parent!==window&&parent.showTab&&parent.document.getElementById('fo')){parent.showTab(k);return true}}catch(e){}return false}
 /* «Записать» из обращения: переходим в таблицу записи, внизу — плашка с клиентом; карточка открывается, когда выберут время */
-function obBook(id){var o=state.o&&state.o[id];if(!obCanAct(o)||!can('edit'))return 'Нет прав записывать';var d0=document.getElementById('obDlg');if(d0.open)d0.close();
-  obPending=o.id;obBanUpd();obShell('zapis');return ''}
+function obBook(id){var o=state.o&&state.o[id];if(!obCanAct(o)||!can('edit'))return 'Нет прав записывать';  obPending=o.id;obBanUpd();obShell('zapis');return ''}
 function obFill(o){var bm={brand:o.brand==='Другое'?'':o.brand,model:o.model};
   sv('fClient',o.client||'');if(o.phone)setPhone(o.phone);sv('fBrand',bm.brand||'');sv('fModel',bm.model||'');fillModels();var tyOk=TYPES.some(function(x){return x.k===o.wk});if(tyOk){setType(o.wk);tonClose()}if(o.year)sv('fYear',o.year);sv('fDesc',tyOk?(o.desc||''):[o.why,o.desc].filter(Boolean).join(': '));if(o.way==='WhatsApp'||o.way==='Instagram')setSrc('online');else if(o.way==='Визит')setSrc('visit');else setSrc('call')}
 function obBanUpd(){var el=document.getElementById('obBan'),o=obPending&&state.o&&state.o[obPending];if(o&&(o.del||o.st==='done'||!(KEY&&me()))){obPending=null;o=null}
@@ -1441,48 +1415,6 @@ function obBanUpd(){var el=document.getElementById('obBan'),o=obPending&&state.o
 setInterval(obBanUpd,1500);
 var _openForm=openForm;openForm=function(b,pre){_openForm(b,pre);if(!b&&obPending&&state.o&&state.o[obPending]&&state.o[obPending].st!=='done'&&canWrite&&can('edit'))obFill(state.o[obPending])};
 function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),feat('obrRep'),feat('tabO'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
-function renderOB(){var W=feat('obrWork'),V=feat('obrView'),A=feat('obrAdd'),L=obAll(),h='';
-  var tabs=[];if(W)tabs.push(['mine','Мои',L.filter(function(o){return obOpen(o)&&obMine(o)}).length]);if(W||V)tabs.push(['all','Все открытые',L.filter(obOpen).length]);if(A&&!W&&!V)tabs.push(['my','Мои обращения',0]);if(W||V||A)tabs.push(['done','Закрытые',0]);if(A&&canWrite)tabs.push(['new','+ Новое',0]);
-  h+='<div class="mh"><div style="flex:1;font-weight:700;font-size:16px">Обращения клиентов</div><button type="button" id="obX" aria-label="Закрыть">✕</button></div><div class="tabs2">'+tabs.map(function(t){return '<button type="button" data-obt="'+t[0]+'" class="'+(obTab===t[0]?'on':'')+'">'+t[1]+(t[2]?' · '+t[2]:'')+'</button>'}).join('')+'</div>';
-  if(obTab==='new'){h+=obForm()}else{
-    var list;if(obTab==='mine')list=L.filter(function(o){return obOpen(o)&&obMine(o)});else if(obTab==='all')list=L.filter(obOpen);else if(obTab==='my')list=L.filter(function(o){return o.byU===UID&&(obOpen(o)||now()-o.ct<7*864e5)});else{var lim=now()-30*864e5;list=L.filter(function(o){return o.st==='done'&&o.ct>lim&&(V||W&&(o.resp===UID||o.cb===UID)||o.byU===UID)})}
-    list.sort(function(a,b){return obTab==='done'?b.ct-a.ct:a.t-b.t});
-    if(!list.length)h+='<div class="sub" style="margin:14px 0">'+(obTab==='done'?'Закрытых обращений за 30 дней нет.':'Открытых обращений нет.')+'</div>';
-    list.forEach(function(o){var car=[o.brand,o.model].filter(Boolean).join(' '),ph=digits(o.phone||''),can2=W&&obOpen(o)&&(o.resp===UID||!o.resp||me().role==='owner');
-      h+='<div class="oi"><div><b>'+obWhen(o.t)+'</b><div class="m">'+(o.st==='done'?'за '+obDur(o.t,o.ct):obAge(o.t))+'</div><div class="m">№ '+(o.n||'')+'</div></div><div><div>'+esc([noCli()?'':o.client,noCli()?'':o.phone,car].filter(Boolean).join(' · ')||'—')+(ph.length>=10&&!noCli()?' <a href="tel:+7'+ph.slice(-10)+'" title="Позвонить" style="text-decoration:none">📞</a>':'')+'</div>';
-      h+='<div class="m">'+esc([o.why,o.way].filter(Boolean).join(' · '))+' · от '+esc(o.by||'—')+' → '+esc(o.resp?uName(o.resp)||'—':'кто свободен')+'</div>';
-      if(o.desc)h+='<div class="m" style="font-style:italic">'+esc(o.desc)+'</div>';
-      (o.tries||[]).forEach(function(x){h+='<div class="m" style="font-size:12px">'+(x.k==='later'?'Перезвонить '+obWhen(x.at):'Недозвон')+' · '+obWhen(x.t)+' · '+esc(x.n||'')+(x.c?' — '+esc(x.c):'')+'</div>'});
-      if(o.st==='done')h+='<div class="m" style="font-size:12px">'+OB_RES[o.res]+' · '+esc(uName(o.cb)||o.cbn||'')+' · '+obWhen(o.ct)+(o.note?' — '+esc(o.note):'')+(o.bk&&state.b[o.bk]&&live(state.b[o.bk])?' · <a href="#" data-obk="'+o.bk+'">открыть запись</a>':'')+'</div>';
-      if(can2){if(obArm&&obArm.id===o.id){var k=obArm.k;h+='<div class="oacts">'+(k==='later'?'<select data-obl><option value="30">через 30 мин</option><option value="60">через 1 ч</option><option value="120">через 2 ч</option><option value="t10">завтра в 10:00</option></select>':'')+'<input type="text" data-obc maxlength="200" placeholder="'+(k==='other'?'Что сделали (обязательно)':'Комментарий')+'" style="min-width:220px"><button type="button" class="pri" data-obok="'+o.id+'">'+(k==='cons'?'Закрыть':k==='wip'?'Отметить':k==='later'?'Сохранить':'Закрыть')+'</button><button type="button" data-obno>Отмена</button></div>'}
-        else h+='<div class="oacts">'+(!o.resp?'<button type="button" data-obtake="'+o.id+'">Взять себе</button>':'')+(can('edit')&&canWrite?'<button type="button" class="pri" data-obbook="'+o.id+'">Записать</button>':'')+'<button type="button" data-oba="cons" data-obi="'+o.id+'">Проконсультировал</button><button type="button" data-oba="wip" data-obi="'+o.id+'">Недозвон</button><button type="button" data-oba="later" data-obi="'+o.id+'">Перезвонить позже</button><button type="button" data-oba="other" data-obi="'+o.id+'">Другое</button></div>'}
-      h+='</div>'+obTag(o)+'</div>'});
-  }
-  document.getElementById('obBody').innerHTML=h;if(obTab==='new'){var b0=document.getElementById('obBrand');if(b0)obModels()}}
-function obForm(){var ws=obWorkers(),opt=function(a,v){return a.map(function(x){return '<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>'}).join('')};
-  return '<div class="og"><div class="f"><label for="obWay">Способ</label><select id="obWay">'+opt(OB_WAY,'Звонок')+'</select></div><div class="f"><label for="obWhy">Причина</label><input type="text" id="obWhy" list="obWhyL" maxlength="60" placeholder="ТО, замена масла…"><datalist id="obWhyL">'+OB_WHY.map(function(x){return '<option value="'+esc(x)+'">'}).join('')+'</datalist></div>'
-   +'<div class="f"><label for="obCl">Клиент</label><input type="text" id="obCl" maxlength="60" placeholder="Имя"></div><div class="f"><label for="obPh">Телефон</label><input type="tel" id="obPh" maxlength="20" placeholder="+7 7__ ___ __ __"></div><div class="f"><label for="obBrand">Марка</label><select id="obBrand"><option value=""></option>'+Object.keys(BRANDS).map(function(b){return '<option>'+esc(b)+'</option>'}).join('')+'<option>Другое</option></select></div>'
-   +'<div class="f"><label for="obModel">Модель</label><input type="text" id="obModel" list="obModelL" maxlength="40"><datalist id="obModelL"></datalist></div><div class="f w3"><label for="obDesc">Комментарий</label><input type="text" id="obDesc" maxlength="300" placeholder="Что хочет клиент, когда удобно перезвонить"></div></div>'
-   +'<div class="err" id="obErr"></div><div class="row" style="justify-content:space-between;display:flex;gap:8px;align-items:center;margin-top:8px"><span class="sub" style="margin:0">Дата и время ставятся сами · принял: '+esc(me().name)+'</span><button type="button" class="pri" id="obSend">Отправить</button></div>'}
-function obModels(){var b=document.getElementById('obBrand').value,l=BRANDS[b]||[];document.getElementById('obModelL').innerHTML=l.map(function(x){return '<option value="'+esc(x)+'">'}).join('')}
-document.getElementById('obBody').addEventListener('change',function(e){if(e.target.id==='obBrand')obModels()});
-document.getElementById('obBody').addEventListener('click',function(e){var t=e.target.closest('button,a');if(!t)return;var dlg=document.getElementById('obDlg'),u=me();
-  if(t.dataset.obk){e.preventDefault();var bk=state.b[t.dataset.obk];dlg.close();if(bk){goto(bk.date,true);openForm(bk)}return}
-  if(t.tagName==='A')return;
-  if(t.id==='obX'){dlg.close();return}
-  if(t.dataset.obt){obTab=t.dataset.obt;obArm=null;renderOB();return}
-  if(t.id==='obSend'){var r0=obCreate({way:fv('obWay'),why:fv('obWhy'),client:fv('obCl'),phone:fv('obPh'),brand:fv('obBrand'),model:fv('obModel'),desc:fv('obDesc')});
-    if(r0.e){document.getElementById('obErr').textContent=r0.e;return}obTab=feat('obrWork')||feat('obrView')?'all':'my';renderOB();return}
-  var o=t.dataset.obi?state.o[t.dataset.obi]:t.dataset.obtake?state.o[t.dataset.obtake]:t.dataset.obbook?state.o[t.dataset.obbook]:t.dataset.obok?state.o[t.dataset.obok]:null;
-  if(t.dataset.obno!==undefined){obArm=null;renderOB();return}
-  if(!obCanAct(o))return;
-  if(t.dataset.obtake){obDo(o.id,'take');renderOB();return}
-  if(t.dataset.oba){obArm={id:o.id,k:t.dataset.oba};renderOB();var ci=document.querySelector('#obBody [data-obc]');if(ci)ci.focus();return}
-  if(t.dataset.obbook){obBook(o.id);return}
-  if(t.dataset.obok){var k=obArm&&obArm.k,ci2=document.querySelector('#obBody [data-obc]'),c=ci2?ci2.value:'';
-    var r1=obDo(o.id,k,c,(document.querySelector('#obBody [data-obl]')||{}).value);if(r1&&k==='other'&&ci2){ci2.placeholder=r1;ci2.focus();return}
-    obArm=null;renderOB()}});
-document.getElementById('obDlg').addEventListener('click',function(e){if(e.target===this)this.close()});
 document.getElementById('obBanX').onclick=function(){obPending=null;obBanUpd()};
 /* ---------- перенести клиентов ---------- */
 function pkWhy(b){var p=state.cfg.posts[postIdx(b.post)];if(!p)return 'пост удалён';var a=postAvail(p,b.date);
@@ -1673,7 +1605,7 @@ async function sGate(){return canWrite&&!!KEY&&can('set');
   return p!==null}
 var setOpen=false;
 function applySetBox(){var t=document.getElementById('sToggle');document.getElementById('setBox').style.display=setOpen?'':'none';t.textContent='Настройки '+(setOpen?'▾':'▸');t.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()}
-document.getElementById('sToggle').onclick=async function(){if(!setOpen&&!(await sGate()))return;setOpen=!setOpen;if(setOpen&&stOpen){stOpen=false;applyStBox()}if(setOpen&&ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}applySetBox()};
+document.getElementById('sToggle').onclick=async function(){if(!setOpen&&!(await sGate()))return;setOpen=!setOpen;if(setOpen&&ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}applySetBox()};
 /* ---------- пользователи (только владелец) ---------- */
 var uOpen=false,uDelArm=null,uMsg='';
 function applyUBox(){var t=document.getElementById('uToggle');document.getElementById('uBox').style.display=uOpen?'':'none';t.textContent='Пользователи '+(uOpen?'▾':'▸');t.setAttribute('aria-expanded',uOpen);if(uOpen)renderUsers();fitMenu()}
@@ -1744,7 +1676,7 @@ document.getElementById('usr').addEventListener('click',function(e){var b=e.targ
   else if(b.id==='accNone'){var a2=accGet();FEAT_L.forEach(function(f){a2.feat[f[0]]=[]});accSave(a2)}
   else if(b.id==='accDef'){state.cfg.acc=null;cfgTouch();applyPerm();setSt();rerender();renderUsers()}},true);
 /* закрывать «Пользователей», когда открывают другой раздел меню */
-['sToggle','gToggle','stToggle'].forEach(function(id){document.getElementById(id).addEventListener('click',closeU,true)});
+['sToggle','gToggle'].forEach(function(id){document.getElementById(id).addEventListener('click',closeU,true)});
 /* ---------- свой пароль и выход ---------- */
 async function openMyPw(){var u=me();if(!u||!KEY)return;
   if(!canWrite){alertMsg('Сменить пароль можно на устройстве, где введён токен GitHub: новый пароль сохраняется в репозитории.');return}
@@ -1782,42 +1714,11 @@ function renderGh(box){
   document.getElementById('ghDel').onclick=function(){token='';canWrite=false;try{localStorage.removeItem('shift-gh-token')}catch(e){}conn='ro';setSt();renderGh(box)};
 }
 var ghOpen=false;
-document.getElementById('gToggle').onclick=function(){ghOpen=!ghOpen;if(ghOpen&&stOpen){stOpen=false;applyStBox()}if(ghOpen&&setOpen){setOpen=false;applySetBox()}var b=document.getElementById('ghBox');b.style.display=ghOpen?'':'none';this.textContent='Синхронизация GitHub '+(ghOpen?'▾':'▸');this.setAttribute('aria-expanded',ghOpen);if(ghOpen)renderGh(b)};
+document.getElementById('gToggle').onclick=function(){ghOpen=!ghOpen;if(ghOpen&&setOpen){setOpen=false;applySetBox()}var b=document.getElementById('ghBox');b.style.display=ghOpen?'':'none';this.textContent='Синхронизация GitHub '+(ghOpen?'▾':'▸');this.setAttribute('aria-expanded',ghOpen);if(ghOpen)renderGh(b)};
 /* клик по свободному месту в меню сворачивает «Настройки» и «Синхронизацию GitHub» */
 /* ---------- статистика источников за месяц ---------- */
-var stOpen=false,stMode='month',stRef=null;
-try{var _sm=localStorage.getItem('zap-stmode');if(_sm==='day'||_sm==='week'||_sm==='month')stMode=_sm}catch(e){}
+/* «Статистика» перенесена в отчёт по обращениям (блок «Записи на сервис по источнику») */
 var SRCC={call:'#378ADD',visit:'#EF9F27',online:'#1D9E75',none:'#8a919c'};
-function monDay(d){var x=parseIso(d),w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);return iso(x)}
-function stRange(){var a,b,lbl,d=parseIso(stRef),MNF=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  if(stMode==='day'){a=b=stRef;lbl=DNF[d.getDay()].charAt(0).toUpperCase()+DNF[d.getDay()].slice(1)+', '+d.getDate()+' '+MN[d.getMonth()]+' '+d.getFullYear()}
-  else if(stMode==='week'){a=monDay(stRef);b=addDays(a,6);var A=parseIso(a),B=parseIso(b);lbl=A.getDate()+(A.getMonth()!==B.getMonth()?' '+MN[A.getMonth()]:'')+' – '+B.getDate()+' '+MN[B.getMonth()]+' '+B.getFullYear()}
-  else{a=stRef.slice(0,8)+'01';var e=new Date(d.getFullYear(),d.getMonth()+1,0);b=iso(e);lbl=MNF[d.getMonth()]+' '+d.getFullYear()}
-  return{a:a,b:b,lbl:lbl}}
-function stShift(dir){var d=parseIso(stRef);if(stMode==='day')d.setDate(d.getDate()+dir);else if(stMode==='week')d.setDate(d.getDate()+7*dir);else d=new Date(d.getFullYear(),d.getMonth()+dir,1);stRef=iso(d);renderStat()}
-function plural(n,a,b,c){var m=n%10,h=n%100;return n+' '+(m===1&&h!==11?a:(m>=2&&m<=4&&(h<12||h>14)?b:c))}
-function renderStat(){
-  if(!stRef)stRef=iso(new Date());
-  var R=stRange(),cnt={call:0,visit:0,online:0,none:0},tot=0,k,b;
-  for(k in state.b){b=state.b[k];if(!live(b)||b.date<R.a||b.date>R.b)continue;tot++;cnt[SRC[b.src]?b.src:'none']++}
-  var keys=['call','visit','online'];if(cnt.none)keys.push('none');
-  var NM={call:'Звонок',visit:'Визит',online:'Онлайн',none:'Не указан'};
-  var h='<div class="stsw" role="tablist">'+[['day','День'],['week','Неделя'],['month','Месяц']].map(function(x){return '<button data-sm="'+x[0]+'" class="'+(stMode===x[0]?'on':'')+'" role="tab" aria-selected="'+(stMode===x[0])+'">'+x[1]+'</button>'}).join('')+'</div>';
-  h+='<div class="row stnav"><button id="stPrev" aria-label="Назад">‹</button><b>'+R.lbl+'</b><button id="stNext" aria-label="Вперёд">›</button><button id="stNow" class="stnow">'+(stMode==='day'?'Сегодня':stMode==='week'?'Эта неделя':'Этот месяц')+'</button></div>';
-  h+='<div class="sttot">Записей: <b>'+tot+'</b></div>';
-  h+='<div class="stcards">'+keys.map(function(x){var n=cnt[x],pc=tot?Math.round(n/tot*100):0;return '<div class="stc"><div class="stk">'+(SRCI[x]||'')+'<span>'+NM[x]+'</span></div><div class="stv">'+(tot?pc+'%':'—')+'</div><div class="stn">'+plural(n,'запись','записи','записей')+'</div></div>'}).join('')+'</div>';
-  h+='<div class="stbar">'+(tot?keys.map(function(x){return cnt[x]?'<div style="flex:'+cnt[x]+';background:'+SRCC[x]+'" title="'+NM[x]+': '+cnt[x]+'"></div>':''}).join(''):'<div style="flex:1;background:var(--bd)"></div>')+'</div>';
-  h+='<div class="stleg">'+keys.map(function(x){return '<span><i style="background:'+SRCC[x]+'"></i>'+NM[x]+'</span>'}).join('')+'</div>';
-  h+='<div class="sub" style="margin:8px 0 0">Считаются все записи за период, включая «Не приехал».'+(cnt.none?' «Не указан» — записи, сделанные до появления поля.':'')+'</div>';
-  var st=document.getElementById('stat');st.innerHTML=h;
-  [].forEach.call(st.querySelectorAll('.stsw button'),function(x){x.onclick=function(){stMode=x.dataset.sm;try{localStorage.setItem('zap-stmode',stMode)}catch(e){}renderStat()}});
-  document.getElementById('stPrev').onclick=function(){stShift(-1)};
-  document.getElementById('stNext').onclick=function(){stShift(1)};
-  document.getElementById('stNow').onclick=function(){stRef=iso(new Date());renderStat()};
-}
-function applyStBox(){var t=document.getElementById('stToggle');document.getElementById('stBox').style.display=stOpen?'':'none';t.textContent='Статистика '+(stOpen?'▾':'▸');t.setAttribute('aria-expanded',stOpen);if(stOpen)renderStat()}
-function closeGh(){if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
-document.getElementById('stToggle').onclick=function(){stOpen=!stOpen;if(stOpen){if(setOpen){setOpen=false;applySetBox()}closeGh();if(ldOpen){ldOpen=false;applyLdBox()}}applyStBox()};
 /* ---------- загрузка на неделю ---------- */
 var ldOpen=false,ldMon=null;
 /* выгрузка в Excel (.xlsx) — тот же сборщик файла, что в отчёте по обращениям */
@@ -1973,10 +1874,10 @@ function renderLoad(){if(!ldMon)ldMon=ldMonday(iso(new Date()));var P=state.cfg.
   h+='<div class="lrc"><h3>Записей по дням</h3>'+days.map(function(D,j){var x=parseIso(D);return '<div class="lhb"><span>'+DN[x.getDay()]+' '+x.getDate()+(D===t?' · сегодня':'')+'</span><div class="tr"><i style="width:'+Math.round(dayT[j].n*100/dmax)+'%;background:var(--ac)"></i></div><b>'+dayT[j].n+'</b></div>'}).join('')+'</div></div>';
   document.getElementById('load').innerHTML=h}
 document.getElementById('load').addEventListener('click',function(e){var t=e.target.closest('[data-ld]');if(!t)return;closeLoad();goto(t.dataset.ld,true)});
-function collapseMenuSections(){closeU();if(msOpen){msOpen=false;applyMsBox()}if(ldOpen){ldOpen=false;applyLdBox()}if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
+function collapseMenuSections(){closeU();if(msOpen){msOpen=false;applyMsBox()}if(ldOpen){ldOpen=false;applyLdBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
 document.getElementById('menu').addEventListener('mousedown',function(e){var t=e.target;
-  if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('#stBox')||t.closest('#ldBox')||t.closest('#msBox')||t.closest('#uBox')||t.closest('button,input,select,textarea,a,label'))return;
-  if(setOpen||ghOpen||stOpen||uOpen||ldOpen||msOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
+  if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('#ldBox')||t.closest('#msBox')||t.closest('#uBox')||t.closest('button,input,select,textarea,a,label'))return;
+  if(setOpen||ghOpen||uOpen||ldOpen||msOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
 
 /* ---------- скрываемое меню в закреплённом заголовке ---------- */
 var menuOpen=false;try{localStorage.removeItem('zap-menu')}catch(e){}
@@ -1985,7 +1886,7 @@ addEventListener('resize',fitMenu);
 /* отступ справа под ползунок меню — только когда меню прокручивается */
 (function(){var m=document.getElementById('menu');function ov(){var o=m.scrollHeight>m.clientHeight+1;if(m.classList.contains('ov')!==o)m.classList.toggle('ov',o)}
 if(window.ResizeObserver){var ro=new ResizeObserver(ov);ro.observe(m);for(var i=0;i<m.children.length;i++)ro.observe(m.children[i])}addEventListener('resize',ov)})();
-function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){closeU();if(ldOpen){ldOpen=false;applyLdBox()}if(msOpen){msOpen=false;applyMsBox()}if(stOpen){stOpen=false;applyStBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
+function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){closeU();if(ldOpen){ldOpen=false;applyLdBox()}if(msOpen){msOpen=false;applyMsBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
 function setMenu(open){if(menuOpen===open)return;if(open)applySetBox();var a=anchor(),t0=a?a.getBoundingClientRect().top:0;menuOpen=open;applyMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}
 document.getElementById('menuB').onclick=function(){setMenu(!menuOpen)};
 /* клик по таблице, кнопкам сверху или любому месту вне меню закрывает его */
