@@ -185,9 +185,12 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 .zmb .bt{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
 .zmb .bt .go{background:var(--danger);border-color:var(--danger);color:#fff}
 .gor[hidden],.gol[hidden],[data-mgo][hidden]{display:none!important}
-.uth{display:flex;gap:2px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:2px}
-.uth button{flex:1;border:0;background:transparent;padding:5px 6px;border-radius:7px;font-size:13px;color:var(--mu);text-align:center!important;white-space:nowrap}
-.uth button.on{background:var(--ac);color:#fff;font-weight:600}
+.uth{position:relative;display:flex;gap:2px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:2px}
+.uth button{position:relative;z-index:1;flex:1;border:0;background:transparent!important;padding:5px 6px;border-radius:7px;font-size:13px;color:var(--mu);text-align:center!important;white-space:nowrap;transition:color .25s}
+.uth button.on{color:#fff;font-weight:600}
+/* подсветка выбранной темы переезжает к нажатой кнопке */
+.uthi{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:7px;background:var(--ac);transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
+.uth.noanim .uthi,.uth.noanim button{transition:none}
 </style>
 </head>
 <body>
@@ -200,7 +203,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <button id="next" aria-label="Вперёд">›</button>
 <button id="today">Сегодня</button>
 <div class="dfw"><select id="dFilter" aria-label="Отдел" hidden tabindex="-1"></select><button type="button" id="dFB" aria-haspopup="listbox" aria-expanded="false" aria-label="Отдел"><span id="dFT"></span><span class="dfc" aria-hidden="true">▾</span></button><div class="cbl" id="dFL" role="listbox" hidden></div></div>
-<div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><div class="uth" role="group" aria-label="Тема оформления"><button type="button" data-th="">Авто</button><button type="button" data-th="light">☀ Светлая</button><button type="button" data-th="dark">🌙 Тёмная</button></div><button type="button" id="uGh">Синхронизация GitHub</button><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
+<div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><div class="uth" role="group" aria-label="Тема оформления"><span class="uthi" aria-hidden="true"></span><button type="button" data-th="">Авто</button><button type="button" data-th="light">Светлая</button><button type="button" data-th="dark">Тёмная</button></div><button type="button" id="uGh">Синхронизация GitHub</button><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
 <div id="menuPanel" class="menu" hidden>
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Токен вводится во вкладке «Запись на сервис»: Меню → Синхронизация GitHub.</div>
@@ -1108,8 +1111,10 @@ addEventListener('resize',alignHdr);alignHdr();new ResizeObserver(alignHdr).obse
   b.addEventListener('click',function(){o=!o;try{localStorage.setItem('g-hdr-open',o?'1':'0')}catch(e){}ap()});ap()})();
 /* меню пользователя: тема и синхронизация GitHub */
 (function(){function cur(){try{return localStorage.getItem('app-theme')||''}catch(e){return ''}}
-  function mark(){var t=cur();[].forEach.call(document.querySelectorAll('.uth button'),function(b){b.classList.toggle('on',b.dataset.th===t);b.setAttribute('aria-pressed',b.dataset.th===t?'true':'false')})}
-  window.themeApply=function(){var t=cur();if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');mark()};
+  function mark(anim){var t=cur();[].forEach.call(document.querySelectorAll('.uth'),function(g){var on=null;[].forEach.call(g.querySelectorAll('button'),function(b){var a=b.dataset.th===t;b.classList.toggle('on',a);b.setAttribute('aria-pressed',a?'true':'false');if(a)on=b});
+    var i=g.querySelector('.uthi');if(!i||!on||!on.offsetWidth)return;if(!anim){g.classList.add('noanim')}i.style.width=on.offsetWidth+'px';i.style.transform='translateX('+on.offsetLeft+'px)';if(!anim){void i.offsetWidth;g.classList.remove('noanim')}})}
+  window.themeApply=function(){var t=cur();if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');mark(true)};
+  document.addEventListener('click',function(e){if(e.target.closest('#uB'))setTimeout(function(){mark(false)},0)},true);
   document.addEventListener('click',function(e){var b=e.target.closest('.uth button');if(b){try{localStorage.setItem('app-theme',b.dataset.th)}catch(x){}try{if(window.parent!==window&&parent.themeAll){parent.themeAll();return}}catch(x){}window.themeApply();return}
     if(e.target.closest('#uGh')){try{var m=document.getElementById('uMenu');if(m)m.hidden=true;var ub=document.getElementById('uB');if(ub)ub.setAttribute('aria-expanded','false')}catch(x){}
       try{var z=parent.document.getElementById('fz').contentWindow;if(z!==window)parent.showTab('zapis');z.zApi.open('g')}catch(x){try{zApi.open('g')}catch(y){}}}});
