@@ -394,6 +394,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 .uthi{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:7px;background:var(--ac);transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
 .uth.noanim .uthi,.uth.noanim button{transition:none}
 .mbx{margin:4px 0 12px}
+.menu>.mrow[hidden],.menu>.tools[hidden],.menu>.mlbl[hidden]{display:none!important}#menuB.mnone{display:none!important}
 </style>
 </head>
 <body class="ro">
@@ -416,7 +417,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <div id="menu" class="menu" style="display:none">
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Введите токен в разделе «Синхронизация GitHub».</div>
 <div class="mlbl">Общее</div><div class="tools"><button id="goStaff" class="pset">Сотрудники и посты ↗</button><button id="goMode" class="pset">Режим работы ↗</button><button id="uToggle" class="pu" aria-expanded="false">Пользователи ▸</button><button id="gToggle" aria-expanded="false" style="display:none">Синхронизация GitHub ▸</button></div>
-<div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-mgo="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-mgo="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl gol">Обращения</div><div class="tools gor"><button type="button" data-mgo="obr:rep" data-need="rep">Отчёт по обращениям ↗</button></div>
+<div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-mgo="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-mgo="grafik:exp" data-need="exp">Скачать график ↗</button></div><div class="mlbl gol">Обращения</div><div class="tools gor"><button type="button" data-mgo="obr:rep" data-need="rep">Отчёт по обращениям ↗</button></div>
 <div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="msToggle" class="pset" aria-expanded="false">Шаблоны сообщений ▸</button><button id="ldToggle" class="ldr" aria-expanded="false">Отчёт загрузки цеха ▸</button><button id="zrToggle" type="button">Отчёт по записям</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
 <div id="setBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
 <div id="uBox" class="pu" style="display:none;margin-bottom:12px"><div class="set" id="usr"></div></div>
@@ -513,10 +514,10 @@ var ROLE_ORDER=['adm','sc','war','mc','head','dir','ozch','spk','atz','mech','ow
 var UID=null;
 /* Функции, открытые пока только части ролей. Чтобы открыть функцию другим, добавьте их роли в список:
    adm, sc, war, mc, head, dir, mech, owner */
-var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],obrAdd:['owner'],obrWork:['owner'],obrView:['owner'],obrRep:['owner'],zrep:['owner'],tabG:ROLE_ORDER.filter(function(r){return r!=='atz'}),tabZ:ROLE_ORDER.filter(function(r){return r!=='atz'})};
+var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],obrAdd:['owner'],obrWork:['owner'],obrView:['owner'],obrRep:['owner'],zrep:['owner'],exp:ROLE_ORDER.slice(),tabG:ROLE_ORDER.filter(function(r){return r!=='atz'}),tabZ:ROLE_ORDER.filter(function(r){return r!=='atz'})};
 /* какие вкладки видит роль: «Обращения» по умолчанию — у тех, кому открыта хоть одна функция обращений */
 var TAB_L=[['tabG','График смен',''],['tabO','Обращения',''],['tabZ','Запись на сервис','']];
-var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Отчёт загрузки цеха','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['obrAdd','Создавать обращения','кнопка «+ Обращение»',''],['obrWork','Отрабатывать обращения','перезванивать, записывать, закрывать; можно назначить ответственным',''],['obrView','Видеть все обращения','мониторинг: открытые и закрытые всех сотрудников',''],['obrRep','Отчёт по обращениям','кнопка «Отчёт» во вкладке «Обращения»',''],['zrep','Отчёт по записям','в меню, раздел «Запись на сервис»','']];
+var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Отчёт загрузки цеха','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['obrAdd','Создавать обращения','кнопка «+ Обращение»',''],['obrWork','Отрабатывать обращения','перезванивать, записывать, закрывать; можно назначить ответственным',''],['obrView','Видеть все обращения','мониторинг: открытые и закрытые всех сотрудников',''],['obrRep','Отчёт по обращениям','кнопка «Отчёт» во вкладке «Обращения»',''],['zrep','Отчёт по записям','в меню, раздел «Запись на сервис»',''],['exp','Скачать график','файл Excel, в меню, раздел «График смен»','']];
 function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];if(a)return a;if(k==='tabO'){var r=[];['obrAdd','obrWork','obrView'].forEach(function(x){featRoles(x).forEach(function(y){if(r.indexOf(y)<0)r.push(y)})});return r}return FEAT[k]||[]}
 function featNeed(k,r){var n=(FEAT_L.filter(function(x){return x[0]===k})[0]||[])[3];if(!n)return true;if(n==='mday')return featRoles('mday').indexOf(r)>=0;return roleBase(r).indexOf(n)>=0}
 /* владелец может сам выключить у себя функцию или вкладку (список acc.off); «Запись» у владельца всегда открыта — там вход и настройки */
@@ -566,7 +567,7 @@ window.zApi={
     myPw:function(){openMyPw()}
   }
 };
-window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),ob:feat('tabO'),tg:feat('tabG'),tz:feat('tabZ'),tpl:feat('tpl'),load:feat('load'),stats:can('stats'),rep:feat('obrRep'),zrep:feat('zrep')}};
+window.permFor=function(){var u=me();if(!u||!KEY)return {};return{name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',graf:can('graf'),set:can('set'),mday:feat('mday'),ob:feat('tabO'),tg:feat('tabG'),tz:feat('tabZ'),tpl:feat('tpl'),load:feat('load'),stats:can('stats'),rep:feat('obrRep'),zrep:feat('zrep'),exp:feat('exp')}};
 function st(b){var s=b.status;return s==='out'?'done':(SN[s]?s:(s==='can'?'nos':'zap'))}
 var KINDS={me:'механик',el:'электрик'};
 function pad(n){return n<10?'0'+n:''+n}
@@ -874,7 +875,7 @@ async function syncNow(){
 }
 function commit(){dirty=true;cacheLocal();schedSync();rerender()}
 function applyPerm(){var B=document.body.classList,w=canWrite&&KEY;
-  ['wa','tpl','load','stats','mday','move','zrep'].forEach(function(k){B.toggle('f-'+k,feat(k))});if(typeof renderCnt==='function'&&appVisible())renderCnt();B.toggle('f-row',feat('load')||feat('stats')||(feat('tpl')&&w&&can('set')));
+  ['wa','tpl','load','stats','mday','move','zrep'].forEach(function(k){B.toggle('f-'+k,feat(k))});if(typeof renderCnt==='function'&&appVisible())renderCnt();B.toggle('f-row',feat('load')||feat('stats')||feat('zrep')||(feat('tpl')&&w&&can('set')));
   B.toggle('no-load',!(can('edit')||can('stats')));if(typeof ldOpen!=='undefined'&&ldOpen&&!(can('edit')||can('stats'))){ldOpen=false;applyLdBox()}
   B.toggle('no-edit',!(w&&can('edit')));B.toggle('no-del',!(w&&can('del')));B.toggle('no-stats',!can('stats'));B.toggle('no-set',!(w&&can('set')));B.toggle('no-users',!(w&&can('users')));
   var rn=document.getElementById('roNote');if(rn)rn.style.display=KEY&&!canWrite&&(can('edit')||can('set')||can('users'))?'':'none';
@@ -1949,6 +1950,13 @@ setInterval(function(){if(sib('fg'))sibGraph()},3000);
   mark()})();
 /* окна пунктов меню открываются сразу под строкой с нажатой кнопкой, а не внизу под всеми кнопками */
 (function(P){P.forEach(function(p){var t=document.getElementById(p[0]),b=document.getElementById(p[1]);if(!t||!b)return;var r=t.closest('.mrow,.tools');if(!r)return;var a=r._lastBox||r;a.parentNode.insertBefore(b,a.nextSibling);r._lastBox=b;b.classList.add('mbx')})})([['uToggle','uBox'],['gToggle','ghBox'],['msToggle','msBox']]);
+
+/* меню: строки без доступных кнопок прячутся вместе с подписью; если доступных пунктов нет совсем — прячется и кнопка «Меню» */
+(function(M,B,close){function vis(e){if(e.hidden)return false;var d=getComputedStyle(e).display;if(d==='none')return false;if(d==='contents')return [].some.call(e.children,vis);return true}
+  function tidy(){var m=document.getElementById(M),b=document.getElementById(B);if(!m||!b)return;var any=false;
+    [].forEach.call(m.children,function(r){if(!r.matches('.mrow,.tools'))return;r.hidden=false;var v=vis(r)&&[].some.call(r.children,vis);r.hidden=!v;var lb=r.previousElementSibling;if(lb&&lb.classList.contains('mlbl'))lb.hidden=!v;if(v)any=true});
+    var was=b.classList.contains('mnone');b.classList.toggle('mnone',!any);if(!any&&!was){try{close()}catch(e){}}}
+  window.menuTidy=tidy;setInterval(tidy,400);tidy()})('menu','menuB',function(){setMenu(false)});
 </script>
 </body>
 </html>
