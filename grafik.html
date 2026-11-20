@@ -19,6 +19,14 @@ body.mo main{max-width:1560px}
 h1{font-size:20px;margin:0}
 .ttl{display:flex;align-items:center;gap:8px 10px;margin:0 0 10px;padding-top:2px;flex-wrap:wrap}
 @media (max-width:600px){.ttl{padding-top:1.5px}}
+/* на телефоне шапка графика сворачивается: видны переключатель, меню и даты, остальное — по кнопке «⋯» */
+#hdrMore{display:none;flex:none;width:40px;padding:0;font-size:18px;line-height:1}
+@media (max-width:600px){#hdrMore{display:inline-flex;align-items:center;justify-content:center;height:38px}
+  body:not(.hdr-open) #m-toggle,body:not(.hdr-open) .ttl .dfw,body:not(.hdr-open) #uChip,body:not(.hdr-open) #bCur{display:none!important}
+  body.hdr-open #hdrMore{background:var(--ac);border-color:var(--ac);color:#fff}
+  .ttl #menuB{padding-left:0;padding-right:0;width:44px;font-size:0;height:38px}.ttl #menuB::before{content:'☰';font-size:18px}
+  .ttl .rng{min-width:0;padding:0 2px}
+  .ttl #m-toggle{order:5}.ttl .dfw{order:6}.ttl #uChip{order:7}}
 .ttl .rng{flex:0 1 auto;padding:0 6px;text-align:center;font-weight:600;min-width:128px;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:4px;position:relative}
 .rng .cal{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;color:var(--mu);border-radius:8px;box-shadow:none;flex:none}
 .rng .cal:hover{color:var(--tx);background:var(--bd)}
@@ -180,7 +188,7 @@ th.flash{animation:blinkbg 1.4s ease-in-out 1}
 <body>
 <main>
 <div id="top">
-<div class="ttlw"><div class="ttl"><h1 class="vh">График смен</h1><div class="tswph" aria-hidden="true"></div><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span><button id="menuB" aria-expanded="false" aria-haspopup="true">☰ Меню ▸</button>
+<div class="ttlw"><div class="ttl"><h1 class="vh">График смен</h1><div class="tswph" aria-hidden="true"></div><span id="syncDot" class="dot n" role="img" title="" aria-label=""></span><span id="syncTx"></span><button id="menuB" aria-expanded="false" aria-haspopup="true">☰ Меню ▸</button><button type="button" id="hdrMore" aria-expanded="false" aria-label="Показать вид, отдел и пользователя" title="Ещё">⋯</button>
 <button id="m-toggle">Вид: неделя ⇄</button>
 <button id="prev" aria-label="Назад">‹</button>
 <div class="rng"><span id="rng"></span><button type="button" id="calB" class="cal" aria-label="Выбрать дату" title="Выбрать дату"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button><input type="date" id="dPick" class="dpk" tabindex="-1" aria-hidden="true"></div>
@@ -310,7 +318,7 @@ function render(){modeLabels();
   var P=period(),mo=mode==='month',days=[],i,j;document.body.classList.toggle('mo',mo);
   for(i=0;i<P.n;i++)days.push(P.s+i);
   var a=dateOf(days[0]),e=dateOf(days[P.n-1]);
-  document.getElementById('rng').textContent=mo?MF[a.getUTCMonth()]+' '+a.getUTCFullYear():a.getUTCDate()+' '+MN[a.getUTCMonth()]+' – '+e.getUTCDate()+' '+MN[e.getUTCMonth()]+' '+e.getUTCFullYear();
+  document.getElementById('rng').textContent=mo?MF[a.getUTCMonth()]+' '+a.getUTCFullYear():(innerWidth<=600&&a.getUTCMonth()===e.getUTCMonth()?a.getUTCDate()+'–'+e.getUTCDate()+' '+MN[e.getUTCMonth()]+' '+e.getUTCFullYear():a.getUTCDate()+' '+MN[a.getUTCMonth()]+' – '+e.getUTCDate()+' '+MN[e.getUTCMonth()]+' '+e.getUTCFullYear());
   var tn=dn(new Date());
   var m1=dateOf(days[0]),m2=dateOf(days[P.n-1]),ml;
   function cap(x){return x.charAt(0).toUpperCase()+x.slice(1)}
@@ -907,6 +915,7 @@ function collapseAll(){showOnly('')}
 var menuB=document.getElementById('menuB'),menuP=document.getElementById('menuPanel');
 function fitMenu(){if(menuP.hidden)return;menuP.style.maxHeight='none';menuP.style.maxHeight=Math.max(160,innerHeight-menuP.getBoundingClientRect().top-12)+'px'}
 addEventListener('resize',fitMenu);
+var gNar=innerWidth<=600;addEventListener('resize',function(){var n=innerWidth<=600;if(n!==gNar){gNar=n;try{render()}catch(e){}}});
 menuP.addEventListener('click',function(e){var t=e.target;if(t===menuP||t.classList.contains('mrow')||t.classList.contains('mi'))collapseAll()});
 menuP.addEventListener('change',function(){fitMenu()});
 function menuSet(o){
@@ -1088,6 +1097,10 @@ addEventListener('resize',alignHdr);alignHdr();new ResizeObserver(alignHdr).obse
 (function(){var SEL='input:not([type=checkbox]):not([type=radio]):not([type=date]):not([type=hidden]):not([type=range]):not([type=color]):not([type=file])';
   function fix(r){[].forEach.call((r.querySelectorAll?r:document).querySelectorAll(SEL),function(i){if(i.id==='pwName'||i.autocomplete==='current-password'||i.dataset.acOk)return;if(i.getAttribute('autocomplete')!=='off')i.setAttribute('autocomplete','off')})}
   fix(document);new MutationObserver(function(m){m.forEach(function(x){[].forEach.call(x.addedNodes,function(n){if(n.nodeType===1){if(n.matches&&n.matches(SEL))fix(n.parentNode||document);else fix(n)}})})}).observe(document.body,{childList:true,subtree:true})})();
+/* кнопка «⋯» на телефоне: показать или спрятать «Вид», «Все отделы», пользователя и подсказку режима */
+(function(){var b=document.getElementById('hdrMore');if(!b)return;var o=false;try{o=localStorage.getItem('g-hdr-open')==='1'}catch(e){}
+  function ap(){document.body.classList.toggle('hdr-open',o);b.setAttribute('aria-expanded',o?'true':'false');b.textContent=o?'✕':'⋯';b.title=o?'Свернуть':'Ещё'}
+  b.addEventListener('click',function(){o=!o;try{localStorage.setItem('g-hdr-open',o?'1':'0')}catch(e){}ap()});ap()})();
 </script>
 </body>
 </html>
