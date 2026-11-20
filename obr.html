@@ -202,6 +202,7 @@ td a.tel{color:inherit;text-decoration:none}
 /* подсветка выбранной темы переезжает к нажатой кнопке */
 .uthi{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:7px;background:var(--ac);transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
 .uth.noanim .uthi,.uth.noanim button{transition:none}
+.menu>.mrow[hidden],.menu>.tools[hidden],.menu>.mlbl[hidden]{display:none!important}#menuB.mnone{display:none!important}
 </style>
 </head>
 <body>
@@ -216,7 +217,7 @@ td a.tel{color:inherit;text-decoration:none}
 <button type="button" id="nB" aria-label="Новое обращение" title="Новое обращение" hidden>+<span class="t"><span class="t2"> Новое</span> обращение</span></button>
 <div class="uchip" id="uChip" hidden><button type="button" id="uB" aria-haspopup="true" aria-expanded="false"></button><div class="umenu" id="uMenu" hidden><div class="ur" id="uRole"></div><div class="uth" role="group" aria-label="Тема оформления"><span class="uthi" aria-hidden="true"></span><button type="button" data-th="">Авто</button><button type="button" data-th="light">Светлая</button><button type="button" data-th="dark">Тёмная</button></div><button type="button" id="uGh">Синхронизация GitHub</button><button type="button" id="uPw">Сменить мой пароль</button><button type="button" id="uOut">Выйти</button></div></div>
 </div>
-<div id="menu" class="menu" hidden><div class="mlbl gol">Общее</div><div class="tools gor"><button type="button" data-mgo="grafik:s" data-need="any">Сотрудники и посты ↗</button><button type="button" data-mgo="grafik:m" data-need="set">Режим работы ↗</button><button type="button" data-mgo="zapis:u" data-need="owner">Пользователи ↗</button></div><div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-mgo="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-mgo="grafik:exp" data-need="any">Скачать график ↗</button></div><div class="mlbl">Обращения</div><div class="tools"><button type="button" id="rB" hidden>Отчёт по обращениям</button></div><div class="mlbl gol">Запись на сервис</div><div class="tools gor"><button type="button" data-mgo="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-mgo="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button><button type="button" data-mgo="zapis:zr" data-need="zrep">Отчёт по записям ↗</button></div></div>
+<div id="menu" class="menu" hidden><div class="mlbl gol">Общее</div><div class="tools gor"><button type="button" data-mgo="grafik:s" data-need="set">Сотрудники и посты ↗</button><button type="button" data-mgo="grafik:m" data-need="set">Режим работы ↗</button><button type="button" data-mgo="zapis:u" data-need="owner">Пользователи ↗</button></div><div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-mgo="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-mgo="grafik:exp" data-need="exp">Скачать график ↗</button></div><div class="mlbl gol">Обращения</div><div class="tools gor"><button type="button" id="rB" hidden>Отчёт по обращениям</button></div><div class="mlbl gol">Запись на сервис</div><div class="tools gor"><button type="button" data-mgo="zapis:ms" data-need="tpl">Шаблоны сообщений ↗</button><button type="button" data-mgo="zapis:ld" data-need="load">Отчёт загрузки цеха ↗</button><button type="button" data-mgo="zapis:zr" data-need="zrep">Отчёт по записям ↗</button></div></div>
 </div>
 <div id="msg">Загрузка…</div>
 <div class="tw" id="tw" hidden><div id="tb"></div><button type="button" class="more" id="more" hidden>Показать ещё</button></div>
@@ -598,6 +599,13 @@ render();
     if(e.target.closest('#uGh')){try{var m=document.getElementById('uMenu');if(m)m.hidden=true;var ub=document.getElementById('uB');if(ub)ub.setAttribute('aria-expanded','false')}catch(x){}
       try{var z=parent.document.getElementById('fz').contentWindow;if(z!==window)parent.showTab('zapis');z.zApi.open('g')}catch(x){try{zApi.open('g')}catch(y){}}}});
   mark()})();
+
+/* меню: строки без доступных кнопок прячутся вместе с подписью; если доступных пунктов нет совсем — прячется и кнопка «Меню» */
+(function(M,B,close){function vis(e){if(e.hidden)return false;var d=getComputedStyle(e).display;if(d==='none')return false;if(d==='contents')return [].some.call(e.children,vis);return true}
+  function tidy(){var m=document.getElementById(M),b=document.getElementById(B);if(!m||!b)return;var any=false;
+    [].forEach.call(m.children,function(r){if(!r.matches('.mrow,.tools'))return;r.hidden=false;var v=vis(r)&&[].some.call(r.children,vis);r.hidden=!v;var lb=r.previousElementSibling;if(lb&&lb.classList.contains('mlbl'))lb.hidden=!v;if(v)any=true});
+    var was=b.classList.contains('mnone');b.classList.toggle('mnone',!any);if(!any&&!was){try{close()}catch(e){}}}
+  window.menuTidy=tidy;setInterval(tidy,400);tidy()})('menu','menuB',function(){setMenu(false)});
 </script>
 </body>
 </html>
