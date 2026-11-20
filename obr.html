@@ -107,6 +107,12 @@ a{color:var(--ac)}
 #msg{color:var(--mu);padding:30px 0;text-align:center}
 .tw{position:relative}
 .day{margin-bottom:18px}
+/* пустые дни — одной строкой */
+.day.dz{margin-bottom:6px}
+.dzl{font-size:13px;color:var(--mu);padding:5px 2px;border-bottom:1px dashed var(--bd)}
+.dzl b{color:var(--tx);font-weight:600}
+.dzl.td b{color:var(--ac)}
+.day.dz+.day:not(.dz){margin-top:14px}
 .dh{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;padding:0 2px 8px}
 .dh b{font-size:16px}
 .dh.td b{color:var(--ac)}
@@ -314,8 +320,8 @@ function render(){var z=Z();
     oldest=list.reduce(function(m,o){var k=isoOf(o.t);return k<m?k:m},td);for(var k=td;k>=lo;k=addD(k,-1)){days.push(k);by[k]=by[k]||[]}}
   var all={};L.forEach(function(o){var k=isoOf(o.t);all[k]=all[k]||[0,0];all[k][0]++;if(o.st!=='done')all[k][1]++});
   var h='';days.forEach(function(k){var d=dObj(k),rows=by[k],a=all[k]||[0,0];
+    if(!rows.length){h+='<section class="day dz" data-d="'+k+'"><div class="dzl'+(k===td?' td':'')+'"><b>'+DNS[d.getDay()]+', '+d.getDate()+' '+MNL[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'')+(k===td?' · сегодня':'')+'</b> — '+(flt==='open'?'открытых обращений нет':flt==='done'?'закрытых обращений нет':'обращений нет')+'</div></section>';return}
     h+='<section class="day" data-d="'+k+'"><div class="dh'+(k===td?' td':'')+'"><b>'+DNL[d.getDay()]+', '+d.getDate()+' '+MNL[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?' '+d.getFullYear():'')+(k===td?' · сегодня':'')+'</b><span class="sub">Обращений: '+a[0]+(a[1]?' · открытых: '+a[1]:'')+'</span></div><div class="tc">';
-    if(!rows.length){h+='<div class="none">'+(flt==='open'?'Открытых обращений нет.':flt==='done'?'Закрытых обращений нет.':'Обращений нет.')+'</div></div></section>';return}
     h+='<table>'+colg+thd+'<tbody>';
     rows.forEach(function(o){var open=o.st!=='done',due=o.st==='later'&&o.later<=now,cls='r'+(exp===o.id?' x':'')+(open&&o.st==='new'?' nw':'')+(due?' due':'')+(flash===o.id?' fl':'');
       h+='<tr class="'+cls+'" data-id="'+o.id+'" tabindex="0" aria-expanded="'+(exp===o.id)+'">'+C.map(function(c){return '<td'+(c.c?' class="'+c.c+'"':'')+'>'+c.f(o)+'</td>'}).join('')+'</tr>';
@@ -547,33 +553,8 @@ $('rPer').addEventListener('click',function(e){var b=e.target.closest('button[da
 function rShift(d){var r=rRange();if(rp.per==='day')rp.a=addD(rp.a,d);else if(rp.per==='week')rp.a=addD(r[0],7*d);else if(rp.per==='month'){var m=dObj(r[0]);rp.a=isoOf(new Date(m.getFullYear(),m.getMonth()+d,1).getTime())}renderRep()}
 $('rPrev').onclick=function(){rShift(-1)};$('rNext').onclick=function(){rShift(1)};
 $('rFrom').onchange=function(){if(this.value){rp.a=this.value;renderRep()}};$('rTo').onchange=function(){if(this.value){rp.b=this.value;renderRep()}};
-/* выгрузка в Excel (.xlsx): файл собирается прямо в браузере, без сторонних библиотек */
-var CRCT=(function(){var t=[],c,n,k;for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
-function crc32(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
-function zipStore(files){var enc=new TextEncoder(),parts=[],cd=[],off=0;
-  function u16(v){return [v&255,(v>>>8)&255]}function u32(v){return [v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255]}
-  files.forEach(function(f){var nm=enc.encode(f[0]),d=enc.encode(f[1]),cr=crc32(d);
-    var lh=[].concat(u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(cr),u32(d.length),u32(d.length),u16(nm.length),u16(0));
-    parts.push(new Uint8Array(lh),nm,d);
-    cd.push(new Uint8Array([].concat(u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0x21),u32(cr),u32(d.length),u32(d.length),u16(nm.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(off))),nm);
-    off+=lh.length+nm.length+d.length});
-  var cs=cd.reduce(function(a,x){return a+x.length},0);
-  return new Blob(parts.concat(cd,[new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cs),u32(off),u16(0)))]),{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
-function xEsc(v){return String(v).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]}).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'')}
-function colName(i){var s='';i++;while(i){var m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s}
-function xlsx(sheet,head,rows,widths){
-  var x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>'
-    +widths.map(function(w,i){return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>'}).join('')+'</cols><sheetData>';
-  [head].concat(rows).forEach(function(r,ri){x+='<row r="'+(ri+1)+'">'+r.map(function(v,ci){var ref=colName(ci)+(ri+1),st=ri?'':' s="1"';if(v===''||v==null)return ri?'':'<c r="'+ref+'"'+st+'/>';
-    if(ri&&typeof v==='number')return '<c r="'+ref+'"><v>'+v+'</v></c>';return '<c r="'+ref+'" t="inlineStr"'+st+'><is><t xml:space="preserve">'+xEsc(v)+'</t></is></c>'}).join('')+'</row>'});
-  x+='</sheetData><autoFilter ref="A1:'+colName(head.length-1)+(rows.length+1)+'"/></worksheet>';
-  return zipStore([
-    ['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
-    ['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
-    ['xl/workbook.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+xEsc(sheet)+'" sheetId="1" r:id="rId1"/></sheets><definedNames><definedName name="_xlnm._FilterDatabase" localSheetId="0" hidden="1">\''+xEsc(sheet)+'\'!$A$1:$'+colName(head.length-1)+'$'+(rows.length+1)+'</definedName></definedNames></workbook>'],
-    ['xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
-    ['xl/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE2E8F0"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'],
-    ['xl/worksheets/sheet1.xml',x]])}
+/* выгрузка в Excel (.xlsx): файл собирает общий сборщик во вкладке записи (одна копия кода на всю программу) */
+function xlsx(sheet,hd,rows,w){return parent.document.getElementById('fz').contentWindow.xlsx(sheet,hd,rows,w)}
 $('rCsv').onclick=function(){var z=Z();if(!z)return;var r=rRange(),L=z.list().filter(function(o){return inR(o,r)}).sort(function(a,b){return a.n-b.n});
   var hd=['№','Дата','Время','Способ','Принял','Ответственный','Марка','Модель','Год','Клиент','Телефон','Причина','Комментарий','Статус','Итог','Закрыл','Время отработки, мин','Недозвонов'];
   var rows=L.map(function(o){var d=new Date(o.t),st=o.st==='done'?'Закрыто':o.st==='later'?'Перезвонить':o.st==='wip'?'Недозвон':'Новое';
