@@ -203,6 +203,7 @@ td a.tel{color:inherit;text-decoration:none}
 .uthi{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:7px;background:var(--ac);transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
 .uth.noanim .uthi,.uth.noanim button{transition:none}
 .menu>.mrow[hidden],.menu>.tools[hidden],.menu>.mlbl[hidden]{display:none!important}#menuB.mnone{display:none!important}
+.tsw-one .tswph{width:196px}@media (max-width:1499px){.tsw-one .tswph{width:150px}}@media (max-width:600px){.tsw-one .tswph{width:126px}}
 </style>
 </head>
 <body>
@@ -309,14 +310,13 @@ function render(){var z=Z();
   function telH(o){var ph=digits(o.phone);return ph.length>=10?'<a class="tel" href="tel:+7'+ph.slice(-10)+'" data-tel>'+esc(o.phone)+'</a>':esc(o.phone)}
   function car(o){return esc([o.brand,o.model].filter(Boolean).join(' '))+(o.year?' <span class="mu">'+esc(o.year)+'</span>':'')}
   col('№','n',function(o){return o.n||''},[46,42,38][lv]);
-  if(lv===0){col('Принято','dt',function(o){return dt(o.t).split(' ')[1]},104);col('Способ','',function(o){return esc(o.way)},104)}
-  else col('Принято','dt',function(o){return dt(o.t).split(' ')[1]+(lv===2?'<br><span class="mu">'+esc(o.way)+'</span>':'')},lv===2?96:64);
-  if(lv===1)col('Способ','w',function(o){return esc(o.way)},96);
+  col('Принято','dt',function(o){return dt(o.t).split(' ')[1]+(lv===2?'<br><span class="mu">'+esc(o.way)+'</span>':'')},[104,64,96][lv]);
   col('Ответ&shy;ственный','w',function(o){return o.resp?esc(o.respName):'<span class="mu">—</span>'},[130,110,100][lv]);
-  if(lv===0){col('Марка','',function(o){return esc(o.brand)},110);col('Модель','',function(o){return esc(o.model)},130);col('Год','',function(o){return esc(o.year||'')},60)}
-  else col('Автомобиль','w',car,lv===1?150:124);
+  if(lv<2)col('Способ',lv?'w':'',function(o){return esc(o.way)},lv?96:104);
   if(lv<2){if(!nc)col('Клиент','w',function(o){return esc(o.client)},lv?130:160);if(!np)col('Телефон','',telH,lv?136:146)}
   else if(!nc||!np)col(nc?'Телефон':'Клиент','w',function(o){return (nc?'':esc(o.client))+(!nc&&!np&&o.client&&o.phone?'<br>':'')+(np?'':telH(o))},140);
+  if(lv===0){col('Марка','',function(o){return esc(o.brand)},110);col('Модель','',function(o){return esc(o.model)},130);col('Год','',function(o){return esc(o.year||'')},60)}
+  else col('Автомобиль','w',car,lv===1?150:124);
   function whyT(o){return o.why==='Дополнительное оборудование'?'Доп. оборудование':o.why}
   col('Причина','',function(o){return o.why?(TYK[o.wk]?'<span class="wk '+o.wk+'">'+esc(whyT(o))+'</span>':esc(whyT(o))):''},[176,164,150][lv]);
   col('Комментарий','cm',function(o){return '<div class="c" data-full="'+esc(o.desc)+'">'+esc(o.desc)+'</div>'});
