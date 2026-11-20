@@ -97,7 +97,7 @@ function swLabel(a,b,d){var w=document.getElementById('twin');if(!w)return;var o
   a1.onfinish=function(){o.remove()};swUpd()}
 function swUpd(){var L=swList(),one=L.length<2;var lb=document.querySelector('#twin .tlb:last-child');if(lb&&!lb.getAnimations().length)lb.innerHTML=swLbHtml(cur);
   [].forEach.call(SW.querySelectorAll('.tar'),function(b){b.hidden=one;var t=swNb(+b.dataset.dir);b.title=t?NM[t][0]:(+b.dataset.dir>0?'Это последний раздел':'Это первый раздел');b.setAttribute('aria-label',t?'Перейти: '+NM[t][0]:b.title);b.querySelector('.obc').textContent=(!one&&t==='obr')?obCnt:''});
-  document.getElementById('tdots').innerHTML=one?'':L.map(function(k){return '<i class="'+(k===cur?'on':'')+'"></i>'}).join('')}
+  ['fg','fo','fz'].forEach(function(id){try{document.getElementById(id).contentDocument.documentElement.classList.toggle('tsw-one',one)}catch(e){}});document.getElementById('tdots').innerHTML=one?'':L.map(function(k){return '<i class="'+(k===cur?'on':'')+'"></i>'}).join('')}
 SW.addEventListener('click',function(e){var b=e.target.closest('.tar');if(!b)return;var d=+b.dataset.dir,t=swNb(d);if(t){showTab(t,d);return}swEdge(d,b)});
 /* упор на крайнем разделе: стрелка вспыхивает красным, название и страница упруго толкаются в сторону нажатия */
 function swEdge(d,b){var red=false;try{red=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}if(!b.animate)return;
