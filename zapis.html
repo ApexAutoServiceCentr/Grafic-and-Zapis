@@ -393,6 +393,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 /* подсветка выбранной темы переезжает к нажатой кнопке */
 .uthi{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:7px;background:var(--ac);transition:transform .3s cubic-bezier(.4,0,.2,1),width .3s cubic-bezier(.4,0,.2,1)}
 .uth.noanim .uthi,.uth.noanim button{transition:none}
+.mbx{margin:4px 0 12px}
 </style>
 </head>
 <body class="ro">
@@ -1946,6 +1947,8 @@ setInterval(function(){if(sib('fg'))sibGraph()},3000);
     if(e.target.closest('#uGh')){try{var m=document.getElementById('uMenu');if(m)m.hidden=true;var ub=document.getElementById('uB');if(ub)ub.setAttribute('aria-expanded','false')}catch(x){}
       try{var z=parent.document.getElementById('fz').contentWindow;if(z!==window)parent.showTab('zapis');z.zApi.open('g')}catch(x){try{zApi.open('g')}catch(y){}}}});
   mark()})();
+/* окна пунктов меню открываются сразу под строкой с нажатой кнопкой, а не внизу под всеми кнопками */
+(function(P){P.forEach(function(p){var t=document.getElementById(p[0]),b=document.getElementById(p[1]);if(!t||!b)return;var r=t.closest('.mrow,.tools');if(!r)return;var a=r._lastBox||r;a.parentNode.insertBefore(b,a.nextSibling);r._lastBox=b;b.classList.add('mbx')})})([['uToggle','uBox'],['gToggle','ghBox'],['msToggle','msBox']]);
 </script>
 </body>
 </html>
