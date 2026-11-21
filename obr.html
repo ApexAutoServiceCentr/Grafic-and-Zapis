@@ -495,7 +495,6 @@ setInterval(function(){if(!busy())render()},60000);
 var rsT;addEventListener('resize',function(){clearTimeout(rsT);rsT=setTimeout(function(){if(!busy())render()},150)});
 /* ===== Отчёт по обращениям ===== */
 var rp={per:'week',a:null,b:null},rOpen=false;
-function dayStart(iso){return dObj(iso).getTime()}
 function rRange(){var td=isoOf(Date.now());if(!rp.a){rp.a=td;rp.b=td}
   if(rp.per==='day')return [rp.a,rp.a];
   if(rp.per==='week'){var d=dObj(rp.a),w=(d.getDay()+6)%7,a=addD(rp.a,-w);return [a,addD(a,6)]}
@@ -555,7 +554,7 @@ var menuOpen=false;
 function setMenu(o){menuOpen=o;$('menu').hidden=!o;$('menuB').setAttribute('aria-expanded',o?'true':'false');$('menuB').textContent=o?'☰ Меню ▾':'☰ Меню ▸'}
 $('menuB').onclick=function(){setMenu(!menuOpen)};
 document.addEventListener('mousedown',function(e){if(menuOpen&&!e.target.closest('#menu,#menuB,#rep'))setMenu(false)});
-setInterval(function(){try{var zd=parent.document.getElementById('fz').contentDocument.getElementById('syncDot'),d=$('syncDot');if(zd&&(d.className!==zd.className||d.title!==zd.title)){d.className=zd.className;d.title=zd.title;d.setAttribute('aria-label',zd.getAttribute('aria-label')||zd.title)}$('syncDot').hidden=!(Z()&&Z().ok());$('menuB').hidden=!(Z()&&Z().ok())||![].some.call($('menu').querySelectorAll('button'),function(b){return !b.hidden});if($('menuB').hidden&&menuOpen)setMenu(false)}catch(e){}},500);
+setInterval(function(){try{var zd=parent.document.getElementById('fz').contentDocument.getElementById('syncDot'),d=$('syncDot');if(zd&&(d.className!==zd.className||d.title!==zd.title)){d.className=zd.className;d.title=zd.title;d.setAttribute('aria-label',zd.getAttribute('aria-label')||zd.title)}$('syncDot').hidden=!(Z()&&Z().ok());$('menuB').hidden=!(Z()&&Z().ok())}catch(e){}},500);
 function openRep(){setMenu(false);var z=Z();if(!z||!z.f().rep)return;rOpen=true;$('rep').hidden=false;renderRep();$('rX').focus()}
 function closeRep(){rOpen=false;$('rep').hidden=true;$('menuB').focus()}
 $('rB').onclick=openRep;$('rX').onclick=closeRep;
@@ -583,7 +582,7 @@ render();
   function upd(){var z=zw(),p={};try{p=(z&&z.permFor&&z.permFor())||{}}catch(e){}
     [].forEach.call(document.querySelectorAll('[data-mgo]'),function(b){var n=b.dataset.need,t=b.dataset.mgo.split(':')[0],okT=t==='obr'?!!p.ob:t==='grafik'?p.tg!==false:p.tz!==false;
       b.hidden=!p.role||!okT||!(n==='any'||(n==='owner'?p.role==='owner':!!p[n]))});
-    [].forEach.call(document.querySelectorAll('.gor'),function(r){var lb=r.previousElementSibling,vis=[].some.call(r.children,function(c){return !c.hidden&&getComputedStyle(c).display!=='none'});r.hidden=!vis;if(lb&&lb.classList.contains('gol'))lb.hidden=!vis})}
+  }
   setInterval(upd,1000);upd()})();
 /* браузер не должен подсказывать ранее введённые значения (имена, телефоны и т. п.) — отключаем автозаполнение у всех полей, кроме входа */
 (function(){var SEL='input:not([type=checkbox]):not([type=radio]):not([type=date]):not([type=hidden]):not([type=range]):not([type=color]):not([type=file])';
