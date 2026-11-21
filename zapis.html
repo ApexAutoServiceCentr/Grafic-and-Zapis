@@ -419,8 +419,7 @@ body:not(.f-mday) .mdl{text-decoration:none;cursor:default;pointer-events:none}
 <div id="roNote" class="sub" style="display:none;margin:4px 0 8px;color:var(--warn,#b45309)">На этом устройстве не введён токен GitHub, поэтому правки недоступны. Введите токен в разделе «Синхронизация GitHub».</div>
 <div class="mlbl">Общее</div><div class="tools"><button id="goStaff" class="pset">Сотрудники и посты ↗</button><button id="goMode" class="pset">Режим работы ↗</button><button id="uToggle" class="pu" aria-expanded="false">Пользователи ▸</button><button id="gToggle" aria-expanded="false" style="display:none">Синхронизация GitHub ▸</button></div>
 <div class="mlbl gol">График смен</div><div class="tools gor"><button type="button" data-mgo="grafik:b" data-need="graf">Режимы корректировки ↗</button><button type="button" data-mgo="grafik:exp" data-need="exp">Скачать график ↗</button></div><div class="mlbl gol">Обращения</div><div class="tools gor"><button type="button" data-mgo="obr:rep" data-need="rep">Отчёт по обращениям ↗</button></div>
-<div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="msToggle" class="pset" aria-expanded="false">Шаблоны сообщений ▸</button><button id="ldToggle" class="ldr" aria-expanded="false">Отчёт загрузки цеха ▸</button><button id="zrToggle" type="button">Отчёт по записям</button><button id="sToggle" style="display:none" aria-expanded="false">Настройки ▸</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
-<div id="setBox" class="pset" style="display:none;margin-bottom:12px"><div class="set" id="set"></div></div>
+<div class="mlbl ldr">Запись на сервис</div><div class="tools ldr"><button id="msToggle" class="pset" aria-expanded="false">Шаблоны сообщений ▸</button><button id="ldToggle" class="ldr" aria-expanded="false">Отчёт загрузки цеха ▸</button><button id="zrToggle" type="button">Отчёт по записям</button><span id="meInfo" hidden></span><button id="myPw" hidden></button><button id="outB" hidden></button></div>
 <div id="uBox" class="pu" style="display:none;margin-bottom:12px"><div class="set" id="usr"></div></div>
 <div id="ghBox" style="display:none;margin-bottom:12px"></div>
 <div id="ldBox" style="display:none"></div>
@@ -882,7 +881,6 @@ function applyPerm(){var B=document.body.classList,w=canWrite&&KEY;
   var rn=document.getElementById('roNote');if(rn)rn.style.display=KEY&&!canWrite&&(can('edit')||can('set')||can('users'))?'':'none';
   document.body.classList.toggle('nocli',noCli());
   var u=me(),mi=document.getElementById('meInfo'),uc=document.getElementById('uChip');if(uc){uc.hidden=!u;if(u){document.getElementById('uB').innerHTML='👤<span class="un"> '+esc(u.name)+'</span> ▾';document.getElementById('uB').title=u.name;document.getElementById('uRole').textContent=u.name+' · '+((ROLES[u.role]||{}).n||'')}}if(mi)mi.innerHTML=u?'👤 <b>'+esc(u.name)+'</b> · '+esc((ROLES[u.role]||{}).n||''):'';
-  if(typeof setOpen!=='undefined'&&setOpen&&!(w&&can('set'))){setOpen=false;applySetBox()}
   if(typeof uOpen!=='undefined'&&uOpen&&!(w&&can('users'))){uOpen=false;applyUBox()}}
 
 /* ---------- экран пароля ---------- */
@@ -939,7 +937,7 @@ var cur=iso(new Date()),RS=null,RE=null,needScroll=true,nar=false,RH=36;
 /* высота строки подбирается так, чтобы день целиком помещался на экране (от 30 до 44 пикселей) */
 function calcRH(){var h=document.getElementById('hdr'),mn=document.getElementById('menu'),qr=document.getElementById('qRes'),hh=h?h.offsetHeight-mn.offsetHeight-qr.offsetHeight:120,g=document.querySelector('#days .gh'),gh=g?g.offsetHeight:72,d=document.querySelector('#days .dh'),dh=d?d.offsetHeight+16:44,n=slots().length||20;
   return Math.max(28,Math.min(44,Math.floor((innerHeight-hh-dh-gh-10)/n)))}
-function rerender(){render();if(lrOpen)renderLoad();if(zrOpen)renderZr();if(document.getElementById('setBox').style.display!=='none'){var ae=document.activeElement;if(!(ae&&document.getElementById('set').contains(ae)))renderSet()}doSearch()}
+function rerender(){render();if(lrOpen)renderLoad();if(zrOpen)renderZr();doSearch()}
 function appVisible(){return document.getElementById('app').style.display!=='none'}
 function secOf(d){return document.querySelector('#days .day[data-d="'+d+'"]')}
 function headRng(){var dd=parseIso(cur);document.getElementById('rng').textContent=DN[dd.getDay()]+', '+dd.getDate()+' '+MN[dd.getMonth()].slice(0,3)+' '+dd.getFullYear()+(cur===iso(new Date())?' · сегодня':'');document.getElementById('dPick').value=cur}
@@ -1223,7 +1221,6 @@ function enhanceSelect(id){
   SELS[id]={sync:sync,open:function(){inp.focus();open()}};sync();
 }
 function syncSelects(){for(var k in SELS)SELS[k].sync()}
-function openSel(id){if(SELS[id])SELS[id].open()}
 ['fPost','fStart','fLen','fStatus'].forEach(enhanceSelect);
 function fixBrand(v){v=String(v||'').trim();return brandKey(v)||v}
 function fillModels(){var k=brandKey(fv('fBrand')),l=k?BRANDS[k]:[].concat.apply([],Object.keys(BRANDS).map(function(x){return BRANDS[x]}));document.getElementById('modelList').innerHTML=l.map(function(m){return '<option value="'+esc(m)+'">'}).join('')}
@@ -1537,57 +1534,8 @@ function renderHist(b){var box=document.getElementById('fHist'),l=document.getEl
   l.innerHTML=h.slice().reverse().map(function(e){return '<li>'+hLine(e)+'</li>'}).join('')}
 document.getElementById('frm').addEventListener('submit',function(e){e.preventDefault()});
 
-/* ---------- настройки ---------- */
-var postDelArm=-1;
-function renderSet(){
-  var c=state.cfg,h='<div class="row"><b>Посты</b></div>';
-  c.posts.forEach(function(p,i){
-    h+='<div class="row"><input type="text" maxlength="20" data-pn="'+i+'" value="'+esc(p.name)+'" aria-label="Название поста" style="max-width:200px"><select data-pk="'+i+'">'+Object.keys(KINDS).map(function(k){return '<option value="'+k+'"'+(k===p.kind?' selected':'')+'>'+KINDS[k]+'</option>'}).join('')+'</select>'+(i>0?'<button data-pu="'+i+'" aria-label="Выше">↑</button>':'')+'<button data-pd="'+i+'" class="'+(postDelArm===i?'arm':'')+'">'+(postDelArm===i?'Удалить?':'✕')+'</button></div>';
-    var list=G.w.filter(function(w){return w.dept===p.kind||(p.emp||[]).indexOf(w.id)>=0});
-    h+='<div class="row" style="padding-top:0;padding-left:8px"><label>Мастера поста:</label>'+(G.ok?(list.length?list.map(function(w){return '<label style="color:var(--tx);font-size:13px;display:inline-flex;gap:4px;align-items:center"><input type="checkbox" data-pe="'+i+':'+w.id+'"'+((p.emp||[]).indexOf(w.id)>=0?' checked':'')+'>'+esc(w.name)+'</label>'}).join(''):'<label>в графике нет сотрудников отдела «'+(p.kind==='el'?'Электрики':'Механики')+'»</label>'):'<label>график смен не загружен</label>')+'</div>';
-  });
-  h+='<div class="sub" style="margin:0 0 4px">Пост открыт для записи, когда по графику на смене хотя бы один из его мастеров. С 18:00 до 19:00 — только если кто-то из них дежурит. Пост без мастеров открыт всегда.</div>';
-  h+='<div class="row"><button id="pAdd">+ Добавить пост</button></div><div class="err" id="setErr"></div>';
-  h+='<div class="row" style="margin-top:6px"><b>Приём клиентов</b></div><div class="row"><label style="min-width:240px">Не больше клиентов на одни полчаса</label><input type="number" id="capI" min="1" max="10" value="'+c.cap+'" style="width:70px"></div><div class="sub" style="margin:0">Обычно равно числу сервисных консультантов на приёмке.</div>';
-  var hh='';for(var m=360;m<=1320;m+=30)hh+='<option value="'+m+'">'+fm(m)+'</option>';
-  h+='<div class="row" style="margin-top:6px"><b>Часы записи</b></div><div class="row"><label>с</label><select id="openI">'+hh+'</select><label>до</label><select id="closeI">'+hh+'</select></div>';
-  var s=document.getElementById('set');s.innerHTML=h;
-  sv('openI',c.open);sv('closeI',c.close);
-}
 function cfgTouch(){state.cfg.cu=now();commit()}
 function futureOn(pid){var t=iso(new Date()),k,b;for(k in state.b){b=state.b[k];if(occupies(b)&&b.post===pid&&b.date>=t)return true}return false}
-document.getElementById('set').addEventListener('change',function(e){
-  var t=e.target,c=state.cfg;
-  if(t.dataset.pn!==undefined){c.posts[+t.dataset.pn].name=t.value.trim()||'Пост';cfgTouch()}
-  else if(t.dataset.pk!==undefined){c.posts[+t.dataset.pk].kind=t.value;cfgTouch();renderSet()}
-  else if(t.dataset.pe!==undefined){var q=t.dataset.pe.split(':'),pp=c.posts[+q[0]],eid=+q[1];pp.emp=(pp.emp||[]).filter(function(x){return x!==eid});if(t.checked)pp.emp.push(eid);cfgTouch()}
-  else if(t.id==='capI'){c.cap=Math.max(1,Math.min(10,parseInt(t.value,10)||1));cfgTouch()}
-  else if(t.id==='openI'||t.id==='closeI'){var o=+fv('openI'),cl=+fv('closeI');if(cl<=o){document.getElementById('setErr').textContent='Время окончания должно быть позже начала';renderSet();return}c.open=o;c.close=cl;cfgTouch();renderSet()}
-});
-document.getElementById('set').addEventListener('click',async function(e){
-  var t=e.target.closest('button');if(!t)return;var c=state.cfg,er=document.getElementById('setErr');
-  if(t.id==='pAdd'){var n=c.posts.length+1;c.posts.push({id:'p'+uid(),name:'Пост '+n,kind:'me'});postDelArm=-1;cfgTouch();renderSet()}
-  else if(t.dataset.pu!==undefined){var i=+t.dataset.pu,x=c.posts[i];c.posts[i]=c.posts[i-1];c.posts[i-1]=x;postDelArm=-1;cfgTouch();renderSet()}
-  else if(t.dataset.pd!==undefined){var j=+t.dataset.pd;
-    if(futureOn(c.posts[j].id)){er.textContent='На «'+c.posts[j].name+'» есть записи на сегодня или позже. Сначала перенесите их на другие посты.';return}
-    if(c.posts.length<=1){er.textContent='Должен остаться хотя бы один пост';return}
-    if(postDelArm!==j){postDelArm=j;renderSet();return}
-    c.posts.splice(j,1);postDelArm=-1;cfgTouch();renderSet()}
-  else if(t.id==='npGo'){
-    var a=fv('np1'),b=fv('np2'),ne=document.getElementById('npErr');
-    if(a.length<8){ne.textContent='Пароль должен быть не короче 8 символов';return}
-    if(a!==b){ne.textContent='Пароли не совпадают';return}
-    t.disabled=true;ne.textContent='';
-    var salt=b64(crypto.getRandomValues(new Uint8Array(16))),k=await deriveKey(a,salt);await storeKey(k,salt);dirty=true;await cacheLocal();await syncNow();
-    ne.style.color='var(--ok)';ne.textContent=dirty?'Пароль сменён на этом устройстве, сохранение в GitHub повторится автоматически':'Пароль сменён';sv('np1','');sv('np2','');t.disabled=false;
-  }
-});
-/* ---------- пароль на настройки (как в графике смен) ---------- */
-var SUNL=null;
-function sLocked(){var p=state.cfg.spw;return !!p&&SUNL!==p.h}
-function hexb(h){var a=new Uint8Array(h.length/2),i;for(i=0;i<a.length;i++)a[i]=parseInt(h.substr(i*2,2),16);return a}
-function bhex(a){return Array.prototype.map.call(a,function(x){return (x<16?'0':'')+x.toString(16)}).join('')}
-async function hashPw(pw,saltHex){var k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);var b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:hexb(saltHex),iterations:150000,hash:'SHA-256'},k,256);return bhex(new Uint8Array(b))}
 /* кнопка «показать пароль» у полей пароля */
 var EYE='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
     EYEX='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
@@ -1614,12 +1562,6 @@ function pwDialog(title,o){o=o||{};return new Promise(function(res){
   ok.onclick=submit;no.onclick=function(){done(null)};
   m.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();submit()}else if(e.key==='Escape'){e.preventDefault();done(null)}};
 })}
-async function sGate(){return canWrite&&!!KEY&&can('set');
-  var p=await pwDialog('Пароль на настройки',{check:async function(v){var h=await hashPw(v,state.cfg.spw.s);if(h!==state.cfg.spw.h)return 'Неверный пароль';SUNL=h;return ''}});
-  return p!==null}
-var setOpen=false;
-function applySetBox(){var t=document.getElementById('sToggle');document.getElementById('setBox').style.display=setOpen?'':'none';t.textContent='Настройки '+(setOpen?'▾':'▸');t.setAttribute('aria-expanded',setOpen);if(setOpen)renderSet()}
-document.getElementById('sToggle').onclick=async function(){if(!setOpen&&!(await sGate()))return;setOpen=!setOpen;if(setOpen&&ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}applySetBox()};
 /* ---------- пользователи (только владелец) ---------- */
 var uOpen=false,uDelArm=null,uMsg='';
 function applyUBox(){var t=document.getElementById('uToggle');document.getElementById('uBox').style.display=uOpen?'':'none';t.textContent='Пользователи '+(uOpen?'▾':'▸');t.setAttribute('aria-expanded',uOpen);if(uOpen)renderUsers();fitMenu()}
@@ -1690,7 +1632,7 @@ document.getElementById('usr').addEventListener('click',function(e){var b=e.targ
   else if(b.id==='accNone'){var a2=accGet();FEAT_L.forEach(function(f){a2.feat[f[0]]=[]});accSave(a2)}
   else if(b.id==='accDef'){state.cfg.acc=null;cfgTouch();applyPerm();setSt();rerender();renderUsers()}},true);
 /* закрывать «Пользователей», когда открывают другой раздел меню */
-['sToggle','gToggle'].forEach(function(id){document.getElementById(id).addEventListener('click',closeU,true)});
+document.getElementById('gToggle').addEventListener('click',closeU,true);
 /* ---------- свой пароль и выход ---------- */
 async function openMyPw(){var u=me();if(!u||!KEY)return;
   if(!canWrite){alertMsg('Сменить пароль можно на устройстве, где введён токен GitHub: новый пароль сохраняется в репозитории.');return}
@@ -1718,6 +1660,11 @@ function alertMsg(t){pwDialog(t,{info:true})}
 /* ---------- блок синхронизации ---------- */
 function renderGh(box){
   box.innerHTML='<div class="set"><div class="row"><label style="min-width:90px">Репозиторий</label><input type="text" id="ghOwner" style="max-width:160px" placeholder="владелец" autocomplete="off"><span>/</span><input type="text" id="ghRepo" style="max-width:190px" placeholder="репозиторий" autocomplete="off"></div><div class="row"><label style="min-width:90px">Токен</label><input type="text" class="pwx" spellcheck="false" autocapitalize="off" data-lpignore="true" data-1p-ignore id="ghTok" placeholder="'+(token?'токен сохранён на этом устройстве':'github_pat_…')+'" autocomplete="off"><button id="ghSave" class="pri">Сохранить</button><button id="ghDel">Удалить токен</button></div></div><div class="sub" style="margin-top:8px">'+(PLAIN?'Просмотр записей работает без токена.':'Просмотр записей работает без токена, нужен только пароль.')+' Чтобы записывать клиентов, нужен токен GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens, доступ только к этому репозиторию, право Contents: Read and write. Токен общий с графиком смен: если он уже введён там на этом устройстве, здесь вводить не нужно. Токен хранится только в этом браузере.</div>';
+  var gw=null;try{gw=parent.document.getElementById('fg').contentWindow}catch(e){}
+  if(me()&&me().role==='owner'&&gw&&gw.gBackup){box.insertAdjacentHTML('beforeend','<div class="set" style="margin-top:8px"><div class="row"><b>Копия графика смен</b></div><div class="row"><button id="gbExp">Скачать копию графика</button><button id="gbImp">Загрузить копию графика…</button><input type="file" id="gbFile" accept="application/json,.json" style="display:none"></div><div class="err" id="gbErr"></div></div>');
+    document.getElementById('gbExp').onclick=function(){gw.gBackup.exp()};
+    document.getElementById('gbImp').onclick=function(){document.getElementById('gbFile').click()};
+    document.getElementById('gbFile').onchange=function(ev){var f=ev.target.files&&ev.target.files[0];if(!f)return;gw.gBackup.imp(f,function(e){var er=document.getElementById('gbErr');if(er){er.style.color=e?'':'var(--ok)';er.textContent=e||'Копия графика загружена'}});ev.target.value=''}}
   sv('ghOwner',GH.owner);sv('ghRepo',GH.repo);
   document.getElementById('ghSave').onclick=function(){
     var o=fv('ghOwner').trim(),r=fv('ghRepo').trim(),t=fv('ghTok').trim();
@@ -1728,7 +1675,7 @@ function renderGh(box){
   document.getElementById('ghDel').onclick=function(){token='';canWrite=false;try{localStorage.removeItem('shift-gh-token')}catch(e){}conn='ro';setSt();renderGh(box)};
 }
 var ghOpen=false;
-document.getElementById('gToggle').onclick=function(){ghOpen=!ghOpen;if(ghOpen&&setOpen){setOpen=false;applySetBox()}var b=document.getElementById('ghBox');b.style.display=ghOpen?'':'none';this.textContent='Синхронизация GitHub '+(ghOpen?'▾':'▸');this.setAttribute('aria-expanded',ghOpen);if(ghOpen)renderGh(b)};
+document.getElementById('gToggle').onclick=function(){ghOpen=!ghOpen;var b=document.getElementById('ghBox');b.style.display=ghOpen?'':'none';this.textContent='Синхронизация GitHub '+(ghOpen?'▾':'▸');this.setAttribute('aria-expanded',ghOpen);if(ghOpen)renderGh(b)};
 /* клик по свободному месту в меню сворачивает «Настройки» и «Синхронизацию GitHub» */
 /* ---------- статистика источников за месяц ---------- */
 /* «Статистика» перенесена в отчёт по обращениям (блок «Записи на сервис по источнику») */
@@ -1888,10 +1835,10 @@ function renderLoad(){if(!ldMon)ldMon=ldMonday(iso(new Date()));var P=state.cfg.
   h+='<div class="lrc"><h3>Записей по дням</h3>'+days.map(function(D,j){var x=parseIso(D);return '<div class="lhb"><span>'+DN[x.getDay()]+' '+x.getDate()+(D===t?' · сегодня':'')+'</span><div class="tr"><i style="width:'+Math.round(dayT[j].n*100/dmax)+'%;background:var(--ac)"></i></div><b>'+dayT[j].n+'</b></div>'}).join('')+'</div></div>';
   document.getElementById('load').innerHTML=h}
 document.getElementById('load').addEventListener('click',function(e){var t=e.target.closest('[data-ld]');if(!t)return;closeLoad();goto(t.dataset.ld,true)});
-function collapseMenuSections(){closeU();if(msOpen){msOpen=false;applyMsBox()}if(ldOpen){ldOpen=false;applyLdBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
+function collapseMenuSections(){closeU();if(msOpen){msOpen=false;applyMsBox()}if(ldOpen){ldOpen=false;applyLdBox()}if(ghOpen){ghOpen=false;document.getElementById('ghBox').style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}
 document.getElementById('menu').addEventListener('mousedown',function(e){var t=e.target;
-  if(t.closest('#setBox')||t.closest('#ghBox')||t.closest('#ldBox')||t.closest('#msBox')||t.closest('#uBox')||t.closest('button,input,select,textarea,a,label'))return;
-  if(setOpen||ghOpen||uOpen||ldOpen||msOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
+  if(t.closest('#ghBox')||t.closest('#ldBox')||t.closest('#msBox')||t.closest('#uBox')||t.closest('button,input,select,textarea,a,label'))return;
+  if(ghOpen||uOpen||ldOpen||msOpen){var a=anchor(),t0=a?a.getBoundingClientRect().top:0;collapseMenuSections();fitMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}});
 
 /* ---------- скрываемое меню в закреплённом заголовке ---------- */
 var menuOpen=false;try{localStorage.removeItem('zap-menu')}catch(e){}
@@ -1900,8 +1847,8 @@ addEventListener('resize',fitMenu);
 /* отступ справа под ползунок меню — только когда меню прокручивается */
 (function(){var m=document.getElementById('menu');function ov(){var o=m.scrollHeight>m.clientHeight+1;if(m.classList.contains('ov')!==o)m.classList.toggle('ov',o)}
 if(window.ResizeObserver){var ro=new ResizeObserver(ov);ro.observe(m);for(var i=0;i<m.children.length;i++)ro.observe(m.children[i])}addEventListener('resize',ov)})();
-function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){closeU();if(ldOpen){ldOpen=false;applyLdBox()}if(msOpen){msOpen=false;applyMsBox()}if(setOpen){setOpen=false;applySetBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
-function setMenu(open){if(menuOpen===open)return;if(open)applySetBox();var a=anchor(),t0=a?a.getBoundingClientRect().top:0;menuOpen=open;applyMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}
+function applyMenu(){var b=document.getElementById('menuB');if(!menuOpen){closeU();if(ldOpen){ldOpen=false;applyLdBox()}if(msOpen){msOpen=false;applyMsBox()}if(ghOpen){ghOpen=false;var gb=document.getElementById('ghBox');gb.style.display='none';var gt=document.getElementById('gToggle');gt.textContent='Синхронизация GitHub ▸';gt.setAttribute('aria-expanded',false)}}document.getElementById('menu').style.display=menuOpen?'':'none';fitMenu();b.textContent='☰ Меню '+(menuOpen?'▾':'▸');b.setAttribute('aria-expanded',menuOpen)}
+function setMenu(open){if(menuOpen===open)return;var a=anchor(),t0=a?a.getBoundingClientRect().top:0;menuOpen=open;applyMenu();if(a)scrollBy(0,a.getBoundingClientRect().top-t0)}
 document.getElementById('menuB').onclick=function(){setMenu(!menuOpen)};
 /* клик по таблице, кнопкам сверху или любому месту вне меню закрывает его */
 document.addEventListener('mousedown',function(e){if(!menuOpen)return;var t=e.target;if(t.closest('#menu')||t.closest('#menuB')||t.closest('dialog')||t.closest('#pwM'))return;setMenu(false)});
@@ -1933,7 +1880,7 @@ setInterval(function(){if(sib('fg'))sibGraph()},3000);
   function upd(){var z=zw(),p={};try{p=(z&&z.permFor&&z.permFor())||{}}catch(e){}
     [].forEach.call(document.querySelectorAll('[data-mgo]'),function(b){var n=b.dataset.need,t=b.dataset.mgo.split(':')[0],okT=t==='obr'?!!p.ob:t==='grafik'?p.tg!==false:p.tz!==false;
       b.hidden=!p.role||!okT||!(n==='any'||(n==='owner'?p.role==='owner':!!p[n]))});
-    [].forEach.call(document.querySelectorAll('.gor'),function(r){var lb=r.previousElementSibling,vis=[].some.call(r.children,function(c){return !c.hidden&&getComputedStyle(c).display!=='none'});r.hidden=!vis;if(lb&&lb.classList.contains('gol'))lb.hidden=!vis})}
+  }
   setInterval(upd,1000);upd()})();
 /* браузер не должен подсказывать ранее введённые значения (имена, телефоны и т. п.) — отключаем автозаполнение у всех полей, кроме входа */
 (function(){var SEL='input:not([type=checkbox]):not([type=radio]):not([type=date]):not([type=hidden]):not([type=range]):not([type=color]):not([type=file])';
