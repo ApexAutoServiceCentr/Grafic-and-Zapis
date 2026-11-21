@@ -552,7 +552,7 @@ window.zApi={
     me:function(){var u=me();return u?{id:u.id,name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',owner:u.role==='owner'}:null},
     f:function(){return {rep:feat('obrRep'),tab:feat('tabO'),add:feat('obrAdd')&&canWrite,work:feat('obrWork'),view:feat('obrView'),write:canWrite,book:can('edit')&&canWrite,nocli:noCli(),noph:noCli()&&me().role!=='atz'}},
     count:function(){return obCount()},
-    list:function(){var nc=noCli(),np=nc&&me().role!=='atz';return obAll().map(function(o){var x=JSON.parse(JSON.stringify(o));if(nc)x.client='';if(np)x.phone='';x.respName=o.resp?uName(o.resp)||'—':'';x.cbName=uName(o.cb)||o.cbn||'';x.canAct=obCanAct(o);x.bkLive=!!(o.bk&&state.b[o.bk]&&live(state.b[o.bk]));return x})},
+    list:function(){var nc=noCli(),np=nc&&me().role!=='atz';return obAll().map(function(o){var x=JSON.parse(JSON.stringify(o));if(nc)x.client='';if(np)x.phone='';x.respName=o.resp?uName(o.resp)||'—':'';x.cbName=uName(o.cb)||o.cbn||'';x.canAct=obCanAct(o);x.canEdit=obCanEdit(o);x.bkLive=!!(o.bk&&state.b[o.bk]&&live(state.b[o.bk]));return x})},
     workers:function(){return obWorkers().map(function(u){return {id:u.id,name:u.name}})},
     /* статистика записей по источнику (раньше — пункт «Статистика» в меню записи), теперь — блок в отчёте по обращениям */
     bookSrc:function(a,b){var c={call:0,visit:0,online:0,none:0},t=0,k,x;for(k in state.b){x=state.b[k];if(!live(x)||x.date<a||x.date>b)continue;t++;c[SRC[x.src]?x.src:'none']++}c.tot=t;return c},
@@ -561,6 +561,7 @@ window.zApi={
     del:function(id){return obDel(id)},
     create:function(f){return obCreate(f||{})},
     act:function(id,k,c,lv,nr){return obDo(id,k,c,lv,nr)},
+    edit:function(id,f){return obEdit(id,f||{})},
     book:function(id){return obBook(id)},
     openBk:function(id){var bk=state.b[id];if(!bk||!live(bk))return;obShell('zapis');goto(bk.date,true);openForm(bk)},
     logout:function(){doLogout()},
@@ -1406,7 +1407,7 @@ function obCreate(f){if(!(KEY&&me()&&feat('obrAdd')&&canWrite))return {e:'Нет
   obSave(o);return {id:o.id,n:o.n}}
 function obCanAct(o){var u=me();return !!(o&&u&&feat('obrWork')&&canWrite&&obOpen(o)&&(o.resp===UID||!o.resp||u.role==='owner'))}
 function obDo(id,k,c,lv,nr){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))return 'Нет прав или обращение уже закрыто';o=JSON.parse(JSON.stringify(o));c=String(c||'').trim().slice(0,200);
-  if(k==='take'){if(o.resp)return '';o.resp=UID;obSave(o);return ''}
+  if(k==='take'){if(o.resp)return '';o.resp=UID;o.h=(o.h||[]).concat([{t:now(),n:u.name,a:'take'}]);obSave(o);return ''}
   if(k==='other'&&!c)return 'Напишите, что сделали';
   if(!o.resp)o.resp=UID;
   if(k==='wip'){o.st='wip';o.tries=(o.tries||[]).concat([{t:now(),n:u.name,k:'wip',c:c}])}
@@ -1414,6 +1415,17 @@ function obDo(id,k,c,lv,nr){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))re
   else if(k==='cons'||k==='other'){o.st='done';o.res=k;o.ct=now();o.cb=UID;o.cbn=u.name;o.note=c}
   else return 'Неизвестное действие';
   obSave(o);return ''}
+/* правка уже созданного обращения: владелец — любое; остальные — открытое, которое сами создали или ведут (или свободное, если отрабатывают обращения) */
+function obCanEdit(o){var u=me();if(!(o&&u&&canWrite&&!o.del))return false;if(u.role==='owner')return true;return obOpen(o)&&(o.byU===UID||o.resp===UID||(feat('obrWork')&&!o.resp))}
+var OB_EF=['way','client','phone','brand','model','year','why','desc'];
+function obEdit(id,f){var o=state.o&&state.o[id],u=me();if(!obCanEdit(o))return 'Нет прав менять это обращение';o=JSON.parse(JSON.stringify(o));
+  var nc=noCli(),np=nc&&u.role!=='atz',n={way:OB_WAY.indexOf(f.way)>=0?f.way:o.way,client:nc?o.client:String(f.client||'').trim().slice(0,60),brand:String(f.brand||'').slice(0,30),model:String(f.model||'').trim().slice(0,40),year:/^\d{4}$/.test(String(f.year||''))?String(f.year):'',desc:String(f.desc||'').trim().slice(0,300)};
+  if(np)n.phone=o.phone;else{var pr=String(f.phone||'').trim(),pd=digits(pr);if(pr&&pd.length<10)return 'Телефон: нужно 10 цифр после +7';n.phone=pd.length>=10?'+7 '+phFmt(pd.slice(-10)):''}
+  var ty=OB_TY.filter(function(t){return t.k===f.wk})[0];if(ty){n.wk=ty.k;n.why=ty.n}else if(f.wk===''&&o.wk){n.wk='';n.why=''}else{n.wk=o.wk||'';n.why=o.why||''}
+  if(!n.client&&!n.phone)return 'Укажите имя клиента или телефон';
+  var ch={};OB_EF.forEach(function(k){var x=o[k]==null?'':String(o[k]),y=n[k]==null?'':String(n[k]);if(x!==y)ch[k]=[x,y]});
+  if(!Object.keys(ch).length)return '';
+  for(var k in n)o[k]=n[k];o.h=(o.h||[]).concat([{t:now(),n:u.name,a:'e',ch:ch}]);obSave(o);return ''}
 function obDel(id){var u=me(),o=state.o&&state.o[id];if(!u||u.role!=='owner'||!canWrite)return 'Удалять может только владелец';if(!o)return '';o=JSON.parse(JSON.stringify(o));o.del=true;obSave(o);return ''}
 function obShell(k){try{if(window.parent!==window&&parent.showTab&&parent.document.getElementById('fo')){parent.showTab(k);return true}}catch(e){}return false}
 /* «Записать» из обращения: переходим в таблицу записи, внизу — плашка с клиентом; карточка открывается, когда выберут время */
