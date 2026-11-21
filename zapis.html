@@ -517,8 +517,8 @@ var UID=null;
 var FEAT={cnt:['owner'],wa:['owner'],tpl:['owner'],load:['owner'],stats:['owner'],mday:['owner'],print:['owner'],move:['owner'],obrAdd:['owner'],obrWork:['owner'],obrView:['owner'],obrRep:['owner'],zrep:['owner'],exp:ROLE_ORDER.slice(),tabG:ROLE_ORDER.filter(function(r){return r!=='atz'}),tabZ:ROLE_ORDER.filter(function(r){return r!=='atz'})};
 /* какие вкладки видит роль: «Обращения» по умолчанию — у тех, кому открыта хоть одна функция обращений */
 var TAB_L=[['tabG','График смен',''],['tabO','Обращения',''],['tabZ','Запись на сервис','']];
-var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Отчёт загрузки цеха','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['obrAdd','Создавать обращения','кнопка «+ Обращение»',''],['obrWork','Отрабатывать обращения','перезванивать, записывать, закрывать; можно назначить ответственным',''],['obrView','Видеть все обращения','мониторинг: открытые и закрытые всех сотрудников',''],['obrRep','Отчёт по обращениям','кнопка «Отчёт» во вкладке «Обращения»',''],['zrep','Отчёт по записям','в меню, раздел «Запись на сервис»',''],['exp','Скачать график','файл Excel, в меню, раздел «График смен»','']];
-function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];if(a)return a;if(k==='tabO'){var r=[];['obrAdd','obrWork','obrView'].forEach(function(x){featRoles(x).forEach(function(y){if(r.indexOf(y)<0)r.push(y)})});return r}return FEAT[k]||[]}
+var FEAT_L=[['cnt','Счётчики в шапке','«Сегодня», «Завтра», «Послезавтра»',''],['wa','WhatsApp в карточке','отправка сообщения клиенту','edit'],['tpl','Шаблоны сообщений','правка текстов','set'],['load','Отчёт загрузки цеха','',''],['mday','День мастера','',''],['print','Распечатать день','в окне «День мастера»','mday'],['move','Перенести клиентов','красная кнопка и список','edit'],['obrAdd','Создавать обращения','кнопка «+ Обращение»',''],['obrWork','Отрабатывать обращения','перезванивать, записывать, закрывать; можно назначить ответственным',''],['obrEdit','Изменять обращения','кнопка «Изменить»: свои и те, что ведёт сотрудник; владелец — любые, в том числе закрытые',''],['obrView','Видеть все обращения','мониторинг: открытые и закрытые всех сотрудников',''],['obrRep','Отчёт по обращениям','кнопка «Отчёт» во вкладке «Обращения»',''],['zrep','Отчёт по записям','в меню, раздел «Запись на сервис»',''],['exp','Скачать график','файл Excel, в меню, раздел «График смен»','']];
+function featRoles(k){var a=state.cfg.acc&&state.cfg.acc.feat&&state.cfg.acc.feat[k];if(a)return a;if(k==='obrEdit'){var e=[];['obrAdd','obrWork'].forEach(function(x){featRoles(x).forEach(function(y){if(e.indexOf(y)<0)e.push(y)})});return e}if(k==='tabO'){var r=[];['obrAdd','obrWork','obrView'].forEach(function(x){featRoles(x).forEach(function(y){if(r.indexOf(y)<0)r.push(y)})});return r}return FEAT[k]||[]}
 function featNeed(k,r){var n=(FEAT_L.filter(function(x){return x[0]===k})[0]||[])[3];if(!n)return true;if(n==='mday')return featRoles('mday').indexOf(r)>=0;return roleBase(r).indexOf(n)>=0}
 /* владелец может сам выключить у себя функцию или вкладку (список acc.off); «Запись» у владельца всегда открыта — там вход и настройки */
 function ownOff(k){var a=state.cfg.acc&&state.cfg.acc.off;return k!=='tabZ'&&!!a&&a.indexOf(k)>=0}
@@ -550,9 +550,9 @@ window.zApi={
     ok:function(){return !!(KEY&&me())},
     sig:function(){return KEY&&me()?obSig():''},
     me:function(){var u=me();return u?{id:u.id,name:u.name,role:u.role,roleName:(ROLES[u.role]||{}).n||'',owner:u.role==='owner'}:null},
-    f:function(){return {rep:feat('obrRep'),tab:feat('tabO'),add:feat('obrAdd')&&canWrite,work:feat('obrWork'),view:feat('obrView'),write:canWrite,book:can('edit')&&canWrite,nocli:noCli(),noph:noCli()&&me().role!=='atz'}},
+    f:function(){return {rep:feat('obrRep'),tab:feat('tabO'),add:feat('obrAdd')&&canWrite,work:feat('obrWork'),view:feat('obrView'),write:canWrite,book:can('edit')&&canWrite,nocli:obNoCli(),noph:obNoCli()}},
     count:function(){return obCount()},
-    list:function(){var nc=noCli(),np=nc&&me().role!=='atz';return obAll().map(function(o){var x=JSON.parse(JSON.stringify(o));if(nc)x.client='';if(np)x.phone='';x.respName=o.resp?uName(o.resp)||'—':'';x.cbName=uName(o.cb)||o.cbn||'';x.canAct=obCanAct(o);x.canEdit=obCanEdit(o);x.bkLive=!!(o.bk&&state.b[o.bk]&&live(state.b[o.bk]));return x})},
+    list:function(){var nc=obNoCli(),np=nc;return obAll().map(function(o){var x=JSON.parse(JSON.stringify(o));if(nc)x.client='';if(np)x.phone='';x.respName=o.resp?uName(o.resp)||'—':'';x.cbName=uName(o.cb)||o.cbn||'';x.canAct=obCanAct(o);x.canEdit=obCanEdit(o);x.bkLive=!!(o.bk&&state.b[o.bk]&&live(state.b[o.bk]));return x})},
     workers:function(){return obWorkers().map(function(u){return {id:u.id,name:u.name}})},
     /* статистика записей по источнику (раньше — пункт «Статистика» в меню записи), теперь — блок в отчёте по обращениям */
     bookSrc:function(a,b){var c={call:0,visit:0,online:0,none:0},t=0,k,x;for(k in state.b){x=state.b[k];if(!live(x)||x.date<a||x.date>b)continue;t++;c[SRC[x.src]?x.src:'none']++}c.tot=t;return c},
@@ -1099,6 +1099,8 @@ document.getElementById('newB').onclick=function(){openForm(null,{})};
 function query(){var q=document.getElementById('q').value.trim().toLowerCase();return q.length<2?'':q}
 /* механикам имя и телефон клиента не показываем */
 function noCli(){var u=me();return !!(u&&(u.role==='mech'||u.role==='atz'))}
+/* в обращениях данные клиента скрыты только у механиков: АТЗ видит и имя, и телефон */
+function obNoCli(){var u=me();return !!(u&&u.role==='mech')}
 function match(b,q){var nc=noCli(),hay=[nc?'':b.client,b.plate,b.car,b.desc,nc?'':b.phone,tName(b),b.src?SRC[b.src]:''].join(' ').toLowerCase(),qd=digits(q),pq=q.replace(/\s+/g,'');
   return hay.indexOf(q)>=0||String(b.plate||'').toLowerCase().indexOf(pq)>=0||(!nc&&qd.length>=4&&digits(b.phone).indexOf(qd)>=0)}
 function doSearch(){
@@ -1416,10 +1418,10 @@ function obDo(id,k,c,lv,nr){var o=state.o&&state.o[id],u=me();if(!obCanAct(o))re
   else return 'Неизвестное действие';
   obSave(o);return ''}
 /* правка уже созданного обращения: владелец — любое; остальные — открытое, которое сами создали или ведут (или свободное, если отрабатывают обращения) */
-function obCanEdit(o){var u=me();if(!(o&&u&&canWrite&&!o.del))return false;if(u.role==='owner')return true;return obOpen(o)&&(o.byU===UID||o.resp===UID||(feat('obrWork')&&!o.resp))}
+function obCanEdit(o){var u=me();if(!(o&&u&&canWrite&&!o.del&&feat('obrEdit')))return false;if(u.role==='owner')return true;return obOpen(o)&&(o.byU===UID||o.resp===UID||(feat('obrWork')&&!o.resp))}
 var OB_EF=['way','client','phone','brand','model','year','why','desc'];
 function obEdit(id,f){var o=state.o&&state.o[id],u=me();if(!obCanEdit(o))return 'Нет прав менять это обращение';o=JSON.parse(JSON.stringify(o));
-  var nc=noCli(),np=nc&&u.role!=='atz',n={way:OB_WAY.indexOf(f.way)>=0?f.way:o.way,client:nc?o.client:String(f.client||'').trim().slice(0,60),brand:String(f.brand||'').slice(0,30),model:String(f.model||'').trim().slice(0,40),year:/^\d{4}$/.test(String(f.year||''))?String(f.year):'',desc:String(f.desc||'').trim().slice(0,300)};
+  var nc=obNoCli(),np=nc,n={way:OB_WAY.indexOf(f.way)>=0?f.way:o.way,client:nc?o.client:String(f.client||'').trim().slice(0,60),brand:String(f.brand||'').slice(0,30),model:String(f.model||'').trim().slice(0,40),year:/^\d{4}$/.test(String(f.year||''))?String(f.year):'',desc:String(f.desc||'').trim().slice(0,300)};
   if(np)n.phone=o.phone;else{var pr=String(f.phone||'').trim(),pd=digits(pr);if(pr&&pd.length<10)return 'Телефон: нужно 10 цифр после +7';n.phone=pd.length>=10?'+7 '+phFmt(pd.slice(-10)):''}
   var ty=OB_TY.filter(function(t){return t.k===f.wk})[0];if(ty){n.wk=ty.k;n.why=ty.n}else if(f.wk===''&&o.wk){n.wk='';n.why=''}else{n.wk=o.wk||'';n.why=o.why||''}
   if(!n.client&&!n.phone)return 'Укажите имя клиента или телефон';
@@ -1437,7 +1439,7 @@ function obBanUpd(){var el=document.getElementById('obBan'),o=obPending&&state.o
   document.getElementById('obBanT').innerHTML='<b>Запись по обращению № '+(o.n||'')+'</b>'+esc([noCli()?'':o.client,noCli()?'':o.phone,car,o.why].filter(Boolean).map(function(x){return ' · '+x}).join(''))+'<span class="obh"> — дважды нажмите на свободное время, данные клиента подставятся сами</span>';el.hidden=false}
 setInterval(obBanUpd,1500);
 var _openForm=openForm;openForm=function(b,pre){_openForm(b,pre);if(!b&&obPending&&state.o&&state.o[obPending]&&state.o[obPending].st!=='done'&&canWrite&&can('edit'))obFill(state.o[obPending])};
-function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),feat('obrRep'),feat('tabO'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
+function obSig(){var o=state.o||{},k,n=0,m=0;for(k in o){n++;if(o[k].u>m)m=o[k].u}var u=me();return [n,m,u?u.id+u.role:'',feat('obrAdd'),feat('obrWork'),feat('obrView'),feat('obrRep'),feat('obrEdit'),feat('tabO'),canWrite,can('edit'),noCli(),Object.keys(state.users||{}).length].join('|')}
 document.getElementById('obBanX').onclick=function(){obPending=null;obBanUpd()};
 /* ---------- перенести клиентов ---------- */
 function pkWhy(b){var p=state.cfg.posts[postIdx(b.post)];if(!p)return 'пост удалён';var a=postAvail(p,b.date);
