@@ -152,6 +152,7 @@ tr.r.fl td{animation:fl 1.6s ease-out 1}
 .ot.done{background:var(--td-bg);color:var(--td)}
 tr.dx>td{background:var(--bg);white-space:normal;padding:10px 14px 12px}
 .hist{font-size:13px;color:var(--mu);display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.hist .hc{display:inline-block;margin-left:6px}.hist .hc+.hc::before{content:'· '}.hist s{opacity:.7}
 .acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .acts button{padding:5px 10px;font-size:13px}
 .acts input,.acts select{padding:5px 8px;font-size:13px}
@@ -347,17 +348,25 @@ function render(){var z=Z();
   if(arm){var ci=document.querySelector('#tb [data-c]');if(ci&&!ci.dataset.f){ci.dataset.f=1;ci.focus()}}}
 
 var LATER=(function(){var h='';for(var m=30;m<=300;m+=30){var hh=Math.floor(m/60),mm=m%60;h+='<option value="'+m+'"'+(m===60?' selected':'')+'>через '+(hh?hh+' ч':'')+(hh&&mm?' ':'')+(mm?mm+' мин':'')+'</option>'}return h+'<option value="t10">завтра</option>'})();
-function detail(o,f){var h='<div class="hist">';
-  h+='<div>Создал: '+esc(o.by||'—')+' · '+dt(o.t)+'</div>';
-  (o.tries||[]).forEach(function(x){h+='<div>'+(x.k==='later'?(x.nr?'Не дозвонились, перезвонить ':'Перезвонить ')+hm(x.at):'Недозвон')+' · '+hm(x.t)+' · '+esc(x.n||'')+(x.c?' — '+esc(x.c):'')+'</div>'});
-  if(o.st==='done')h+='<div><b>'+(RES[o.res]||'Закрыто')+'</b> · '+esc(o.cbName)+' · '+dt(o.ct)+(o.note?' — '+esc(o.note):'')+(o.bkLive?' · <a href="#" data-bk="'+o.bk+'">открыть запись</a>':'')+'</div>';
-  h+='</div>';
+var OH={way:'Способ',client:'Клиент',phone:'Телефон',brand:'Марка',model:'Модель',year:'Год',why:'Причина',desc:'Комментарий'};
+function hv(k,v,f){if(v===''||v==null)return '—';if((k==='client'&&f.nocli)||(k==='phone'&&f.noph))return '•••';v=String(v);return v.length>60?v.slice(0,60)+'…':v}
+/* история: создание, «взял в работу», недозвоны, правки и закрытие — по времени */
+function detail(o,f){var E=[{t:o.t,h:'Создал: '+esc(o.by||'—')+' · '+dt(o.t)}];
+  (o.tries||[]).forEach(function(x){E.push({t:x.t,h:(x.k==='later'?(x.nr?'Не дозвонились, перезвонить ':'Перезвонить ')+hm(x.at):'Недозвон')+' · '+hm(x.t)+' · '+esc(x.n||'')+(x.c?' — '+esc(x.c):'')})});
+  (o.h||[]).forEach(function(x){if(x.a==='take'){E.push({t:x.t,h:'Взял в работу · '+hm(x.t)+' · '+esc(x.n||'')});return}if(x.a!=='e')return;
+    var ch=x.ch||{},parts=Object.keys(ch).map(function(k){return '<span class="hc">'+esc(OH[k]||k)+': <s>'+esc(hv(k,ch[k][0],f))+'</s> → '+esc(hv(k,ch[k][1],f))+'</span>'});
+    E.push({t:x.t,h:'Изменил · '+hm(x.t)+' · '+esc(x.n||'')+(parts.length?':'+parts.join(''):'')})});
+  if(o.st==='done')E.push({t:o.ct||Date.now(),h:'<b>'+(RES[o.res]||'Закрыто')+'</b> · '+esc(o.cbName)+' · '+dt(o.ct)+(o.note?' — '+esc(o.note):'')+(o.bkLive?' · <a href="#" data-bk="'+o.bk+'">открыть запись</a>':'')});
+  E.sort(function(a,b){return a.t-b.t});
+  var h='<div class="hist">'+E.map(function(e){return '<div>'+e.h+'</div>'}).join('')+'</div>';
   if(o.canAct){
     if(arm&&arm.id===o.id){var k=arm.k;h+='<div class="acts">'+(k==='later'?'<div class="seg2" role="group" aria-label="Почему перезвонить"><button type="button" data-nr="1" class="'+(arm.nr?'on':'')+'">Не дозвонились</button><button type="button" data-nr="0" class="'+(arm.nr?'':'on')+'">Клиент попросил</button></div><label class="vh" for="lSel">Когда перезвонить</label><select id="lSel" data-l>'+LATER+'</select>':'')
       +'<input type="text" data-c maxlength="200" aria-label="Комментарий" placeholder="'+(k==='other'?'Что сделали (обязательно)':'Комментарий')+'"><button type="button" class="pri" data-ok="'+o.id+'">'+(k==='later'?'Сохранить':'Закрыть обращение')+'</button><button type="button" data-no>Отмена</button></div>'}
     else h+='<div class="acts">'+(f.book?'<button type="button" class="pri" data-a="book">Записать</button>':'')+'<button type="button" data-a="cons">Проконсультирован</button><button type="button" data-a="later">Перезвонить</button><button type="button" data-a="other">Другое</button></div>'}
   else if(o.st!=='done'&&f.work)h+='<div class="mu" style="font-size:13px">Обращение ведёт '+esc(o.respName)+'.</div>';
-  var me=Z()&&Z().me();if(me&&me.owner&&f.write)h+=delArm===o.id?'<div class="acts" style="margin-top:8px;justify-content:flex-end"><span>Удалить обращение № '+(o.n||'')+'? Восстановить будет нельзя.</span><button type="button" class="del" style="margin-left:0" data-delok>Да, удалить</button><button type="button" data-delno>Отмена</button></div>':'<div class="acts" style="margin-top:8px"><button type="button" class="del" data-del>Удалить обращение</button></div>';
+  var me=Z()&&Z().me(),canDel=me&&me.owner&&f.write;
+  if(delArm!==o.id&&(o.canEdit||canDel))h+='<div class="acts" style="margin-top:8px">'+(o.canEdit?'<button type="button" data-edit>Изменить</button>':'')+(canDel?'<button type="button" class="del" data-del>Удалить обращение</button>':'')+'</div>';
+  else if(canDel)h+='<div class="acts" style="margin-top:8px;justify-content:flex-end"><span>Удалить обращение № '+(o.n||'')+'? Восстановить будет нельзя.</span><button type="button" class="del" style="margin-left:0" data-delok>Да, удалить</button><button type="button" data-delno>Отмена</button></div>';
   if(err)h+='<div class="err">'+esc(err)+'</div>';
   return h}
 
@@ -381,6 +390,7 @@ $('tb').addEventListener('click',function(e){var z=Z();if(!z)return;
   if(!b){if(e.target.closest('tr.dx'))return;var tr=e.target.closest('tr.r');if(tr)toggle(tr.dataset.id);return}
   var id=exp;if(!id)return;
   if(b.dataset.no!==undefined){arm=null;err='';render();return}
+  if(b.dataset.edit!==undefined){var eo=z.list().filter(function(x){return x.id===id})[0];if(eo)editDlg(eo);return}
   if(b.dataset.del!==undefined){delArm=id;arm=null;render();return}
   if(b.dataset.delno!==undefined){delArm=null;render();return}
   if(b.dataset.delok!==undefined){err=z.del(id)||'';if(!err){exp=null;delArm=null}render();return}
@@ -453,10 +463,19 @@ combo('nModel',allModels);
 $('nBrand').addEventListener('change',function(){var k=brandKey(this.value);if(k)this.value=k});
 $('nModel').addEventListener('change',function(){var v=this.value.trim().toLowerCase(),el=this;allModels().forEach(function(m){if(m.toLowerCase()===v)el.value=m})});
 $('nYear').addEventListener('input',function(){var d=digits(this.value).slice(0,4);if(this.value!==d)this.value=d});
-function newDlg(){var z=Z();if(!z||!z.ok()||!z.f().add)return;var L=z.lists(),me=z.me();BR=L.brands;
+var editId=null;
+function dlgBase(){var z=Z(),L=z.lists(),f=z.f();BR=L.brands;$('nErr').textContent='';
+  $('nTy').innerHTML=(L.obTypes||L.types||[]).map(function(t){return '<button type="button" data-ty="'+t.k+'" class="'+t.k+'">'+esc(t.n)+'</button>'}).join('');
+  $('nCl').closest('.f').hidden=!!(editId&&f.nocli);$('nPh').closest('.f').hidden=!!(editId&&f.noph);return L}
+function editDlg(o){var z=Z();if(!z||!o.canEdit)return;editId=o.id;var L=dlgBase();
+  $('nWay').innerHTML=opts(L.way,o.way||'Звонок');SELS.nWay.sync();setTy(o.wk||'');
+  $('nCl').value=o.client||'';$('nPh').value=phFmt(digits(o.phone).slice(-10));$('nBrand').value=o.brand||'';$('nModel').value=o.model||'';$('nYear').value=o.year||'';$('nDesc').value=o.desc||'';
+  $('ndT').textContent='Обращение № '+(o.n||'')+' · правка';$('nWho').textContent='Принял: '+(o.by||'—')+' · '+dt(o.t)+' · правка попадёт в историю';
+  if(!$('nd').open)$('nd').showModal();$('nCl').focus()}
+function newDlg(){var z=Z();if(!z||!z.ok()||!z.f().add)return;editId=null;var L=dlgBase(),me=z.me();
   $('nWay').innerHTML=opts(L.way,'Звонок');SELS.nWay.sync();
-  $('nTy').innerHTML=(L.obTypes||L.types||[]).map(function(t){return '<button type="button" data-ty="'+t.k+'" class="'+t.k+'">'+esc(t.n)+'</button>'}).join('');setTy('');
-  ['nCl','nPh','nBrand','nModel','nYear','nDesc'].forEach(function(id){$(id).value=''});$('nErr').textContent='';
+  setTy('');
+  ['nCl','nPh','nBrand','nModel','nYear','nDesc'].forEach(function(id){$(id).value=''});
   var nx=0;z.list().forEach(function(o){if(o.n>nx)nx=o.n});$('ndT').textContent='Новое обращение № '+(nx+1);
   $('nWho').textContent='Дата и время ставятся сами · принял: '+me.name+' · ответственный — кто возьмёт в работу';
   if(!$('nd').open)$('nd').showModal();$('nCl').focus()}
@@ -475,6 +494,8 @@ $('nPh').addEventListener('cut',function(e){var el=this,a=el.selectionStart||0,z
 $('nSend').onclick=function(){var z=Z();if(!z)return;var L=z.lists(),why=((L.obTypes||L.types||[]).filter(function(t){return t.k===nTy})[0]||{}).n||'',pd=digits($('nPh').value),yr=$('nYear').value.trim();
   if(pd&&pd.length!==10){$('nErr').textContent='В номере телефона после +7 должно быть 10 цифр';return}
   if(yr&&!(+yr>=1950&&+yr<=new Date().getFullYear()+1)){$('nErr').textContent='Год выпуска: 4 цифры, например 2021';return}
+  if(editId){var e2=z.edit(editId,{way:$('nWay').value,wk:nTy,client:$('nCl').value,phone:pd?'7'+pd:'',brand:$('nBrand').value.trim(),model:$('nModel').value,year:yr,desc:$('nDesc').value});
+    if(e2){$('nErr').textContent=e2;return}$('nd').close();flash=editId;editId=null;render();return}
   var r=z.create({way:$('nWay').value,why:why,wk:nTy,client:$('nCl').value,phone:pd?'7'+pd:'',brand:$('nBrand').value.trim(),model:$('nModel').value,year:yr,desc:$('nDesc').value});
   if(r.e){$('nErr').textContent=r.e;return}$('nd').close();q='';$('q').value='';$('qX').hidden=true;if(flt==='done')flt='open';flash=r.id;exp=null;arm=null;render();scrollTo(0,0)};
 $('nd').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.defaultPrevented&&e.target.tagName==='INPUT'&&!e.isComposing){e.preventDefault();$('nSend').click()}});
