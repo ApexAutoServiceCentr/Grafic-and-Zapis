@@ -263,7 +263,7 @@ function dur(a,b){var m=Math.max(0,Math.round((b-a)/60000));if(m<60)return m+' �
 var RES={book:'Записан',cons:'Проконсультирован',other:'Другое'};
 var day=null,span=14,oldest=null,goDay=null,spyOff=0,flt='all',q='',exp=null,arm=null,lim=200,flash=null,lastSig='',err='';
 try{flt=localStorage.getItem('obr-flt')||'all'}catch(e){}
-var TYK={},delArm=null;
+var TYK={},delArm=null,TOUCH=false;try{TOUCH=matchMedia('(pointer:coarse)').matches}catch(e){}
 
 function tag(o){if(o.st==='done')return '<span class="ot done">'+(RES[o.res]||'Закрыто')+'</span>';var nr=(o.tries||[]).filter(function(x){return x.k==='wip'||x.nr}).length;if(o.st==='later')return '<span class="ot later">'+(nr?'Недозвон ×'+nr+' · п':'П')+'ерезвонить '+hm(o.later)+'</span>';if(o.st==='wip')return '<span class="ot wip">Недозвон ×'+nr+'</span>';return '<span class="ot new">Новое</span>'}
 /* что видит сотрудник: владелец и «видеть все» — всё; кто отрабатывает — все открытые и закрытые с его участием; кто только создаёт — свои */
@@ -308,7 +308,8 @@ function render(){var z=Z();
   var W=document.documentElement.clientWidth,lv=W>=1600?0:W>=1250?1:2;document.body.dataset.lv=lv;
   var nc=f.nocli,np=f.noph,C=[];
   function col(hd,cl,fn,w){C.push({h:hd,c:cl,f:fn,w:w})}
-  function telH(o){var ph=digits(o.phone);return ph.length>=10?'<a class="tel" href="tel:+7'+ph.slice(-10)+'" data-tel>'+esc(o.phone)+'</a>':esc(o.phone)}
+  /* звонок по нажатию — только на телефоне; на компьютере номер просто текст (иначе браузер спрашивает, каким приложением открыть) */
+  function telH(o){var ph=digits(o.phone);return ph.length>=10&&TOUCH?'<a class="tel" href="tel:+7'+ph.slice(-10)+'" data-tel>'+esc(o.phone)+'</a>':esc(o.phone)}
   function car(o){return esc([o.brand,o.model].filter(Boolean).join(' '))+(o.year?' <span class="mu">'+esc(o.year)+'</span>':'')}
   col('№','n',function(o){return o.n||''},[46,42,38][lv]);
   col('Принято','dt',function(o){return dt(o.t).split(' ')[1]+(lv===2?'<br><span class="mu">'+esc(o.way)+'</span>':'')},[104,64,96][lv]);
