@@ -1356,10 +1356,19 @@ function msgOk(t){var e=document.getElementById('fMsgOk');e.textContent=t;clearT
 async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();var ok=false;try{ok=document.execCommand('copy')}catch(x){}document.body.removeChild(a);return ok}}
 document.querySelector('.mseg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;msgT=b.dataset.mt;[].forEach.call(this.children,function(x){x.classList.toggle('on',x===b)})});
 document.getElementById('fMsgC').onclick=async function(){var t=msgFor(msgCur());msgOk(await copyText(t)?MSG_N[msgT]+' скопировано — вставьте в WhatsApp':'Не удалось скопировать')};
-/* WhatsApp Web: чаты всегда открываются в одной и той же вкладке */
+/* WhatsApp Web. Сайт сам не может управлять чужой вкладкой WhatsApp (защита браузера), поэтому:
+   есть расширение «Apex — WhatsApp в одной вкладке» → чат открывается в уже открытой вкладке без перезагрузки;
+   расширения нет → как раньше, через новую вкладку. */
+function waOpen(phone,text){var url='https://web.whatsapp.com/send?phone='+phone+'&text='+encodeURIComponent(text);
+  function old(){var w=window.open(url,'zapis-whatsapp');try{if(w)w.focus()}catch(e){}msgOk('Чат открыт во вкладке WhatsApp Web — после отправки отметьте «Клиент предупреждён»')}
+  if(document.documentElement.dataset.apexWa!=='1'){old();return}
+  var id=Date.now()+''+Math.random(),done=false;
+  function on(e){if(e.source!==window||!e.data||e.data.type!=='APEX_WA_RESULT'||e.data.id!==id)return;done=true;window.removeEventListener('message',on);
+    if(e.data.ok)msgOk('Чат открыт в WhatsApp — после отправки отметьте «Клиент предупреждён»');else old()}
+  window.addEventListener('message',on);window.postMessage({type:'APEX_WA_OPEN',id:id,phone:phone,text:text},'*');
+  setTimeout(function(){if(!done){window.removeEventListener('message',on);old()}},2000)}
 document.getElementById('fMsgW').onclick=function(){if(!feat('wa'))return;var d=msgCur(),ph=digits(d.phone||'');if(ph.length<10){msgOk('Сначала укажите телефон клиента');return}
-  var w=window.open('https://web.whatsapp.com/send?phone=7'+ph.slice(-10)+'&text='+encodeURIComponent(msgFor(d)),'zapis-whatsapp');try{if(w)w.focus()}catch(e){}
-  msgOk('Чат открыт во вкладке WhatsApp Web — после отправки отметьте «Клиент предупреждён»')};
+  waOpen('7'+ph.slice(-10),msgFor(d))};
 var msOpen=false,msTm=null;
 function applyMsBox(){var t=document.getElementById('msToggle');document.getElementById('msBox').style.display=msOpen?'':'none';t.textContent='Шаблоны сообщений '+(msOpen?'▾':'▸');t.setAttribute('aria-expanded',msOpen);if(msOpen)renderMs();fitMenu()}
 document.getElementById('msToggle').onclick=function(){var o=!msOpen;if(o)collapseMenuSections();msOpen=o;applyMsBox()};
